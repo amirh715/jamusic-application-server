@@ -1,0 +1,119 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.jamapplicationserver.modules.user.usecases.Login;
+
+import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.modules.user.domain.errors.*;
+import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.modules.user.domain.*;
+import com.jamapplicationserver.modules.user.repository.UserRepository;
+import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.infra.Services.JWT.JWTUtils;
+import com.jamapplicationserver.modules.user.infra.services.LoginAuditManager;
+import com.jamapplicationserver.modules.user.repository.IUserRepository;
+
+/**
+ *
+ * @author amirhossein
+ */
+public class LoginUseCase implements IUseCase<LoginRequestDTO, String> {
+    
+    private final IUserRepository repository;
+    
+    private LoginUseCase(IUserRepository repository) {
+        this.repository = repository;
+    }
+    
+    @Override
+    public Result execute(LoginRequestDTO request) throws GenericAppException {
+        
+        System.out.println("LoginUseCase");
+        
+        try {
+            
+            Result loginResult;
+            
+            final Result<MobileNo> mobileOrError = MobileNo.create(request.mobile);
+            final Result<Password> passwordOrError = Password.create(request.password, false);
+            
+            final Result[] combinedProps = {
+                mobileOrError,
+                passwordOrError
+            };
+            
+            final Result combinedPropsResult = Result.combine(combinedProps);
+            
+            if(combinedPropsResult.isFailure) return combinedPropsResult;
+            
+            final MobileNo mobile = mobileOrError.getValue();
+            final Password password = passwordOrError.getValue();
+            
+            final User user = this.repository.fetchByMobile(mobile);
+
+            if(user == null) return Result.fail(new UserMobileOrPasswordIsIncorrectError());
+
+            // user is not active
+            if(!user.isActive()) {
+                loginResult = Result.fail(new UserIsNotActiveError());
+                auditLogin(user.id, loginResult, request);
+                return Result.fail(new UserIsNotActiveError());
+            }
+
+            // password does not match
+            final boolean doesMatch = user.getPassword().equals(password);
+            if(!doesMatch) {
+                loginResult = Result.fail(new UserMobileOrPasswordIsIncorrectError());
+                auditLogin(user.id, loginResult, request);
+                return loginResult;
+            }
+
+            // non-admin user cannot log in through the admin client
+//            if(request.device.family.equals("") && !user.isAdmin()) {
+//                loginResult = null;
+//                auditLogin(user.id, loginResult, request);
+//                return loginResult;
+//            }
+            
+            // generate token
+            final String token =
+                    JWTUtils.generateToken(user.id, user.getRole(), request.device);
+            
+            loginResult = Result.ok(token);
+            auditLogin(user.id, loginResult, request);
+            
+            return loginResult;
+            
+        } catch(Exception e) {
+            throw new GenericAppException(e);
+        }
+        
+    }
+    
+    private void auditLogin(UniqueEntityID userId, Result result, LoginRequestDTO request) {
+        final boolean wasSuccessful = result.isSuccess;
+        final BusinessError failureReason = result.isFailure ? result.getError() : null;
+        LoginAuditManager
+                .getInstance()
+                .audit(
+                        userId,
+                        wasSuccessful,
+                        failureReason,
+                        request.ip,
+                        request.device.family,
+                        request.os.family
+                );
+    }
+    
+    public static LoginUseCase getInstance() {
+        return LoginUseCaseHolder.INSTANCE;
+    }
+    
+    private static class LoginUseCaseHolder {
+
+        private static final LoginUseCase INSTANCE =
+                new LoginUseCase(UserRepository.getInstance());
+    }
+}

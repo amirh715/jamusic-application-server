@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="manager1">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.GenreModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.PlayedModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.PlaylistModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.UserPasswordResetVerificationModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.TrackModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.UserModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.ShowCaseModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.SingerModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.AuditTrailModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.BandModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.UserVerificationModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.AlbumModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.LoginAuditModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.UserEmailVerificationModel</class>
+    <class>com.jamapplicationserver.infra.Persistence.database.Models.NotificationModel</class>
+    <properties>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+      <property name="hibernate.default_schema" value="jamschema"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.archive.autodetection" value="class, hbm"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/JamDB"/>
+      <property name="javax.persistence.jdbc.user" value="postgres"/>
+      <property name="javax.persistence.jdbc.password" value="Aspect123"/>
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      <!-- no idea about what below line does. added so that child relations can be merged -->
+      <!--<property name="hibernate.event.merge.entity_copy_observer" value="allow"/>-->
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+    </properties>
+    <!--<jta-data-source>java:/DefaultDS</jta-data-source>-->
+  </persistence-unit>
+</persistence>
