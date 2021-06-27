@@ -7,8 +7,6 @@ package com.jamapplicationserver.modules.library.usecases.CreateLibraryEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.io.InputStream;
-import java.time.Duration;
 import java.nio.file.Path;
 import com.jamapplicationserver.modules.library.infra.DTOs.usecases.CreateLibraryEntityRequestDTO;
 import com.jamapplicationserver.core.domain.IUseCase;
@@ -23,7 +21,6 @@ import com.jamapplicationserver.modules.library.domain.Band.Band;
 import com.jamapplicationserver.modules.library.domain.Singer.Singer;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.domain.Track.*;
-import com.jamapplicationserver.modules.library.repositories.mappers.GenreMapper;
 import com.jamapplicationserver.modules.library.domain.core.AudioStream;
 
 /**
@@ -63,6 +60,8 @@ public class CreateLibraryEntityUseCase implements IUseCase<CreateLibraryEntityR
             
             if(!request.genres.isEmpty()) {
                 
+                
+                
             }
             
             final Set<Result<Genre>> genresOrError =
@@ -81,6 +80,10 @@ public class CreateLibraryEntityUseCase implements IUseCase<CreateLibraryEntityR
             final Result<GenreList> genreListOrError = GenreList.create(genres);
             
             combinedProps.add(titleOrError);
+            
+            final Result combinedPropsResult = Result.combine(combinedProps);
+            
+            if(combinedPropsResult.isFailure) return combinedPropsResult;
                         
             if(request.description != null)
                 combinedProps.add(descriptionOrError);
@@ -113,20 +116,36 @@ public class CreateLibraryEntityUseCase implements IUseCase<CreateLibraryEntityR
                 combinedProps.add(lyricsOrError);
             
             final Title title = titleOrError.getValue();
-            final Description description = descriptionOrError.getValue();
-            final GenreList genreList = genreListOrError.getValue();
-            final TagList tags = tagsOrError.getValue();
-            final Flag flag = flagOrError.getValue();
             
-            final InstagramId instagramId = instagramIdOrError.getValue();
+            final Description description =
+                    request.description != null ?
+                    descriptionOrError.getValue() : null;
             
-            final UniqueEntityID artistId = artistIdOrError.getValue();
+            final GenreList genreList =
+                    request.genres != null ?
+                    genreListOrError.getValue() : null;
             
-            final Lyrics lyrics = lyricsOrError.getValue();
+            final TagList tags =
+                    request.tags != null ?
+                    tagsOrError.getValue() : null;
             
-            final Result combinedPropsResult = Result.combine(combinedProps);
+            final Flag flag =
+                    request.flagNote != null ?
+                    flagOrError.getValue() : null;
             
-            if(combinedPropsResult.isFailure) return combinedPropsResult;
+            final InstagramId instagramId =
+                    request.instagramId != null ?
+                    instagramIdOrError.getValue() : null;
+            
+            final UniqueEntityID artistId =
+                    request.artistId != null ?
+                    artistIdOrError.getValue() : null;
+            
+            final Lyrics lyrics =
+                    request.lyrics != null ?
+                    lyricsOrError.getValue() : null;
+            
+            LibraryEntity createdEntity;
             
             Artist artist;
             
@@ -143,6 +162,8 @@ public class CreateLibraryEntityUseCase implements IUseCase<CreateLibraryEntityR
                     
                     artist = band;
                     
+                    createdEntity = band;
+                    
                 break;
                 case S:
                     
@@ -152,6 +173,8 @@ public class CreateLibraryEntityUseCase implements IUseCase<CreateLibraryEntityR
                     final Singer singer = singerOrError.getValue();
                     
                     artist = singer;
+                    
+                    createdEntity = singer;
                     
                 break;
                 case A:
@@ -201,6 +224,8 @@ public class CreateLibraryEntityUseCase implements IUseCase<CreateLibraryEntityR
                     
                     this.repository.save(artist);
                     
+                    createdEntity = album;
+                    
                 break;
 
                 case T:
@@ -243,6 +268,8 @@ public class CreateLibraryEntityUseCase implements IUseCase<CreateLibraryEntityR
 
                     this.persistence.write(audio, audioPath);
                     
+                    createdEntity = track;
+                    
                 break;
                 default:
                     return Result.fail(new ValidationError(""));
@@ -251,9 +278,10 @@ public class CreateLibraryEntityUseCase implements IUseCase<CreateLibraryEntityR
             // save entity to database
             this.repository.save(artist);
             
-            return Result.ok();
+            return Result.ok(createdEntity);
             
         } catch(Exception e) {
+            e.printStackTrace();
             throw new GenericAppException(e);
         }
         

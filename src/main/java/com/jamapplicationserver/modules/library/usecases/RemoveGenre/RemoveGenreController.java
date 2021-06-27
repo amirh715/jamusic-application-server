@@ -5,7 +5,11 @@
  */
 package com.jamapplicationserver.modules.library.usecases.RemoveGenre;
 
+import java.util.Map;
 import com.jamapplicationserver.core.infra.BaseController;
+import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.utils.MultipartFormDataUtil;
 
 /**
  *
@@ -13,11 +17,42 @@ import com.jamapplicationserver.core.infra.BaseController;
  */
 public class RemoveGenreController extends BaseController {
     
-    private RemoveGenreController() {
+    private final IUseCase usecase;
+    
+    private RemoveGenreController(IUseCase usecase) {
+        this.usecase = usecase;
     }
     
     @Override
     public void executeImpl() {
+        
+        try {
+            
+            final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+            
+            final Result result = this.usecase.execute(fields.get("id"));
+            
+            if(result.isFailure) {
+                
+                final BusinessError error = result.getError();
+                
+                if(error instanceof NotFoundError)
+                    this.notFound(error);
+                
+                if(error instanceof ConflictError)
+                    this.conflict(error);
+                
+                if(error instanceof ClientErrorError)
+                    this.clientError(error);
+                
+                return;
+            }
+            
+            this.noContent();
+            
+        } catch(Exception e) {
+            this.fail(e);
+        }
         
     }
     
@@ -27,6 +62,7 @@ public class RemoveGenreController extends BaseController {
     
     private static class RemoveGenreControllerHolder {
 
-        private static final RemoveGenreController INSTANCE = new RemoveGenreController();
+        private static final RemoveGenreController INSTANCE =
+                new RemoveGenreController(RemoveGenreUseCase.getInstance());
     }
 }

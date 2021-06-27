@@ -6,6 +6,8 @@
 package com.jamapplicationserver.modules.library.usecases.GetGenreByTitle;
 
 import com.jamapplicationserver.core.infra.BaseController;
+import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.logic.*;
 
 /**
  *
@@ -13,11 +15,42 @@ import com.jamapplicationserver.core.infra.BaseController;
  */
 public class GetGenreByTitleController extends BaseController {
     
-    private GetGenreByTitleController() {
+    private final IUseCase usecase;
+    
+    private GetGenreByTitleController(IUseCase usecase) {
+        this.usecase = usecase;
     }
     
     @Override
     public void executeImpl() {
+        
+        try {
+            
+            final String title = this.req.params("title");
+            
+            final Result result = this.usecase.execute(title);
+            
+            if(result.isFailure) {
+                
+                final BusinessError error = result.getError();
+                
+                if(error instanceof NotFoundError)
+                    this.notFound(error);
+                
+                if(error instanceof ConflictError)
+                    this.conflict(error);
+                
+                if(error instanceof ClientErrorError)
+                    this.clientError(error);
+                
+                return;
+            }
+            
+            this.ok(result.getValue());
+            
+        } catch(Exception e) {
+            this.fail(e);
+        }
         
     }
     
@@ -27,6 +60,7 @@ public class GetGenreByTitleController extends BaseController {
     
     private static class GetGenreByTitleControllerHolder {
 
-        private static final GetGenreByTitleController INSTANCE = new GetGenreByTitleController();
+        private static final GetGenreByTitleController INSTANCE =
+                new GetGenreByTitleController(GetGenreByTitleUseCase.getInstance());
     }
 }

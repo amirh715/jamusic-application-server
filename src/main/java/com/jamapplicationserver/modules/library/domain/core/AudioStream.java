@@ -30,7 +30,7 @@ public class AudioStream extends FilterInputStream {
             Duration duration,
             MusicFileFormat format
     ) {
-        this.in = in;
+        super(in);
         this.size = size;
         this.duration = duration;
         this.format = format;

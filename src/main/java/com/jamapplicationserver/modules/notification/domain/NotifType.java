@@ -9,4 +9,4 @@ package com.jamapplicationserver.modules.notification.domain;
  *
  * @author amirhossein
  */
-public enum NotifType { SMS, FCM, APP_STARTUP }
+public enum NotifType { SMS, FCM, APP }

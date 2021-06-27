@@ -24,14 +24,15 @@ public class LibraryPaths {
     
     public static final String REMOVE_ENTITY = "";
     
-    public static final String CREATE_NEW_GENRE = "";
+    public static final String CREATE_NEW_GENRE = "/genres";
     
-    public static final String GET_ALL_GENRES = "/genres";
+    public static final String GET_ALL_GENRES = "/genres/";
     public static final String GET_GENRE_BY_TITLE = "/genres/:title";
+    public static final String GET_GENRE_BY_ID = "/genres/:id";
     
-    public static final String EDIT_GENRE = "/genres";
+    public static final String EDIT_GENRE = "/genres/";
     
-    public static final String REMOVE_GENRE = "/genres";
+    public static final String REMOVE_GENRE = "/genres/";
     
     public static final String PLAYED_TRACK = "/played-track";
     

@@ -8,23 +8,24 @@ package com.jamapplicationserver.core.domain;
 /**
  *
  * @author amirhossein
+ * @param <T>
  */
 public abstract class NumericValueObject<T extends Number> extends ValueObject<T> {
 
-    private final Number value;
+    protected final T value;
     
-    public NumericValueObject(Number value) {
+    public NumericValueObject(T value) {
         this.value = value;
     }
 
+    @Override
+    public T getValue() {
+        return this.value;
+    }
     
     public final String toPersian() {
         
-        final String convertedToPersian = "";
-
-        
-        
-        return convertedToPersian;
+        return "";
     }
     
 }

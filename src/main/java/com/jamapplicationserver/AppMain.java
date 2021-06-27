@@ -5,20 +5,12 @@
  */
 package com.jamapplicationserver;
 
-import com.jamapplicationserver.core.domain.DateTime;
 import static spark.Spark.*;
 
 import com.jamapplicationserver.modules.user.infra.http.UserRoutes;
+import com.jamapplicationserver.modules.library.infra.http.LibraryRoutes;
 import com.jamapplicationserver.infra.ClientVerifier.ClientVerifier;
-import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
-import com.jamapplicationserver.infra.Persistence.filesystem.FilePersistenceManager;
-import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import javax.servlet.*;
-import java.util.*;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -67,6 +59,7 @@ public class AppMain {
             path("/user", UserRoutes.getInstance());
             
             // '/library' - library routes
+            path("/library", LibraryRoutes.getInstance());
             
             // '/notification' - notification routes
             

@@ -13,11 +13,9 @@ import com.jamapplicationserver.core.logic.*;
  * @author dada
  */
 public class Rate extends NumericValueObject<Double> {
-    
-    private final double value;
-    
+
     private Rate(double value) {
-        this.value = value;
+        super(value);
     }
     
     @Override

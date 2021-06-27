@@ -6,6 +6,8 @@
 package com.jamapplicationserver.modules.library.usecases.GetAllGenres;
 
 import com.jamapplicationserver.core.infra.BaseController;
+import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.logic.*;
 
 /**
  *
@@ -13,11 +15,40 @@ import com.jamapplicationserver.core.infra.BaseController;
  */
 public class GetAllGenresController extends BaseController {
     
-    private GetAllGenresController() {
+    private final IUseCase usecase;
+    
+    private GetAllGenresController(IUseCase usecase) {
+        this.usecase = usecase;
     }
     
     @Override
     public void executeImpl() {
+        
+        try {
+            
+            final Result result = this.usecase.execute(null);
+            
+            if(result.isFailure) {
+                
+                final BusinessError error = result.getError();
+                
+                if(error instanceof NotFoundError)
+                    this.notFound(error);
+                
+                if(error instanceof ConflictError)
+                    this.conflict(error);
+                
+                if(error instanceof ClientErrorError)
+                    this.clientError(error);
+                
+                return;
+            }
+            
+            this.ok(result.getValue());
+            
+        } catch(Exception e) {
+            this.fail(e);
+        }
         
     }
     
@@ -27,6 +58,7 @@ public class GetAllGenresController extends BaseController {
     
     private static class GetAllGenresControllerHolder {
 
-        private static final GetAllGenresController INSTANCE = new GetAllGenresController();
+        private static final GetAllGenresController INSTANCE =
+                new GetAllGenresController(GetAllGenresUseCase.getInstance());
     }
 }

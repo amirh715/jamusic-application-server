@@ -10,6 +10,7 @@ import java.util.UUID;
 /**
  *
  * @author amirhossein
+ * @param <U>
  * 
  */
 public abstract class Entity {

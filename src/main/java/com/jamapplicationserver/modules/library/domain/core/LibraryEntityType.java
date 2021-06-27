@@ -25,10 +25,16 @@ public enum LibraryEntityType {
         this.type = type;
     }
     
-    public static final Result<LibraryEntityType> create(String type) {
-        if(type == null) return Result.fail(new ValidationError());
+    public static final Result<LibraryEntityType> create(String value) {
+        if(value == null)
+            return Result.fail(new ValidationError("Library entity type is required"));
         
-        return Result.ok(LibraryEntityType.valueOf(type));
+        final LibraryEntityType type = LibraryEntityType.valueOf(value);
+        
+        if(type == null)
+            return Result.fail(new ValidationError("Library entity type is incorrect"));
+        
+        return Result.ok(type);
     }
     
 }

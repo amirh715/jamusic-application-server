@@ -32,9 +32,12 @@ public class TagList extends ValueObject {
     
     public static final Result<TagList> create(Set tags) {
         
+        if(tags == null)
+            return Result.fail(new ValidationError("Tags are required"));
+        
         if(tags.size() > MAX_ALLOWED_TAGS)
             return Result.fail(new ValidationError("Tag lists can have " + MAX_ALLOWED_TAGS + " max."));
-        
+
         return Result.ok(new TagList(tags));
         
     }

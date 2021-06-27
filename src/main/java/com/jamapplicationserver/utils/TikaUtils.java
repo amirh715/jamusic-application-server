@@ -23,13 +23,9 @@ public class TikaUtils {
     private final TikaConfig tikaConfig;
     private final DefaultDetector detector;
     
-    private TikaUtils() {
-        try {
-            this.tikaConfig = new TikaConfig("./src/main/resources/Config/tika-config.xml");
-            this.detector = new DefaultDetector();
-        } catch(TikaException | IOException | SAXException e) {
-            e.printStackTrace();
-        }
+    private TikaUtils() throws TikaException, IOException, SAXException {
+        this.tikaConfig = new TikaConfig("./src/main/resources/Config/tika-config.xml");
+        this.detector = new DefaultDetector();
     }
     
     public final boolean isImage(InputStream stream) throws IOException {
@@ -79,11 +75,23 @@ public class TikaUtils {
     
     public static TikaUtils getInstance() {
         
-        return TikaUtilsHolder.INSTANCE;
+        try {
+
+            return new TikaUtils();
+            
+        } catch(TikaException | IOException | SAXException e) {
+            return null;
+        }
+        
     }
     
-    private static class TikaUtilsHolder {
-
-        private static final TikaUtils INSTANCE = new TikaUtils();
-    }
+//    public static TikaUtils getInstance() {
+//        
+//        return TikaUtilsHolder.INSTANCE;
+//    }
+//    
+//    private static class TikaUtilsHolder {
+//
+//        private static final TikaUtils INSTANCE = new TikaUtils();
+//    }
 }

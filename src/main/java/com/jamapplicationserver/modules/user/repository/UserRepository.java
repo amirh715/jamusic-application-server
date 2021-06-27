@@ -239,7 +239,7 @@ public class UserRepository implements IUserRepository {
                 final ConstraintViolationException exception = (ConstraintViolationException)e.getCause().getCause();
                 
                 final String constraintName = exception.getConstraintName();
-                String message = "Unknown constraint violation.";
+                String message = "Unknown constraint violation";
                 if(constraintName.equals("mobile_unique_key"))
                     message = "Mobile No. " + user.getMobile().getValue() + " is already present in the database";
                 if(constraintName.equals("email_unique_key"))

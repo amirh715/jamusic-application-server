@@ -191,28 +191,35 @@ public class LibraryEntityMapper {
         
         LibraryEntityModel model;
         
-        final Set<GenreModel> genres =
+        Set<GenreModel> genres = null;
+        Set<String> tags = null;
+        
+        if(entity.getGenres() != null) {
+            genres =
                 entity
                 .getGenres()
                 .getValue()
                 .stream()
                 .map(genre -> GenreMapper.toPersistence(genre))
                 .collect(Collectors.toSet());
+        }
         
-        final Set<String> tags =
+        if(entity.getTags() != null) {
+            tags =
                 entity
                 .getTags()
                 .getValue()
                 .stream()
                 .map(tag -> tag.getValue())
                 .collect(Collectors.toSet());
-        
+        }
+                
         if(entity instanceof Singer) {
             
             model = new SingerModel();
             
             final Set<AlbumModel> albumsIds =
-                    ((Band) entity).getAlbumsIds()
+                    ((Singer) entity).getAlbumsIds()
                     .stream()
                     .map(albumId -> {
                         final AlbumModel album = new AlbumModel();
@@ -222,7 +229,7 @@ public class LibraryEntityMapper {
                     .collect(Collectors.toSet());
             
             final Set<TrackModel> tracksIds =
-                    ((Band) entity).getTracksIds()
+                    ((Singer) entity).getTracksIds()
                     .stream()
                     .map(trackId -> {
                         final TrackModel track = new TrackModel();
@@ -235,14 +242,16 @@ public class LibraryEntityMapper {
             model.setTitle(entity.getTitle().getValue());
             model.setDescription(entity.getDescription().getValue());
             model.setPublished(entity.isPublished());
-            model.setTags(tags);
+            model.setTags(tags != null ? tags : Set.of());
             model.setGenres(genres);
-            model.setFlagNote(entity.getFlag().getValue());
-            model.setImagePath(entity.getImagePath().toAbsolutePath().toString());
+            model.setFlagNote(entity.getFlag() != null ? entity.getFlag().getValue() : null);
+            model.setImagePath(entity.getImagePath() != null ? entity.getImagePath().toString() : null);
             model.setDuration(entity.getDuration().toSeconds());
+            
             model.setTotalPlayedCount(entity.getTotalPlayedCount());
             model.setCreatedAt(entity.getCreatedAt().getValue());
             model.setLastModifiedAt(entity.getLastModifiedAt().getValue());
+            
             ((SingerModel) model).setAlbums(albumsIds);
             ((SingerModel) model).setTracks(tracksIds);
             
@@ -276,14 +285,15 @@ public class LibraryEntityMapper {
                     })
                     .collect(Collectors.toSet());
             
-            model.setId(((Singer) entity).id.toValue());
+            model.setId(((Band) entity).id.toValue());
             model.setTitle(entity.getTitle().getValue());
-            model.setDescription(entity.getDescription().getValue());
+            model.setDescription(
+                    entity.getDescription() != null ? entity.getDescription().getValue() : null);
             model.setPublished(entity.isPublished());
             model.setTags(tags);
             model.setGenres(genres);
-            model.setFlagNote(entity.getFlag().getValue());
-            model.setImagePath(entity.getImagePath().toAbsolutePath().toString());
+            model.setFlagNote(entity.getFlag() != null ? entity.getFlag().getValue() : null);
+            model.setImagePath(entity.getImagePath() != null ? entity.getImagePath().toString() : null);
             model.setDuration(entity.getDuration().toSeconds());
             model.setTotalPlayedCount(entity.getTotalPlayedCount());
             model.setCreatedAt(entity.getCreatedAt().getValue());

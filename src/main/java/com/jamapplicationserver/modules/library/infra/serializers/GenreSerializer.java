@@ -8,7 +8,6 @@ package com.jamapplicationserver.modules.library.infra.serializers;
 import java.lang.reflect.Type;
 import com.google.gson.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.*;
 
 /**
  *
@@ -21,14 +20,28 @@ public class GenreSerializer implements JsonSerializer<Genre> {
         
         JsonObject json = new JsonObject();
         
+        json.add("id", new JsonPrimitive(
+                genre.id.toString()
+        ));
         json.add("title", new JsonPrimitive(
-                genre.getTitleInPersian().getValue())
-        );
-        json.add("parentGenre",
-                new JsonPrimitive(
-                        genre.getParent().getTitleInPersian().getValue()
-                )
-        );
+                genre.getTitle().getValue()
+        ));
+        json.add("titleInPersian", new JsonPrimitive(
+                genre.getTitleInPersian().getValue()
+        ));
+        json.add("createdAt", new JsonPrimitive(
+                genre.getCreatedAt().toJalali()
+        ));
+        json.add("lastModifiedAt", new JsonPrimitive(
+                genre.getLastModifiedAt().toJalali()
+        ));
+        json.add("size", new JsonPrimitive(genre.getSize()));
+        json.add("isRoot", new JsonPrimitive(genre.isRoot()));
+        
+        if(genre.getParent() != null) {
+            final JsonElement parentGenre = this.serialize(genre.getParent(), type, context);
+            json.add("parentGenre", parentGenre);
+        }
         
         return json;
     }

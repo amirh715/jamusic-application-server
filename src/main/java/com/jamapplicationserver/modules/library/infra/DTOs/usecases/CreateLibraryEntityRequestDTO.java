@@ -60,8 +60,11 @@ public class CreateLibraryEntityRequestDTO implements IDTO {
         this.type = type;
         this.title = title;
         this.description = description;
-        this.genres = serializer.deserialize(genres, new TypeToken<List<GenreDTO>>(){});
-        this.tags = serializer.deserialize(tags, new TypeToken<List<String>>(){});
+        this.genres =
+                genres != null ?
+                serializer.deserialize(genres, new TypeToken<List<GenreDTO>>(){}) :
+                Set.of();
+        this.tags = serializer.deserialize(tags, new TypeToken<Set<String>>(){});
         this.flagNote = flagNote;
         this.artistId = artistId;
         this.instagramId = instagramId;

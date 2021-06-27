@@ -41,12 +41,7 @@ public class Flag extends ValueObject {
     
     @Override
     public String getValue() {
-        return this.toString();
-    }
-    
-    @Override
-    public String toString() {
-        return this.toString();
+        return this.flagNote;
     }
     
     

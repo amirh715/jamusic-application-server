@@ -5,33 +5,65 @@
  */
 package com.jamapplicationserver.modules.library.domain.core;
 
-import com.jamapplicationserver.core.domain.ValueObject;
+import java.util.UUID;
+import java.time.LocalDateTime;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 
 /**
  *
  * @author amirhossein
  */
-public class Genre extends ValueObject {
+public class Genre extends Entity {
     
     public static final int MAX_ALLOWED_PARENT_GENRE_SIZE = 3;
 
-    public final GenreTitle title;
+    private GenreTitle title;
     
-    private final GenreTitle titleInPersian;
+    private GenreTitle titleInPersian;
     
     private final Genre parentGenre;
     
-    private Genre(GenreTitle title, GenreTitle titleInPersian, Genre parentGenre) {
+    private final DateTime createdAt;
+    
+    private final DateTime lastModifiedAt;
+    
+    // creation constructor
+    private Genre(
+            GenreTitle title,
+            GenreTitle titleInPersian,
+            Genre parentGenre,
+            DateTime createdAt,
+            DateTime lastModifiedAt
+    ) {
         super();
         this.title = title;
         this.titleInPersian = titleInPersian;
         this.parentGenre = parentGenre;
+        this.createdAt = createdAt;
+        this.lastModifiedAt = lastModifiedAt;
     }
     
-    @Override
-    public String getValue() {
-        return this.title.toString();
+    // reconstitution constructor
+    private Genre(
+            UniqueEntityID id,
+            GenreTitle title,
+            GenreTitle titleInPersian,
+            Genre parentGenre,
+            DateTime createdAt,
+            DateTime lastModifiedAt
+    ) {
+        super(id);
+        this.title = title;
+        this.titleInPersian = titleInPersian;
+        this.parentGenre = parentGenre;
+        this.createdAt = createdAt;
+        this.lastModifiedAt = lastModifiedAt;
+    }
+    
+    public void edit(GenreTitle title, GenreTitle titleInPersian) {
+        this.title = title;
+        this.titleInPersian = titleInPersian;
     }
     
     public static Result<Genre> create(GenreTitle title, GenreTitle titleInPersian, Genre parentGenre) {
@@ -42,7 +74,57 @@ public class Genre extends ValueObject {
         )
             return Result.fail(new ValidationError("Genre can have " + MAX_ALLOWED_PARENT_GENRE_SIZE + " max."));
         
-        return Result.ok(new Genre(title, titleInPersian, parentGenre));
+        return Result.ok(
+                new Genre(
+                        title,
+                        titleInPersian,
+                        parentGenre,
+                        DateTime.createNow(),
+                        DateTime.createNow()
+                )
+        );
+    }
+    
+    public static Result<Genre> reconstitute(
+            UUID id,
+            String title,
+            String titleInPersian,
+            Genre parent,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt
+    ) {
+        
+        final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromUUID(id);
+        final Result<GenreTitle> titleOrError = GenreTitle.create(title);
+        final Result<GenreTitle> titleInPersianOrError = GenreTitle.create(titleInPersian);
+        final Result<DateTime> createdAtOrError = DateTime.create(createdAt);
+        final Result<DateTime> lastModifiedAtOrError = DateTime.create(lastModifiedAt);
+        
+        final Result[] combinedProps = {
+            idOrError,
+            titleOrError,
+            titleInPersianOrError,
+            createdAtOrError,
+            lastModifiedAtOrError
+        };
+        
+        final Result combinedPropsResult = Result.combine(combinedProps);
+        
+        if(combinedPropsResult.isFailure)
+            return Result.fail(combinedPropsResult.getError());
+        
+        final Genre instance =
+                new Genre(
+                        idOrError.getValue(),
+                        titleOrError.getValue(),
+                        titleInPersianOrError.getValue(),
+                        parent,
+                        createdAtOrError.getValue(),
+                        lastModifiedAtOrError.getValue()
+                );
+        
+        
+        return Result.ok(instance);
     }
     
     public final int getSize() {
@@ -68,6 +150,14 @@ public class Genre extends ValueObject {
     
     public final boolean isRoot() {
         return parentGenre == null;
+    }
+    
+    public final DateTime getCreatedAt() {
+        return this.createdAt;
+    }
+    
+    public final DateTime getLastModifiedAt() {
+        return this.lastModifiedAt;
     }
 
     

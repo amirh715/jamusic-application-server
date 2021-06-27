@@ -31,7 +31,7 @@ public class Title extends ValueObject {
     public static final Result<Title> create(String title) {
         
         if(title == null)
-            return Result.fail(new ValidationError(""));
+            return Result.fail(new ValidationError("Title is required"));
         
         if(
                 title.length() > MAX_LENGTH ||

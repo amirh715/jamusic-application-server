@@ -61,8 +61,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             
             final Predicate predicate =
                     cb.or(
-                            cb.equal(root.get("type"), "S"),
-                            cb.equal(root.get("type"), "B")
+                            cb.equal(root.get("entity_type"), "S"),
+                            cb.equal(root.get("entity_type"), "B")
                     );
             
             return new LibraryEntityQueryScope(List.of(predicate));
@@ -172,9 +172,13 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public void save(LibraryEntity entity) {
         
+        final EntityTransaction tnx = this.em.getTransaction();
+        
         try {
             
             final boolean exists = this.exists(entity.id);
+            
+            tnx.begin();
             
             final LibraryEntityModel model = LibraryEntityMapper.toPersistence(entity);
             
@@ -183,9 +187,10 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             else
                 this.em.persist(model);
             
-            
         } catch(Exception e) {
-            
+            e.printStackTrace();
+        } finally {
+            tnx.commit();
         }
         
     }
@@ -212,7 +217,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
         
         try {
             
-            final LibraryEntityModel model = this.em.find(LibraryEntityModel.class, id);
+            final LibraryEntityModel model = this.em.find(LibraryEntityModel.class, id.toValue());
             
             return model != null;
             

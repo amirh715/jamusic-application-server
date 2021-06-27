@@ -25,7 +25,7 @@ public class ImageStream extends FilterInputStream {
             long size,
             ImageFileFormat format
     ) {
-        this.in = in;
+        super(in);
         this.size = size;
         this.format = format;
     }

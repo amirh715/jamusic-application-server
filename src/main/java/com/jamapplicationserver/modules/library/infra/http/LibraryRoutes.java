@@ -21,6 +21,7 @@ import com.jamapplicationserver.modules.library.usecases.EditGenre.EditGenreCont
 import com.jamapplicationserver.modules.library.usecases.GetAllGenres.GetAllGenresController;
 import com.jamapplicationserver.modules.library.usecases.GetGenreByTitle.GetGenreByTitleController;
 import com.jamapplicationserver.modules.library.usecases.RemoveGenre.RemoveGenreController;
+import com.jamapplicationserver.modules.library.usecases.GetGenreById.GetGenreByIdController;
 
 /**
  *
@@ -112,6 +113,12 @@ public class LibraryRoutes implements RouteGroup {
         get(
                 LibraryPaths.GET_GENRE_BY_TITLE,
                 GetGenreByTitleController.getInstance()
+        );
+        
+        // get genre by id
+        get(
+                LibraryPaths.GET_GENRE_BY_ID,
+                GetGenreByIdController.getInstance()
         );
         
         // remove genre

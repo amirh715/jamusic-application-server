@@ -7,22 +7,18 @@ package com.jamapplicationserver.modules.library.repositories;
 
 import java.util.Set;
 import com.jamapplicationserver.modules.library.domain.core.*;
+import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.infra.IRepository;
 
 /**
  *
  * @author dada
  */
-public interface IGenreRepository {
-    
-    void save(Genre genre);
-    
-    boolean exists(GenreTitle title);
+public interface IGenreRepository extends IRepository<Genre> {
     
     Genre fetchByTitle(GenreTitle title);
     
     Set<Genre> fetchAll();
-    
-    void remove(Genre genre);
     
     
 }

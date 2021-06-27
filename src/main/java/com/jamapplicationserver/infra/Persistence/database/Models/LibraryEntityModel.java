@@ -86,7 +86,7 @@ public class LibraryEntityModel {
     }
     
     public void setTitle(String title) {
-        
+        this.title = title;
     }
     
     public String getDescription() {
@@ -120,6 +120,7 @@ public class LibraryEntityModel {
     }
     
     public void setTags(Set<String> tags) {
+        if(tags == null) return;
         final String separator = "#";
         this.tags = tags.stream()
                 .map(tag -> {

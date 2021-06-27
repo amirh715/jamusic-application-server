@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jamapplicationserver.modules.library.infra.DTOs.entities;
+package com.jamapplicationserver.modules.library.infra.DTOs.usecases;
 
 import com.jamapplicationserver.core.domain.IDTO;
 
@@ -11,16 +11,16 @@ import com.jamapplicationserver.core.domain.IDTO;
  *
  * @author dada
  */
-public class GenreDTO implements IDTO {
+public class EditGenreRequestDTO implements IDTO {
     
-    public String title;
-    public String titleInPersian;
-    public String parentGenreId;
+    public final String id;
+    public final String title;
+    public final String titleInPersian;
     
-    public GenreDTO(String title, String titleInPersian, String parentGenreId) {
+    public EditGenreRequestDTO(String id, String title, String titleInPersian) {
+        this.id = id;
         this.title = title;
         this.titleInPersian = titleInPersian;
-        this.parentGenreId = parentGenreId;
     }
     
 }

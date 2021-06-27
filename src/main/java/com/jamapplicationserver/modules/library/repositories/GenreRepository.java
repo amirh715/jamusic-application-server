@@ -7,8 +7,10 @@ package com.jamapplicationserver.modules.library.repositories;
 
 import javax.persistence.*;
 import javax.persistence.criteria.*;
+import org.hibernate.exception.ConstraintViolationException;
 import java.util.*;
 import java.util.stream.Collectors;
+import com.jamapplicationserver.core.domain.UniqueEntityID;
 import com.jamapplicationserver.modules.library.repositories.mappers.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.library.domain.core.*;
@@ -33,18 +35,36 @@ public class GenreRepository implements IGenreRepository {
         
         try {
             
-            final String query = "SELECT * FROM GenreModel g";
+            final String query = "SELECT g FROM GenreModel g";
             
             return (Set<Genre>) this.em.createQuery(query)
-                    .getResultList()
-                    .stream()
+                    .getResultStream()
                     .map(model -> GenreMapper.toDomain((GenreModel)model))
                     .collect(Collectors.toSet());
 
         } catch(Exception e) {
+            e.printStackTrace();
             return null;
         }
 
+    }
+    
+    @Override
+    public Genre fetchById(UniqueEntityID id) {
+        
+        try {
+            
+            final GenreModel model = this.em.find(GenreModel.class, id.toValue());
+            
+            return GenreMapper.toDomain(model);
+            
+        } catch(NoResultException e) {
+            return null;
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        
     }
     
     @Override
@@ -52,52 +72,102 @@ public class GenreRepository implements IGenreRepository {
         
         try {
             
-            final GenreModel model = this.em.find(GenreModel.class, title.getValue());
+            final String query = "FROM GenreModel g WHERE g.title = :title";
+
+            final GenreModel model = (GenreModel) this.em.createQuery(query)
+                    .setParameter("title", title.getValue())
+                    .getSingleResult();
             
             return GenreMapper.toDomain(model);
             
         } catch(Exception e) {
+            e.printStackTrace();
             return null;
         }
 
     }
 
     @Override
-    public void save(Genre genre) {
+    public void save(Genre genre) throws ConstraintViolationException {
         
         GenreModel model;
         
-        em.getTransaction().begin();
+        final EntityTransaction tnx = this.em.getTransaction();
         
-        if(this.exists(genre.title)) { // updater existing genre
+        try {
             
-            model = new GenreModel();
+            tnx.begin();
+        
+            if(this.exists(genre.id)) { // updater existing genre
+
+                model = new GenreModel();
+
+                GenreMapper.mergeForPersistence(genre, model);
+
+                em.merge(model);
+
+            } else { // insert new genre
+
+                model = GenreMapper.toPersistence(genre);
+
+                em.persist(model);
+
+            }
             
-            GenreMapper.mergeForPersistence(genre, model);
+            tnx.commit();
             
-            em.merge(model);
+        } catch(RollbackException e) {
             
-        } else { // insert new genre
-            
-            model = GenreMapper.toPersistence(genre);
-            
-            em.persist(model);
+            if(e.getClass() != null && e.getCause().getCause() != null) {
+                
+                final ConstraintViolationException exception = (ConstraintViolationException) e.getCause().getCause();
+                
+                final String constraintName = exception.getConstraintName();
+                String message = "Unknown constraint violation";
+                if(constraintName.equals("title_unique_key"))
+                    message = "عنوان سبک تکراری است";
+                if(constraintName.equals("title_in_persian_unique_key"))
+                    message = "عنوان فارسی سبک تکراری است";
+                throw new ConstraintViolationException(message, exception.getSQLException(), constraintName);
+            }
             
         }
-        
-        em.getTransaction().commit();
         
     }
     
     @Override
-    public boolean exists(GenreTitle title) {
+    public boolean exists(UniqueEntityID id) {
         
-        return true;
+        try {
+            
+            final GenreModel model = this.em.find(GenreModel.class, id.toValue());
+            return model != null;
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
     
     @Override
     public void remove(Genre genre) {
 
+        try {
+            
+            final EntityTransaction tnx = this.em.getTransaction();
+            
+            final GenreModel model = GenreMapper.toPersistence(genre);
+            
+            tnx.begin();
+            
+            this.em.remove(model);
+            
+            tnx.commit();
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         
     }
     

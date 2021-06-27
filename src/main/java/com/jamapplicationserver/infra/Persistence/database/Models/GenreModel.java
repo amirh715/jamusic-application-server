@@ -16,7 +16,12 @@ import java.io.Serializable;
  * @author amirhossein
  */
 @Entity
-@Table(name="genres", schema="jamschema")
+@Table(name="genres", schema="jamschema",
+        uniqueConstraints={
+            @UniqueConstraint(columnNames={"title"}, name="title_unique_key"),
+            @UniqueConstraint(columnNames={"title_in_persian"}, name="title_in_persian_unique_key")
+        }
+)
 public class GenreModel implements Serializable {
     
     public GenreModel() {
@@ -24,18 +29,21 @@ public class GenreModel implements Serializable {
     }
     
     @Id
+    @Column(name="id")
+    private UUID id;
+    
     @Column(name="title")
     private String title;
     
-    @Column(name="title_in_persian", unique=true, nullable=false)
+    @Column(name="title_in_persian", nullable=false)
     private String titleInPersian;
     
     // parent genre
     @ManyToOne
-    @JoinColumn(name="parent_genre_title", nullable=true)
+    @JoinColumn(name="parent_genre_id", nullable=true)
     private GenreModel parentGenre;
     
-    @ManyToOne(optional=false)
+    @ManyToOne(optional=true)
     private UserModel updater;
     
     @Column(name="created_at", nullable=false)
@@ -43,6 +51,10 @@ public class GenreModel implements Serializable {
     
     @Column(name="last_modified_at", nullable=false)
     private LocalDateTime lastModifiedAt;
+    
+    public UUID getId() {
+        return this.id;
+    }
     
     public String getTitle() {
         return this.title;
@@ -66,6 +78,10 @@ public class GenreModel implements Serializable {
     
     public LocalDateTime getLastModifiedAt() {
         return this.lastModifiedAt;
+    }
+    
+    public void setId(UUID id) {
+        this.id = id;
     }
     
     public void setTitle(String title) {

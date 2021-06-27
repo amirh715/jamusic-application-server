@@ -25,12 +25,12 @@ public class GenreTitle extends ValueObject {
     
     public static Result<GenreTitle> create(String title) {
         
-        if(title == null) return Result.fail(new ValidationError(""));
+        if(title == null) return Result.fail(new ValidationError("Genre title is required"));
         
         if(
                 title.length() > GenreTitle.MAX_LENGTH ||
                 title.length() < GenreTitle.MIN_LENGTH
-        ) return Result.fail(new ValidationError(""));
+        ) return Result.fail(new ValidationError("Genre title is not valid"));
         
         return Result.ok(new GenreTitle(title));
     }
