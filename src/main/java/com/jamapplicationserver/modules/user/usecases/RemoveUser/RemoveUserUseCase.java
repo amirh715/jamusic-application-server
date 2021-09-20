@@ -16,7 +16,7 @@ import com.jamapplicationserver.modules.user.domain.errors.*;
  *
  * @author amirhossein
  */
-public class RemoveUserUseCase implements IUseCase<RemoveUserRequestDTO, Object> {
+public class RemoveUserUseCase implements IUsecase<RemoveUserRequestDTO, Object> {
     
     private final IUserRepository repository;
     
@@ -31,10 +31,10 @@ public class RemoveUserUseCase implements IUseCase<RemoveUserRequestDTO, Object>
         
         try {
             
-            final Result<UniqueEntityID> idOrError =
-                    UniqueEntityID.createFromString(request.id);
-            final Result<UniqueEntityID> updaterIdOrError =
-                    UniqueEntityID.createFromString(request.updater);
+            final Result<UniqueEntityId> idOrError =
+                    UniqueEntityId.createFromString(request.id);
+            final Result<UniqueEntityId> updaterIdOrError =
+                    UniqueEntityId.createFromString(request.updater);
             
             final Result[] combinedProps = {
                 idOrError,

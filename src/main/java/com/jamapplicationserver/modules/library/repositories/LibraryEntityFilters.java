@@ -24,17 +24,20 @@ public class LibraryEntityFilters {
     
     public final LibraryEntityType type;
     
+    public final double rateFrom;
+    public final double rateTill;
+    
     public final Boolean published;
     
-    public final Boolean flagged;
+    public final Boolean isFlagged;
     
     public final Boolean hasImage;
     
-    public final GenreList genres;
+    public final Set<UniqueEntityId> genreIds;
     
-    public final UniqueEntityID creatorId;
+    public final UniqueEntityId creatorId;
     
-    public final UniqueEntityID updaterId;
+    public final UniqueEntityId updaterId;
     
     public LibraryEntityFilters(
             DateTime createdAtFrom,
@@ -43,12 +46,14 @@ public class LibraryEntityFilters {
             DateTime lastModifiedAtTill,
             String searchTerm,
             LibraryEntityType type,
+            double rateFrom,
+            double rateTill,
             Boolean published,
-            Boolean flagged,
+            Boolean isFlagged,
             Boolean hasImage,
-            GenreList genres,
-            UniqueEntityID creatorId,
-            UniqueEntityID updaterId
+            Set<UniqueEntityId> genreIds,
+            UniqueEntityId creatorId,
+            UniqueEntityId updaterId
     ) {
         this.createdAtFrom = createdAtFrom;
         this.createdAtTill = createdAtTill;
@@ -56,12 +61,15 @@ public class LibraryEntityFilters {
         this.lastModifiedAtTill = lastModifiedAtTill;
         this.searchTerm = searchTerm;
         this.type = type;
-        this.published = published != null ? published : true;
-        this.flagged = flagged;
-        this.hasImage = hasImage;
-        this.genres = genres;
+        this.rateFrom = rateFrom;
+        this.rateTill = rateTill;
+        this.published = published != null ? published : null;
+        this.isFlagged = isFlagged != null ? isFlagged : null;
+        this.hasImage = hasImage != null ? hasImage : null;
+        this.genreIds = genreIds;
         this.creatorId = creatorId;
         this.updaterId = updaterId;
+        
     }
     
 }

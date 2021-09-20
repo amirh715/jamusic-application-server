@@ -9,7 +9,6 @@ import java.util.*;
 import com.google.gson.reflect.TypeToken;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.domain.IDTO;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.GenreDTO;
 
 /**
  *
@@ -19,7 +18,9 @@ public class GetLibraryEntitiesByFiltersRequestDTO implements IDTO {
     
     public final String searchTerm;
     public final String type;
-    public final GenreDTO genres;
+    public final Set<String> genreIds;
+    public final double rateFrom;
+    public final double rateTo;
     public final List<String> tags;
     public final Boolean flagged;
     public final Boolean published;
@@ -35,12 +36,14 @@ public class GetLibraryEntitiesByFiltersRequestDTO implements IDTO {
             String searchTerm,
             String type,
             String genres,
-            String creatorId,
-            String updaterId,
+            String rateFrom,
+            String rateTo,
             String tags,
             Boolean flagged,
             Boolean published,
             Boolean hasImage,
+            String creatorId,
+            String updaterId,
             String createdAtFrom,
             String createdAtTill,
             String lastModifiedAtFrom,
@@ -48,20 +51,23 @@ public class GetLibraryEntitiesByFiltersRequestDTO implements IDTO {
     ) {
         
         final ISerializer serializer = Serializer.getInstance();
-        
+            
         this.searchTerm = searchTerm;
         this.type = type;
-        this.genres = serializer.deserialize(tags, new TypeToken<List<GenreDTO>>(){});
+        this.genreIds = serializer.deserialize(tags, new TypeToken<Set<String>>(){});
+        this.rateFrom = rateFrom != null ? Double.valueOf(rateFrom) : 0.0;
+        this.rateTo = rateTo != null ? Double.valueOf(rateTo) : 5.0;
         this.creatorId = creatorId;
         this.updaterId = updaterId;
         this.tags = serializer.deserialize(tags, new TypeToken<List<String>>(){});
-        this.flagged = flagged;
-        this.published = published;
-        this.hasImage = hasImage;
+        this.flagged = flagged != null ? flagged : null;
+        this.published = published != null ? published : null;
+        this.hasImage = hasImage != null ? hasImage : null;
         this.createdAtFrom = createdAtFrom;
         this.createdAtTill = createdAtTill;
         this.lastModifiedAtFrom = lastModifiedAtFrom;
         this.lastModifiedAtTill = lastModifiedAtTill;
+
     }
     
 }

@@ -7,28 +7,30 @@ package com.jamapplicationserver.modules.library.infra.http;
 
 import spark.RouteGroup;
 import static spark.Spark.*;
-import com.jamapplicationserver.modules.library.usecases.CreateLibraryEntity.CreateLibraryEntityController;
-import com.jamapplicationserver.modules.library.usecases.GetLibraryEntitiesByFilters.GetLibraryEntitiesByFiltersController;
-import com.jamapplicationserver.modules.library.usecases.GetLibraryEntityById.GetLibraryEntityByIdController;
-import com.jamapplicationserver.modules.library.usecases.EditLibraryEntity.EditLibraryEntityController;
-import com.jamapplicationserver.modules.library.usecases.PublishOrArchiveLibraryEntity.PublishArchiveLibraryEntityController;
-import com.jamapplicationserver.modules.library.usecases.PlayTrack.PlayTrackController;
-import com.jamapplicationserver.modules.library.usecases.RemoveLibraryEntity.RemoveLibraryEntityController;
-import com.jamapplicationserver.modules.library.usecases.GetLibraryEntityImageById.GetLibraryEntityImageByIdController;
-import com.jamapplicationserver.modules.library.usecases.GetTrackAudioById.GetTrackAudioByIdController;
-import com.jamapplicationserver.modules.library.usecases.CreateGenre.CreateGenreController;
-import com.jamapplicationserver.modules.library.usecases.EditGenre.EditGenreController;
-import com.jamapplicationserver.modules.library.usecases.GetAllGenres.GetAllGenresController;
-import com.jamapplicationserver.modules.library.usecases.GetGenreByTitle.GetGenreByTitleController;
-import com.jamapplicationserver.modules.library.usecases.RemoveGenre.RemoveGenreController;
-import com.jamapplicationserver.modules.library.usecases.GetGenreById.GetGenreByIdController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.CreateArtist.CreateArtistController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.CreateAlbum.CreateAlbumController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.CreateTrack.CreateTrackController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibraryEntitiesByFilters.GetLibraryEntitiesByFiltersController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibraryEntityById.GetLibraryEntityByIdController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.PublishOrArchiveLibraryEntity.PublishArchiveLibraryEntityController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.PlayTrack.PlayTrackController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.RemoveLibraryEntity.RemoveLibraryEntityController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibraryEntityImageById.GetLibraryEntityImageByIdController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetTrackAudioById.GetTrackAudioByIdController;
+import com.jamapplicationserver.modules.library.usecases.Genres.CreateGenre.CreateGenreController;
+import com.jamapplicationserver.modules.library.usecases.Genres.EditGenre.EditGenreController;
+import com.jamapplicationserver.modules.library.usecases.Genres.GetAllGenres.GetAllGenresController;
+import com.jamapplicationserver.modules.library.usecases.Genres.GetGenreByTitle.GetGenreByTitleController;
+import com.jamapplicationserver.modules.library.usecases.Genres.RemoveGenre.RemoveGenreController;
+import com.jamapplicationserver.modules.library.usecases.Genres.GetGenreById.GetGenreByIdController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetRecommendedCollections.GetRecommendedCollectionsController;
 
 /**
  *
  * @author dada
  */
 public class LibraryRoutes implements RouteGroup {
-    
+
     private LibraryRoutes() {
     }
     
@@ -37,10 +39,22 @@ public class LibraryRoutes implements RouteGroup {
         
         before("/*", (req, res) -> System.out.println(req.url()));
         
-        // create library entity
+        // create new artist
         post(
-                LibraryPaths.CREATE_NEW_ENTITY,
-                CreateLibraryEntityController.getInstance()
+                LibraryPaths.CREATE_NEW_ARTIST,
+                CreateArtistController.getInstance()
+        );
+        
+        // create new album
+        post(
+                LibraryPaths.CREATE_NEW_ALBUM,
+                CreateAlbumController.getInstance()
+        );
+        
+        // create new track
+        post(
+                LibraryPaths.CREATE_NEW_TRACK,
+                CreateTrackController.getInstance()
         );
         
         // get library entities by filters
@@ -55,10 +69,10 @@ public class LibraryRoutes implements RouteGroup {
                 GetLibraryEntityByIdController.getInstance()
         );
         
-        // edit library entity
-        put(
-                LibraryPaths.EDIT_ENTITY,
-                EditLibraryEntityController.getInstance()
+        // get collections
+        get(
+                LibraryPaths.GET_COLLECTIONS,
+                GetRecommendedCollectionsController.getInstance()
         );
         
         // publish/archive library entity
@@ -67,8 +81,8 @@ public class LibraryRoutes implements RouteGroup {
                 PublishArchiveLibraryEntityController.getInstance()
         );
         
-        // play track
-        put(
+        // played track
+        post(
                 LibraryPaths.PLAYED_TRACK,
                 PlayTrackController.getInstance()
         );
@@ -108,17 +122,17 @@ public class LibraryRoutes implements RouteGroup {
                 LibraryPaths.GET_ALL_GENRES,
                 GetAllGenresController.getInstance()
         );
+                
+        // get genre by id
+        get(
+                LibraryPaths.GET_GENRE_BY_ID,
+                GetGenreByIdController.getInstance()
+        );
         
         // get genre by title
         get(
                 LibraryPaths.GET_GENRE_BY_TITLE,
                 GetGenreByTitleController.getInstance()
-        );
-        
-        // get genre by id
-        get(
-                LibraryPaths.GET_GENRE_BY_ID,
-                GetGenreByIdController.getInstance()
         );
         
         // remove genre

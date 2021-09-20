@@ -17,9 +17,9 @@ import com.jamapplicationserver.modules.user.domain.*;
  */
 public class GetUserByIDController extends BaseController {
     
-    private final IUseCase useCase;
+    private final IUsecase useCase;
     
-    private GetUserByIDController(IUseCase useCase) {
+    private GetUserByIDController(IUsecase useCase) {
         this.useCase = useCase;
     }
     

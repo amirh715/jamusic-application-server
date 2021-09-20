@@ -14,10 +14,10 @@ import com.jamapplicationserver.core.domain.*;
  */
 public class CreateUserResponseDTO implements IDTO {
     
-    public final UniqueEntityID id;
+    public final UniqueEntityId id;
     
     public CreateUserResponseDTO(
-            UniqueEntityID id
+            UniqueEntityId id
     ) {
         this.id = id;
     }

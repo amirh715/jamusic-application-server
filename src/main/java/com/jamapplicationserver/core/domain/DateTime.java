@@ -32,9 +32,11 @@ public class DateTime extends ValueObject<LocalDateTime> {
     }
     
     public static Result<DateTime> create(LocalDateTime value) {
-        // validate input here...
-        
         return Result.ok(new DateTime(value));
+    }
+    
+    public static DateTime createWithoutValidation(LocalDateTime value) {
+        return new DateTime(value);
     }
     
     public static Result<DateTime> create(String value) {
@@ -132,13 +134,13 @@ public class DateTime extends ValueObject<LocalDateTime> {
         final long seconds = duration.toSeconds();
         final long absSeconds = Math.abs(seconds);
         
-        String yearsPart = "";
-        String monthsPart = "";
-        String daysPart = "";
-        String hoursPart = "";
-        String minsPart = "";
+        String yearsPart;
+        String monthsPart;
+        String daysPart;
+        String hoursPart;
+        String minsPart;
         
-        String phrase = "";
+        String phrase;
         
         if(absSeconds < 10)
             phrase = "لحظاتی";

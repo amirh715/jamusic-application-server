@@ -9,6 +9,7 @@ import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import java.util.*;
+import java.util.stream.*;
 import java.nio.file.Path;
 import java.time.*;
 
@@ -25,7 +26,8 @@ public class Singer extends Artist {
             Flag flag,
             TagList tags,
             GenreList genres,
-            InstagramId instagramId
+            InstagramId instagramId,
+            UniqueEntityId creatorId
     ) {
         super(
             title,
@@ -33,13 +35,14 @@ public class Singer extends Artist {
             flag,
             tags,
             genres,
-            instagramId
+            instagramId,
+            creatorId
         );
     }
     
     // reconstitution constructor
     private Singer(
-            UniqueEntityID id,
+            UniqueEntityId id,
             Title title,
             Description description,
             boolean published,
@@ -53,8 +56,10 @@ public class Singer extends Artist {
             Rate rate,
             DateTime createdAt,
             DateTime lastModifiedAt,
-            Set<UniqueEntityID> albumsIds,
-            Set<UniqueEntityID> tracksIds
+            UniqueEntityId creatorId,
+            UniqueEntityId updaterId,
+            Set<UniqueEntityId> albumsIds,
+            Set<UniqueEntityId> tracksIds
     ) {
         super(
                 id,
@@ -71,6 +76,8 @@ public class Singer extends Artist {
                 rate,
                 createdAt,
                 lastModifiedAt,
+                creatorId,
+                updaterId,
                 albumsIds,
                 tracksIds
         );
@@ -83,10 +90,12 @@ public class Singer extends Artist {
             Flag flag,
             TagList tags,
             GenreList genres,
-            InstagramId instagramId
+            InstagramId instagramId,
+            UniqueEntityId creatorId
     ) {
         
         if(title == null) return Result.fail(new ValidationError("Title is required for singers."));
+        if(creatorId == null) return Result.fail(new ValidationError("Singer must have a creator"));
         
         Singer instance = new Singer(
                 title,
@@ -94,7 +103,8 @@ public class Singer extends Artist {
                 flag,
                 tags,
                 genres,
-                instagramId
+                instagramId,
+                creatorId
         );
         
         return Result.ok(instance);
@@ -108,18 +118,20 @@ public class Singer extends Artist {
             String flagNote,
             Set<Tag> tags,
             Set<Genre> genres,
-            String instagramId,
             String imagePath,
-            LocalDateTime createdAt,
-            LocalDateTime lastModifiedAt,
             long totalPlayedCount,
             double rate,
             long totalDuration,
-            Set<UUID> albumsIDs,
-            Set<UUID> tracksIDs
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
+            UUID creatorId,
+            UUID updaterId,
+            String instagramId,
+            Set<UUID> albumsIds,
+            Set<UUID> tracksIds
     ) {
         
-        final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromUUID(id);
+        final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromUUID(id);
         final Result<Title> titleOrError = Title.create(title);
         final Result<Description> descriptionOrError = Description.create(description);
         final Result<Flag> flagOrError = Flag.create(flagNote);
@@ -129,49 +141,70 @@ public class Singer extends Artist {
         final Result<InstagramId> instagramIdOrError = InstagramId.create(instagramId);
         final Result<DateTime> createdAtOrError = DateTime.create(createdAt);
         final Result<DateTime> lastModifiedAtOrError = DateTime.create(lastModifiedAt);
+        final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromUUID(creatorId);
+        final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromUUID(updaterId);
         
-        final Result<Set<UniqueEntityID>> albumsIDsOrErrors =
-                UniqueEntityID.createFromUUIDs(albumsIDs);
+        final Result<Set<Result<UniqueEntityId>>> albumsIdsOrErrors =
+                UniqueEntityId.createFromUUIDs(albumsIds != null ? albumsIds : Set.of());
         
-        final Result<Set<UniqueEntityID>> tracksIDsOrErrors =
-                UniqueEntityID.createFromUUIDs(tracksIDs);
+        final Result<Set<Result<UniqueEntityId>>> tracksIdsOrErrors =
+                UniqueEntityId.createFromUUIDs(tracksIds);
         
-        final Result[] combinedProps = {
-            idOrError,
-            titleOrError,
-            descriptionOrError,
-            flagOrError,
-            tagListOrError,
-            genreListOrError,
-            rateOrError,
-            instagramIdOrError,
-            createdAtOrError,
-            lastModifiedAtOrError,
-            albumsIDsOrErrors,
-            tracksIDsOrErrors
-        };
+        final ArrayList<Result> combinedProps = new ArrayList<>();
+        
+        combinedProps.add(idOrError);
+        combinedProps.add(titleOrError);
+        combinedProps.add(rateOrError);
+        combinedProps.add(createdAtOrError);
+        combinedProps.add(lastModifiedAtOrError);
+        combinedProps.add(creatorIdOrError);
+        combinedProps.add(updaterIdOrError);
+        
+        if(description != null) combinedProps.add(descriptionOrError);
+        if(flagNote != null) combinedProps.add(flagOrError);
+        if(tags != null) combinedProps.add(tagListOrError);
+        if(genres != null) combinedProps.add(genreListOrError);
+        if(instagramId != null) combinedProps.add(instagramIdOrError);
+        if(albumsIds != null && !albumsIds.isEmpty()) combinedProps.add(albumsIdsOrErrors);
+        if(tracksIds != null && !tracksIds.isEmpty()) combinedProps.add(tracksIdsOrErrors);
         
         final Result combinedPropsResult = Result.combine(combinedProps);
         
         if(combinedPropsResult.isFailure) return combinedPropsResult;
+        
+        final Set<UniqueEntityId> albumsIdsValues =
+                albumsIdsOrErrors.getValue()
+                .stream()
+                .map(result -> result.getValue())
+                .collect(Collectors.toSet());
+        
+        final Set<UniqueEntityId> tracksIdsValues =
+                tracksIdsOrErrors.getValue()
+                .stream()
+                .map(result -> result.getValue())
+                .collect(Collectors.toSet());
 
         Singer instance = new Singer(
                 idOrError.getValue(),
                 titleOrError.getValue(),
-                descriptionOrError.getValue(),
+                description != null ? descriptionOrError.getValue() : null,
                 published,
-                flagOrError.getValue(),
-                tagListOrError.getValue(),
-                genreListOrError.getValue(),
-                Path.of(imagePath),
-                instagramIdOrError.getValue(),
+                flagNote != null ? flagOrError.getValue() : null,
+                tags != null ? tagListOrError.getValue() : null,
+                genres != null ? genreListOrError.getValue() : null,
+                imagePath != null ? Path.of(imagePath) : null,
+                instagramId != null ? instagramIdOrError.getValue() : null,
                 Duration.ofSeconds(totalDuration),
                 totalPlayedCount,
                 rateOrError.getValue(),
                 createdAtOrError.getValue(),
                 lastModifiedAtOrError.getValue(),
-                albumsIDsOrErrors.getValue(),
-                tracksIDsOrErrors.getValue()
+                creatorIdOrError.getValue(),
+                updaterIdOrError.getValue(),
+                albumsIds != null && !albumsIds.isEmpty() ?
+                        albumsIdsValues : null,
+                tracksIds != null && !tracksIds.isEmpty() ?
+                        tracksIdsValues : null
         );
         
         return Result.ok(instance);

@@ -9,14 +9,16 @@ import java.time.*;
 import java.util.*;
 import java.nio.file.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
+import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.library.domain.core.errors.*;
 
 /**
  *
  * @author amirhossein
  */
-public class Track extends LibraryEntity {
+public class Track extends Artwork {
     
     private final Path audioPath;
     
@@ -25,6 +27,8 @@ public class Track extends LibraryEntity {
     private final MusicFileFormat type;
     
     private Lyrics lyrics;
+    
+    private Album album;
 
     // creation constructor
     private Track(
@@ -37,25 +41,37 @@ public class Track extends LibraryEntity {
             Flag flag,
             TagList tags,
             GenreList genres,
-            Lyrics lyrics
+            UniqueEntityId creatorId,
+            RecordLabel recordLabel,
+            RecordProducer producer,
+            ReleaseYear releaseYear,
+            Lyrics lyrics,
+            Artist artist,
+            Album album
     ) {
         super(
                 title,
                 description,
                 flag,
                 tags,
-                genres
+                genres,
+                creatorId,
+                recordLabel,
+                producer,
+                releaseYear,
+                artist
         );
         this.size = size;
         this.duration = duration;
         this.audioPath = audioPath;
         this.type = type;
         this.lyrics = lyrics;
+        this.album = album;
     }
     
     // reconstitution constructor
     private Track(
-            UniqueEntityID id,
+            UniqueEntityId id,
             Title title,
             Description description,
             boolean published,
@@ -71,7 +87,14 @@ public class Track extends LibraryEntity {
             Rate rate,
             DateTime createdAt,
             DateTime lastModifiedAt,
-            Lyrics lyrics
+            UniqueEntityId creatorId,
+            UniqueEntityId updaterId,
+            RecordLabel recordLabel,
+            RecordProducer producer,
+            ReleaseYear releaseYear,
+            Lyrics lyrics,
+            Artist artist,
+            Album album
     ) {
         super(
                 id,
@@ -86,13 +109,20 @@ public class Track extends LibraryEntity {
                 totalPlayedCount,
                 rate,
                 createdAt,
-                lastModifiedAt
+                lastModifiedAt,
+                creatorId,
+                updaterId,
+                recordLabel,
+                producer,
+                releaseYear,
+                artist
         );
         this.size = size;
         this.duration = duration;
         this.type = type;
         this.audioPath = audioPath;
         this.lyrics = lyrics;
+        this.album = album;
     }
     
     public static final Result<Track> create(
@@ -105,10 +135,18 @@ public class Track extends LibraryEntity {
             MusicFileFormat type,
             TagList tags,
             GenreList genres,
-            Lyrics lyrics
+            UniqueEntityId creatorId,
+            RecordLabel recordLabel,
+            RecordProducer producer,
+            ReleaseYear releaseYear,
+            Lyrics lyrics,
+            Artist artist,
+            Album album
     ) {
         
         if(title == null) return Result.fail(new ValidationError("Title is required for tracks."));
+        if(audioPath == null) return Result.fail(new ValidationError("Track must have an audio path"));
+        if(type == null) return Result.fail(new ValidationError("Type is required"));
         
         Track instance = new Track(
                 title,
@@ -120,7 +158,13 @@ public class Track extends LibraryEntity {
                 flag,
                 tags,
                 genres,
-                lyrics
+                creatorId,
+                recordLabel,
+                producer,
+                releaseYear,
+                lyrics,
+                artist,
+                album
         );
         
         return Result.ok(instance);
@@ -135,21 +179,27 @@ public class Track extends LibraryEntity {
             Set<Tag> tags,
             Set<Genre> genres,
             String imagePath,
-            LocalDateTime createdAt,
-            LocalDateTime lastModifiedAt,
-            long duration,
-            long size,
-            String format,
-            String audioPath,
             long totalPlayedCount,
             double rate,
+            long duration,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
+            UUID creatorId,
+            String recordLabel,
+            String producer,
+            Integer releaseYear,
+            UUID updaterId,
+            String audioPath,
+            String format,
+            long size,
             String lyrics,
-            Artist artist
+            Artist artist,
+            Album album
     ) {
         
         if(title == null) return Result.fail(new ValidationError(""));
         
-        final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromUUID(id);
+        final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromUUID(id);
         final Result<Title> titleOrError = Title.create(title);
         final Result<Description> descriptionOrError = Description.create(description);
         final Result<Flag> flagOrError = Flag.create(flagNote);
@@ -159,21 +209,27 @@ public class Track extends LibraryEntity {
         final Result<Rate> rateOrError = Rate.create(rate);
         final Result<DateTime> createdAtOrError = DateTime.create(createdAt);
         final Result<DateTime> lastModifiedAtOrError = DateTime.create(lastModifiedAt);
+        final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromUUID(creatorId);
+        final Result<RecordLabel> recordLabelOrError = RecordLabel.create(recordLabel);
+        final Result<RecordProducer> producerOrError = RecordProducer.create(producer);
+        final Result<ReleaseYear> releaseYearOrError = ReleaseYear.create(releaseYear);
+        final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromUUID(updaterId);
         final Result<Lyrics> lyricsOrError = Lyrics.create(lyrics);
         
-        final Result[] combinedProps = {
-            idOrError,
-            titleOrError,
-            descriptionOrError,
-            flagOrError,
-            tagListOrError,
-            genreListOrError,
-            rateOrError,
-            typeOrError,
-            createdAtOrError,
-            lastModifiedAtOrError,
-            lyricsOrError
-        };
+        final ArrayList<Result> combinedProps = new ArrayList<>();
+        
+        combinedProps.add(idOrError);
+        combinedProps.add(titleOrError);
+        combinedProps.add(rateOrError);
+        combinedProps.add(createdAtOrError);
+        combinedProps.add(lastModifiedAtOrError);
+        combinedProps.add(creatorIdOrError);
+        combinedProps.add(updaterIdOrError);
+        
+        if(lyrics != null) combinedProps.add(lyricsOrError);
+        if(recordLabel != null) combinedProps.add(recordLabelOrError);
+        if(producer != null) combinedProps.add(producerOrError);
+        if(releaseYear != null) combinedProps.add(releaseYearOrError);
         
         final Result combinedPropsResult = Result.combine(combinedProps);
         
@@ -182,12 +238,12 @@ public class Track extends LibraryEntity {
         Track instance = new Track(
                 idOrError.getValue(),
                 titleOrError.getValue(),
-                descriptionOrError.getValue(),
+                description != null ? descriptionOrError.getValue() : null,
                 published,
-                flagOrError.getValue(),
-                tagListOrError.getValue(),
-                genreListOrError.getValue(),
-                Path.of(imagePath),
+                flagNote != null ? flagOrError.getValue() : null,
+                tags != null ? tagListOrError.getValue() : null,
+                genres != null ? genreListOrError.getValue() : null,
+                imagePath != null ? Path.of(imagePath) : null,
                 size,
                 Duration.ofSeconds(duration),
                 typeOrError.getValue(),
@@ -196,39 +252,176 @@ public class Track extends LibraryEntity {
                 rateOrError.getValue(),
                 createdAtOrError.getValue(),
                 lastModifiedAtOrError.getValue(),
-                lyricsOrError.getValue()
+                creatorIdOrError.getValue(),
+                updaterIdOrError.getValue(),
+                recordLabel != null ? recordLabelOrError.getValue() : null,
+                producer != null ? producerOrError.getValue() : null,
+                releaseYear != null ? releaseYearOrError.getValue() : null,
+                lyrics != null ? lyricsOrError.getValue() : null,
+                artist,
+                album
         );
+        
+        // track's genres must be a substitute of its artist/album.
+        if(genres != null && !genres.isEmpty()) {
+            
+            if(instance.album != null) {
+                
+                //
+                for(Genre genre : instance.genres.getValue()) {
+
+                    final boolean doesGenreMatchOneOfAlbumsGenres =
+                            album.getGenres()
+                            .getValue()
+                            .stream()
+                            .anyMatch(genreOfAlbum ->
+                                        genreOfAlbum.equals(genre) ||
+                                        genreOfAlbum.isSubGenreOf(genre)
+                            );
+
+                    if(!doesGenreMatchOneOfAlbumsGenres)
+                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+
+                }
+                    
+            }
+            
+            if(instance.album == null) {
+                
+                for(Genre genre : instance.genres.getValue()) {
+                    
+                    final boolean doesGenreMatchOneOfArtistsGenre =
+                            artist.getGenres()
+                            .getValue()
+                            .stream()
+                            .anyMatch(genreOfArtist ->
+                                    genreOfArtist.equals(genre) ||
+                                    genreOfArtist.isSubGenreOf(genre)
+                            );
+                    
+                    if(!doesGenreMatchOneOfArtistsGenre)
+                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+                    
+                }
+                
+            }
+            
+        }
         
         return Result.ok(instance);
     }
     
     @Override
     public final void publish() {
+        if(this.isPublished()) return;
+        if(
+                (this.album != null && !this.album.isPublished()) ||
+                (this.artist != null && !this.artist.isPublished())
+        ) {
+            this.archive();
+            return;
+        }
         this.published = true;
+        this.modified();
+    }
+    
+    @Override
+    public final void publish(UniqueEntityId updaterId) {
+        this.publish();
+        this.updaterId = updaterId;
     }
     
     @Override
     public final void archive() {
+        if(!this.isPublished()) return;
         this.published = false;
+        this.modified();
     }
     
     @Override
-    public void edit(
+    public final void archive(UniqueEntityId updaterId) {
+        this.archive();
+        this.updaterId = updaterId;
+    }
+    
+    @Override
+    public void rate(Rate rate) {
+        this.rate = rate;
+    }
+    
+    @Override
+    public Result edit(
             Title title,
             Description description,
             TagList tags,
-            GenreList genres
+            GenreList genres,
+            Flag flag,
+            RecordLabel recordLabel,
+            RecordProducer producer,
+            ReleaseYear releaseYear,
+            UniqueEntityId updaterId
     ) {
         
         this.title = title;
         this.description = description;
         this.tags = tags;
-        this.genres = genres;
+        
+        if(genres != null) {
+            
+            if(this.album != null) {
+                
+                // album's genres must be a subset of album's artist genres
+                for(Genre genre : genres.getValue()) {
 
+                    final boolean doesGenreMatchOneOfAlbumsGenres =
+                            album.getGenres()
+                            .getValue()
+                            .stream()
+                            .anyMatch(genreOfAlbum ->
+                                        genreOfAlbum.equals(genre) ||
+                                        genreOfAlbum.isSubGenreOf(genre)
+                            );
+
+                    if(!doesGenreMatchOneOfAlbumsGenres)
+                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+
+                }
+                    
+            }
+            
+            if(this.album == null) {
+                
+                for(Genre genre : genres.getValue()) {
+                    
+                    final boolean doesGenreMatchOneOfArtistsGenre =
+                            artist.getGenres()
+                            .getValue()
+                            .stream()
+                            .anyMatch(genreOfArtist ->
+                                    genreOfArtist.equals(genre) ||
+                                    genreOfArtist.isSubGenreOf(genre)
+                            );
+                    
+                    if(!doesGenreMatchOneOfArtistsGenre)
+                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+                    
+                }
+                
+            }
+            
+            this.genres = genres;
+            
+        }
+
+        this.updaterId = updaterId;
+        this.modified();
+        
+        return Result.ok();
     }
     
     public void changeLyrics(Lyrics lyrics) {
         this.lyrics = lyrics;
+        this.modified();
     }
 
     public final long getSize() {
@@ -247,10 +440,24 @@ public class Track extends LibraryEntity {
         return this.lyrics;
     }
     
-    public final void playedBy(UniqueEntityID playerId, DateTime playedAt) {
-        
-        this.totalPlayedCount++;
-        
+    public Album getAlbum() {
+        return this.album;
+    }
+    
+    public final void played() {
+        totalPlayedCount++;
+    }
+    
+    // not related to domain!
+    // for passing album reference only!
+    public void setAlbum(Album album) {
+        this.album = album;
+    }
+    
+    // not related to domain
+    // for passing artist reference only!
+    public void setArtist(Artist artist) {
+        this.artist = artist;
     }
 
 }

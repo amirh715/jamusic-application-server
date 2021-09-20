@@ -14,11 +14,17 @@ import com.jamapplicationserver.core.domain.IDTO;
 public class PublishArchiveLibraryEntityRequestDTO implements IDTO {
     
     public final String id;
-    public final String state;
+    public final Boolean published;
+    public final Boolean cascadeToAll;
     
-    public PublishArchiveLibraryEntityRequestDTO(String id, String state) {
+    public PublishArchiveLibraryEntityRequestDTO(
+            String id,
+            String published,
+            String cascadeToAll
+    ) {
         this.id = id;
-        this.state = state;
+        this.published = Boolean.valueOf(published);
+        this.cascadeToAll = Boolean.valueOf(cascadeToAll);
     }
     
 }

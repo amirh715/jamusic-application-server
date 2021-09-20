@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.user.domain.errors;
 
 import com.jamapplicationserver.core.logic.ConflictError;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 
 /**
  *
@@ -16,7 +16,7 @@ public class UserAlreadyExistsError extends ConflictError {
     
     private static final int CODE = 202;
     
-    public UserAlreadyExistsError(UniqueEntityID id) {
+    public UserAlreadyExistsError(UniqueEntityId id) {
         super("User with id " + id.toString() + " already exists.", CODE);
     }
     

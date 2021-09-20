@@ -5,10 +5,11 @@
  */
 package com.jamapplicationserver.modules.user.usecases.GetUsersByFilters;
 
+import com.jamapplicationserver.core.domain.UserRole;
 import com.jamapplicationserver.core.domain.DateTime;
 import java.util.*;
-import com.jamapplicationserver.core.domain.IUseCase;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.IUsecase;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.core.logic.*;
@@ -17,7 +18,7 @@ import com.jamapplicationserver.core.logic.*;
  *
  * @author amirhossein
  */
-public class GetUsersByFiltersUseCase implements IUseCase<GetUsersByFiltersRequestDTO, GetUsersByFiltersResponseDTO> {
+public class GetUsersByFiltersUseCase implements IUsecase<GetUsersByFiltersRequestDTO, GetUsersByFiltersResponseDTO> {
     
     private final IUserRepository repository;
     
@@ -36,8 +37,8 @@ public class GetUsersByFiltersUseCase implements IUseCase<GetUsersByFiltersReque
             final Result<DateTime> lastModifiedAtTillOrError = DateTime.create(request.lastModifiedAtTill);
             final Result<UserState> stateOrError = UserState.create(request.state);
             final Result<UserRole> roleOrError = UserRole.create(request.role);
-            final Result<UniqueEntityID> creatorIdOrError = UniqueEntityID.createFromString(request.creatorId);
-            final Result<UniqueEntityID> updaterIdOrError = UniqueEntityID.createFromString(request.updaterId);
+            final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromString(request.creatorId);
+            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             
             final List<Result> combinedProps = new ArrayList<>();
             

@@ -12,8 +12,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import ua_parser.*;
 
 import java.util.*;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
-import com.jamapplicationserver.modules.user.domain.UserRole;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
+import com.jamapplicationserver.core.domain.UserRole;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -27,7 +27,7 @@ public class JWTUtils {
     private static final Algorithm ALGO = Algorithm.HMAC256(SECRET);
 
     public static final String generateToken(
-            UniqueEntityID subject,
+            UniqueEntityId subject,
             UserRole role,
             Device device
     ) {

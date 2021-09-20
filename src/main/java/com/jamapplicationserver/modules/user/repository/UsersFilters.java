@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.user.repository;
 
+import com.jamapplicationserver.core.domain.UserRole;
 import com.jamapplicationserver.infra.Persistence.database.Models.UserStateEnum;
 import com.jamapplicationserver.infra.Persistence.database.Models.UserRoleEnum;
 import java.time.*;

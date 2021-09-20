@@ -5,8 +5,9 @@
  */
 package com.jamapplicationserver.modules.user.usecases.RequestPasswordReset;
 
+import com.jamapplicationserver.core.domain.MobileNo;
 import com.jamapplicationserver.modules.user.domain.errors.UserDoesNotExistError;
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.core.logic.*;
@@ -16,7 +17,7 @@ import com.jamapplicationserver.modules.user.repository.IUserRepository;
  *
  * @author amirhossein
  */
-public class RequestPasswordResetUseCase implements IUseCase<RequestPasswordResetRequestDTO, String> {
+public class RequestPasswordResetUseCase implements IUsecase<RequestPasswordResetRequestDTO, String> {
     
     private final IUserRepository repository;
     

@@ -5,9 +5,9 @@
  */
 package com.jamapplicationserver.modules.user.usecases.VerifyAccount;
 
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
@@ -16,7 +16,7 @@ import com.jamapplicationserver.modules.user.domain.errors.*;
  *
  * @author amirhossein
  */
-public class VerifyAccountUseCase implements IUseCase<VerifyAccountRequestDTO, Result> {
+public class VerifyAccountUseCase implements IUsecase<VerifyAccountRequestDTO, Result> {
 
     private final IUserRepository repository;
     
@@ -27,7 +27,7 @@ public class VerifyAccountUseCase implements IUseCase<VerifyAccountRequestDTO, R
         
         try {            
             
-            final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromString(request.id);
+            final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
             final int code = request.code;
             
             if(idOrError.isFailure) return idOrError;

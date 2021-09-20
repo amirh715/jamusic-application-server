@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.library.domain.Player;
 
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.core.logic.Result;
+import com.jamapplicationserver.modules.library.domain.Track.Track;
 
 /**
  *
@@ -14,11 +14,11 @@ import com.jamapplicationserver.core.logic.Result;
  */
 public class PlayedTrack extends ValueObject {
     
-    public final UniqueEntityID trackID;
+    public final Track track;
     public final DateTime playedAt;
     
-    private PlayedTrack(UniqueEntityID trackID, DateTime playedAt) {
-        this.trackID = trackID;
+    public PlayedTrack(Track track, DateTime playedAt) {
+        this.track = track;
         this.playedAt = playedAt;
     }
     
@@ -27,9 +27,12 @@ public class PlayedTrack extends ValueObject {
         return this.toString();
     }
     
-    public static final Result<PlayedTrack> create(UniqueEntityID trackID, DateTime playedAt) {
-        
-        return Result.ok(new PlayedTrack(trackID, playedAt));
+    public Track getTrack() {
+        return this.track;
+    }
+    
+    public DateTime getPlayedAt() {
+        return this.playedAt;
     }
     
 }

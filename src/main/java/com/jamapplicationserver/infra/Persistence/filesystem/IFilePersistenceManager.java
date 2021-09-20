@@ -26,6 +26,8 @@ public interface IFilePersistenceManager {
     
     Path buildPath(Class clazz);
     
+    Path buildPath(Class clazz, String extension);
+    
     List<File> walk(Path path);
     
 }

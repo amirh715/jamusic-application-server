@@ -5,6 +5,8 @@
  */
 package com.jamapplicationserver.modules.user.repository;
 
+import com.jamapplicationserver.core.domain.MobileNo;
+import com.jamapplicationserver.core.domain.Email;
 import java.util.Set;
 import java.net.URL;
 import com.jamapplicationserver.core.infra.IRepository;

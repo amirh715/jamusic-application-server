@@ -64,8 +64,14 @@ public class UserModel implements Serializable {
     @Column(name="last_modified_at", nullable=false)
     private LocalDateTime lastModifiedAt;
     
-    @OneToMany(mappedBy="playedTrack")
-    private Set<PlayedModel> playedTracks;
+    @OneToMany(mappedBy="player", cascade=CascadeType.ALL)
+    private Set<PlayedModel> playedTracks = new HashSet<PlayedModel>();
+    
+    @OneToMany(mappedBy="recipient")
+    private Set<NotificationRecipientModel> notifications = new HashSet<>();
+    
+    @OneToMany
+    private final Set<PlaylistModel> playlists = new HashSet<>();
 
     @OneToOne(cascade=CascadeType.ALL)
     @JoinColumn(
@@ -76,7 +82,7 @@ public class UserModel implements Serializable {
     )
     private UserModel creator;
     
-    @OneToOne(cascade={CascadeType.ALL})
+    @OneToOne(cascade=CascadeType.ALL)
     @JoinColumn(
             name="updater_id",
             referencedColumnName="id",
@@ -267,9 +273,43 @@ public class UserModel implements Serializable {
         this.passwordResetVerification = passwordResetVerification;
     }
     
+    public Set<PlayedModel> getPlayedTracks() {
+        System.out.println("UserModel::getPlayedTracks size: " + this.playedTracks.size() + " - isEmpty? " + this.playedTracks.isEmpty());
+        return this.playedTracks;
+    }
+    
+    public void addPlayedTrack(TrackModel track, LocalDateTime playedAt) {
+        final PlayedModel playedTrack =
+                new PlayedModel(
+                        track,
+                        this,
+                        playedAt
+                );
+        this.playedTracks.add(playedTrack);
+    }
+    
+    public Set<NotificationRecipientModel> getNotifications() {
+        return this.notifications;
+    }
+    
+    public void addNotification(NotificationRecipientModel recipient) {
+        this.notifications.add(recipient);
+    }
+    
+    public Set<PlaylistModel> getPlaylists() {
+        return this.playlists;
+    }
+    
+    public void addPlaylist(PlaylistModel playlist) {
+        this.playlists.add(playlist);
+    }
+    
+    public void removePlaylist(PlaylistModel playlist) {
+        this.playlists.remove(playlist);
+    }
+    
     @Override
     public boolean equals(Object user) {
-        System.out.println("equals :: UserModel");
         if(user == this)
             return true;
         if(!(user instanceof UserModel))

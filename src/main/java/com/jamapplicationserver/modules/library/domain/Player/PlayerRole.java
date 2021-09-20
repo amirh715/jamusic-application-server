@@ -25,6 +25,18 @@ public class PlayerRole extends ValueObject {
         return this.value;
     }
     
+    public boolean isAdmin() {
+        return true;
+    }
+    
+    public boolean isSubscriber() {
+        return true;
+    }
+    
+    public boolean isLibraryManager() {
+        return true;
+    }
+    
     public static final Result<PlayerRole> create(String value) {
         
         if(value == null) return Result.fail(new ValidationError("Player role is required"));

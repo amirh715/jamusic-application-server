@@ -5,16 +5,13 @@
  */
 package com.jamapplicationserver.modules.library.repositories;
 
-import java.util.*;
-import javax.persistence.*;
-import javax.persistence.criteria.*;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
-import com.jamapplicationserver.core.infra.*;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.domain.Band.Band;
 import com.jamapplicationserver.modules.library.domain.Singer.Singer;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
+import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
 /**
  *
@@ -22,24 +19,30 @@ import com.jamapplicationserver.modules.library.domain.Track.Track;
  */
 public interface ILibraryEntityRepository {
     
-    void save(LibraryEntity entity);
+    void save(LibraryEntity entity) throws Exception;
     
-    boolean exists(UniqueEntityID id);
+    boolean exists(UniqueEntityId id);
     
-    LibraryEntityQueryScope<LibraryEntity> fetchById(UniqueEntityID id);
+    LibraryEntityQueryScope<LibraryEntity> fetchById(UniqueEntityId id);
     
-    LibraryEntityQueryScope<Artist> fetchArtistById(UniqueEntityID id);
+    LibraryEntityQueryScope<Artist> fetchArtistById(UniqueEntityId id);
     
-    LibraryEntityQueryScope<Band> fetchBandById(UniqueEntityID id);
+    LibraryEntityQueryScope<Artwork> fetchArtworkById(UniqueEntityId id);
     
-    LibraryEntityQueryScope<Singer> fetchSingerById(UniqueEntityID id);
+    LibraryEntityQueryScope<Band> fetchBandById(UniqueEntityId id);
     
-    LibraryEntityQueryScope<Album> fetchAlbumById(UniqueEntityID id);
+    LibraryEntityQueryScope<Singer> fetchSingerById(UniqueEntityId id);
     
-    LibraryEntityQueryScope<Track> fetchTrackById(UniqueEntityID id);
+    LibraryEntityQueryScope<Album> fetchAlbumById(UniqueEntityId id);
+    
+    LibraryEntityQueryScope<Track> fetchTrackById(UniqueEntityId id);
     
     void remove(LibraryEntity entity);
     
     LibraryEntityQueryScope<LibraryEntity> fetchByFilters(LibraryEntityFilters filters);
-
+    
+    LibraryEntity toDomain(LibraryEntityModel model);
+    
+    LibraryEntityModel toPersistence(LibraryEntity entity);
+    
 }

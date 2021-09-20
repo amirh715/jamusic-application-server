@@ -5,8 +5,6 @@
  */
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
-import java.util.*;
-import java.time.LocalDateTime;
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -16,10 +14,10 @@ import java.io.Serializable;
  */
 @Entity
 @DiscriminatorValue("T")
-public class TrackModel extends LibraryEntityModel {
+public class TrackModel extends ArtworkModel implements Serializable {
     
     public TrackModel() {
-        
+        super();
     }
     
     @Column(name="audio_path", unique=true)
@@ -37,14 +35,6 @@ public class TrackModel extends LibraryEntityModel {
     @ManyToOne
     @JoinColumn(name="album_id")
     private AlbumModel album;
-    
-    @ManyToOne
-    @JoinColumn(name="band_id")
-    private BandModel band;
-    
-    @ManyToOne
-    @JoinColumn(name="track_id")
-    private SingerModel singer;
     
     public String getAudioPath() {
         return this.audioPath;
@@ -70,12 +60,30 @@ public class TrackModel extends LibraryEntityModel {
         this.size = size;
     }
     
-    public void setFormat(String format) { // ENUM ??
+    public void setFormat(String format) {
         this.format = format;
     }
     
     public void setLyrics(String lyrics) {
         this.lyrics = lyrics;
+    }
+    
+    public AlbumModel getAlbum() {
+        return this.album;
+    }
+    
+    public void setAlbum(AlbumModel album) {
+        this.album = album;
+    }
+    
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
     
 }

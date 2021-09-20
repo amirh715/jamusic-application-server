@@ -12,7 +12,10 @@ import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.*;
 import org.apache.tika.detect.*;
 import org.apache.tika.metadata.*;
-import org.xml.sax.SAXException;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.mp3.Mp3Parser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.*;
 
 /**
  *
@@ -38,9 +41,11 @@ public class TikaUtils {
     
     public final boolean isAudio(InputStream stream) throws IOException {
         
-        final String subType = this.getSubtype(stream);
+        final String type = this.getType(stream);
         
-        return subType.equals("audio");
+        System.out.println(type);
+        
+        return type.equals("audio");
         
     }
     
@@ -59,7 +64,7 @@ public class TikaUtils {
         
         final Metadata metadata = new Metadata();
         final MediaType mediaType = detector.detect(stream, metadata);
-        
+                
         return mediaType.getType();
         
     }
@@ -69,8 +74,19 @@ public class TikaUtils {
         final Metadata metadata = new Metadata();
         final MediaType mediaType = detector.detect(stream, metadata);
         
-        return mediaType.getType();
+        return mediaType.getSubtype();
         
+    }
+    
+    public String test(InputStream stream) throws IOException, SAXException, TikaException {
+        BodyContentHandler handler = new BodyContentHandler();
+        Metadata metadata = new Metadata();
+        ParseContext context = new ParseContext();
+        Mp3Parser p = new Mp3Parser();
+        
+        p.parse(stream, handler, metadata, context);
+        
+        return metadata.toString();
     }
     
     public static TikaUtils getInstance() {
@@ -80,6 +96,7 @@ public class TikaUtils {
             return new TikaUtils();
             
         } catch(TikaException | IOException | SAXException e) {
+            e.printStackTrace();
             return null;
         }
         

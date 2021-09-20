@@ -26,17 +26,6 @@ public enum UserState {
         this.valueInPersian = valueInPersian;
     }
     
-    public static final Stream<UserState> stream() {
-        return Stream.of(UserState.values());
-    }
-    
-    public static final Result<UserState> create(String value) {
-        if(value == null) return Result.fail(new ValidationError("User state is required"));
-        final boolean isValid =
-                UserState.stream().anyMatch(state -> value.equals(state.getValue()));
-        return isValid ? Result.ok(UserState.valueOf(value)) : Result.fail(new ValidationError("Invalid state"));
-    }
-    
     public String getValue() {
         return this.value;
     }
@@ -49,8 +38,15 @@ public enum UserState {
         return this.value.equals(ACTIVE.value);
     }
     
-    public final boolean equalsTo(UserState userState) {
-        return this.equals(userState);
+    public static final Stream<UserState> stream() {
+        return Stream.of(UserState.values());
+    }
+    
+    public static final Result<UserState> create(String value) {
+        if(value == null) return Result.fail(new ValidationError("User state is required"));
+        final boolean isValid =
+                UserState.stream().anyMatch(state -> value.equals(state.getValue()));
+        return isValid ? Result.ok(UserState.valueOf(value)) : Result.fail(new ValidationError("Invalid state"));
     }
     
 }

@@ -6,7 +6,6 @@
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.util.*;
-import java.time.LocalDateTime;
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -16,39 +15,31 @@ import java.io.Serializable;
  */
 @Entity
 @DiscriminatorValue("A")
-public class AlbumModel extends LibraryEntityModel {
+//@AssociationOverride(name="artist", joinColumns=@JoinColumn(name="album_artist_id"))
+public class AlbumModel extends ArtworkModel implements Serializable {
     
-    public AlbumModel() {
-        
-    }
-    
-    @ManyToOne
-    @JoinColumn(name="singer_id")
-    private SingerModel singer;
-    
-    @ManyToOne
-    @JoinColumn(name="band_id")
-    private BandModel band;
-    
-    @OneToMany
-    @JoinColumn(name="album_id")
+    @OneToMany(mappedBy="album", cascade=CascadeType.ALL)
     private Set<TrackModel> tracks;
     
-    public SingerModel getSinger() {
-        return this.singer;
-    }
-    
-    public BandModel getBand() {
-        return this.band;
+    public AlbumModel() {
+        super();
+        this.tracks = new HashSet<>();
     }
     
     public Set<TrackModel> getTracks() {
         return this.tracks;
     }
     
-    public void setTracks(Set<TrackModel> tracks) {
+    protected void setTracks(Set<TrackModel> tracks) {
         this.tracks = tracks;
     }
     
+    public void addTrack(TrackModel track) {
+        this.tracks.add(track);
+    }
+    
+    public void removeTrack(TrackModel track) {
+        this.tracks.remove(track);
+    }
     
 }

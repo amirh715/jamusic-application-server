@@ -36,7 +36,7 @@ public class Message extends ValueObject {
         if(
                 message.length() > MAX_LENGTH ||
                 message.length() < MIN_LENGTH
-        ) return Result.fail(new ValidationError(""));
+        ) return Result.fail(new ValidationError("Message length must be between 1 to 4000 characters"));
         
         return Result.ok(new Message(message));
     }

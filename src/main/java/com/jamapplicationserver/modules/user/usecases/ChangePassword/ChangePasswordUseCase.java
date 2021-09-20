@@ -6,8 +6,8 @@
 package com.jamapplicationserver.modules.user.usecases.ChangePassword;
 
 import com.jamapplicationserver.modules.user.domain.errors.*;
-import com.jamapplicationserver.core.domain.IUseCase;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.IUsecase;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.core.logic.*;
@@ -17,7 +17,7 @@ import com.jamapplicationserver.modules.user.repository.IUserRepository;
  *
  * @author amirhossein
  */
-public class ChangePasswordUseCase implements IUseCase<ChangePasswordRequestDTO, String> {
+public class ChangePasswordUseCase implements IUsecase<ChangePasswordRequestDTO, String> {
     
     private final IUserRepository repository;
     
@@ -32,10 +32,10 @@ public class ChangePasswordUseCase implements IUseCase<ChangePasswordRequestDTO,
 
         try {
             
-            final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromString(request.id);
+            final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
             final Result<Password> currentPasswordOrError = Password.create(request.currentPassword, false);
             final Result<Password> newPasswordOrError = Password.create(request.newPassword, false);
-            final Result<UniqueEntityID> updaterIdOrError = UniqueEntityID.createFromString(request.updaterId);
+            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             
             final Result[] combinedProps = {
                 idOrError,
@@ -48,10 +48,10 @@ public class ChangePasswordUseCase implements IUseCase<ChangePasswordRequestDTO,
             
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
-            final UniqueEntityID id = idOrError.getValue();
+            final UniqueEntityId id = idOrError.getValue();
             final Password currentPassword = currentPasswordOrError.getValue();
             final Password newPassword = newPasswordOrError.getValue();
-            final UniqueEntityID updaterId = updaterIdOrError.getValue();
+            final UniqueEntityId updaterId = updaterIdOrError.getValue();
             
             final User user = this.repository.fetchById(id);
             

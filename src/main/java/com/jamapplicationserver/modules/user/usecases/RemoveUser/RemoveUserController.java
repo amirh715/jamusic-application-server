@@ -18,9 +18,9 @@ import com.jamapplicationserver.utils.MultipartFormDataUtil;
  */
 public class RemoveUserController extends BaseController {
     
-    private final IUseCase useCase;
+    private final IUsecase useCase;
     
-    private RemoveUserController(IUseCase useCase) {
+    private RemoveUserController(IUsecase useCase) {
         this.useCase = useCase;
     }
     

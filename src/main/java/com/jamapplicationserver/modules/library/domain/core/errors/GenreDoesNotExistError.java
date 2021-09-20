@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class GenreDoesNotExistError extends NotFoundError {
     
-    private static final String DEFAULT_MESSAGE = "";
+    private static final String DEFAULT_MESSAGE = "Genre does not exist";
     private static final int CODE = 111;
     
     public GenreDoesNotExistError() {

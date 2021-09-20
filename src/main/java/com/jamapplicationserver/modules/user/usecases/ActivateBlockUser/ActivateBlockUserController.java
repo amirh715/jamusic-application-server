@@ -9,7 +9,7 @@ import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import java.util.*;
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 
 /**
  *
@@ -17,9 +17,9 @@ import com.jamapplicationserver.core.domain.IUseCase;
  */
 public class ActivateBlockUserController extends BaseController {
     
-    private final IUseCase useCase;
+    private final IUsecase useCase;
     
-    private ActivateBlockUserController(IUseCase useCase) {
+    private ActivateBlockUserController(IUsecase useCase) {
         this.useCase = useCase;
     }
     

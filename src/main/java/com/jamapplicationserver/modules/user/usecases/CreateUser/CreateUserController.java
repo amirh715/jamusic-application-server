@@ -9,7 +9,7 @@ import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import java.util.*;
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.user.domain.User;
 
 /**
@@ -18,7 +18,7 @@ import com.jamapplicationserver.modules.user.domain.User;
  */
 public class CreateUserController extends BaseController {
     
-    private final IUseCase useCase;
+    private final IUsecase useCase;
     
     @Override
     public void executeImpl() {

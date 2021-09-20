@@ -6,7 +6,6 @@
 package com.jamapplicationserver.core.domain;
 
 import java.util.*;
-import com.jamapplicationserver.core.domain.ValueObject;
 import com.jamapplicationserver.core.logic.*;
 
 /**
@@ -15,7 +14,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ImageFileFormat extends ValueObject {
     
-    private static final Set<String> VALID_TYPES = Set.of("JPG");
+    private static final Set<String> VALID_TYPES = Set.of("JPG", "PNG");
     
     private final String value;
     
@@ -32,7 +31,7 @@ public class ImageFileFormat extends ValueObject {
         
         if(value == null) return Result.fail(new ValidationError("Image file type is required"));
         
-        if(!VALID_TYPES.contains(value)) return Result.fail(new ValidationError("Invalid image type"));
+        if(!VALID_TYPES.contains(value.toUpperCase())) return Result.fail(new ValidationError("Invalid image type"));
         
         return Result.ok(new ImageFileFormat(value));
     }

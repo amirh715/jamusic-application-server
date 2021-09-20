@@ -25,22 +25,33 @@ public class AuditManager {
     public void auditRecord(
             AggregateRoot aggregate,
             AuditAction action,
+            String note,
             DateTime auditedAt
     ) {
         
         final EntityManager em = getEntityManager();
         
-        em.getTransaction().begin();
+        final EntityTransaction tnx = em.getTransaction();
+        
+        try {
+        
+        tnx.begin();
         
         final AuditTrailModel audit = new AuditTrailModel();
 
         audit.setId(UUID.randomUUID());
-        audit.setTableName(aggregate.getClass().getName());
+        audit.setTableName(aggregate.getClass().getSimpleName());
         audit.setAuditedAt(LocalDateTime.now());
-        audit.setNote("This is an audit.");
+        audit.setNote(note);
 
         audit.setRecord(stringify(aggregate));
         
+        tnx.commit();
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+            tnx.rollback();
+        }
         
     }
     

@@ -30,7 +30,7 @@ public abstract class DomainEvent {
         this.aggregate = aggregate;
     }
     
-    public UniqueEntityID getAggregateId() {
+    public UniqueEntityId getAggregateId() {
         return this.aggregate.id;
     }
     

@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.user.domain.errors;
 
 import com.jamapplicationserver.core.logic.NotFoundError;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 
 /**
  *

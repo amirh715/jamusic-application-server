@@ -5,9 +5,10 @@
  */
 package com.jamapplicationserver.modules.user.usecases.Login;
 
+import com.jamapplicationserver.core.domain.MobileNo;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.core.logic.*;
@@ -19,7 +20,7 @@ import com.jamapplicationserver.modules.user.repository.IUserRepository;
  *
  * @author amirhossein
  */
-public class LoginUseCase implements IUseCase<LoginRequestDTO, String> {
+public class LoginUseCase implements IUsecase<LoginRequestDTO, String> {
     
     private final IUserRepository repository;
     
@@ -54,18 +55,24 @@ public class LoginUseCase implements IUseCase<LoginRequestDTO, String> {
             final User user = this.repository.fetchByMobile(mobile);
 
             if(user == null) return Result.fail(new UserMobileOrPasswordIsIncorrectError());
-
-            // user is not active
-            if(!user.isActive()) {
-                loginResult = Result.fail(new UserIsNotActiveError());
-                auditLogin(user.id, loginResult, request);
-                return Result.fail(new UserIsNotActiveError());
-            }
-
+            
             // password does not match
             final boolean doesMatch = user.getPassword().equals(password);
             if(!doesMatch) {
                 loginResult = Result.fail(new UserMobileOrPasswordIsIncorrectError());
+                auditLogin(user.id, loginResult, request);
+                return loginResult;
+            }
+
+            // user is not verified
+            if(!user.isVerified()) {
+                loginResult = Result.fail(new UserIsNotVerifiedError());
+                auditLogin(user.id, loginResult, request);
+                return loginResult;
+            }
+            
+            if(!user.isActive()) {
+                loginResult = Result.fail(new UserIsNotActiveError());
                 auditLogin(user.id, loginResult, request);
                 return loginResult;
             }
@@ -92,7 +99,7 @@ public class LoginUseCase implements IUseCase<LoginRequestDTO, String> {
         
     }
     
-    private void auditLogin(UniqueEntityID userId, Result result, LoginRequestDTO request) {
+    private void auditLogin(UniqueEntityId userId, Result result, LoginRequestDTO request) {
         final boolean wasSuccessful = result.isSuccess;
         final BusinessError failureReason = result.isFailure ? result.getError() : null;
         LoginAuditManager

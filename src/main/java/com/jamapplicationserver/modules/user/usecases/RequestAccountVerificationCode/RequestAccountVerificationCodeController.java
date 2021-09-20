@@ -7,8 +7,8 @@ package com.jamapplicationserver.modules.user.usecases.RequestAccountVerificatio
 
 import java.util.*;
 import com.jamapplicationserver.core.infra.BaseController;
-import com.jamapplicationserver.core.domain.IUseCase;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.IUsecase;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 
@@ -19,7 +19,7 @@ import com.jamapplicationserver.utils.MultipartFormDataUtil;
  */
 public class RequestAccountVerificationCodeController extends BaseController {
     
-    private final IUseCase useCase;
+    private final IUsecase useCase;
     
     @Override
     public void executeImpl() {
@@ -27,7 +27,7 @@ public class RequestAccountVerificationCodeController extends BaseController {
         System.out.println("RequestUserVerificationRequestController");
         
         final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
-        final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromString(fields.get("id"));
+        final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(fields.get("id"));
         
         if(idOrError.isFailure) {
             this.clientError(idOrError.getError());

@@ -9,6 +9,7 @@ import java.util.*;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  *
@@ -18,7 +19,8 @@ import javax.persistence.*;
 @Table(name="library_entities", schema="jamschema")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="entity_type", discriminatorType = DiscriminatorType.STRING)
-public class LibraryEntityModel {
+@org.hibernate.annotations.DiscriminatorOptions(force=true)
+public abstract class LibraryEntityModel implements Serializable {
     
     public LibraryEntityModel() {
         
@@ -27,7 +29,7 @@ public class LibraryEntityModel {
     @Id
     @Column(name="id")
     private UUID id;
-    
+
     @Column(name="title", unique=false, nullable=false, columnDefinition="")
     private String title;
     
@@ -59,7 +61,7 @@ public class LibraryEntityModel {
     private long duration;
     
     @Column(name="rate", nullable=false, columnDefinition="")
-    private float rate;
+    private double rate;
     
     @ManyToMany
     @JoinTable(
@@ -71,7 +73,13 @@ public class LibraryEntityModel {
                 @JoinColumn(name="genre_id")
             }
     )
-    private Set<GenreModel> genres = new HashSet<GenreModel>();
+    protected Set<GenreModel> genres = new HashSet<GenreModel>();
+    
+    @ManyToOne(optional=true) // false for production
+    private UserModel creator;
+    
+    @ManyToOne(optional=true) // false for production
+    private UserModel updater;
     
     public UUID getId() {
         return this.id;
@@ -114,13 +122,14 @@ public class LibraryEntityModel {
     }
     
     public Set<String> getTags() {
+        if(this.tags == null || this.tags.isEmpty()) return Set.of();
         final String separator = "#";
-        final List<String> tagsList = Arrays.asList(tags.split(separator));
+        final List<String> tagsList = Arrays.asList(this.tags.split(separator));
         return tagsList.stream().collect(Collectors.toSet());
     }
     
     public void setTags(Set<String> tags) {
-        if(tags == null) return;
+        if(tags == null || tags.isEmpty()) return;
         final String separator = "#";
         this.tags = tags.stream()
                 .map(tag -> {
@@ -176,7 +185,7 @@ public class LibraryEntityModel {
         return this.rate;
     }
     
-    public void setRate(float rate) {
+    public void setRate(double rate) {
         this.rate = rate;
     }
     
@@ -184,8 +193,57 @@ public class LibraryEntityModel {
         return this.genres;
     }
     
-    public void setGenres(Set<GenreModel> genres) {
+    public void addGenre(GenreModel genreToAdd) {
+
+        if(this.genres.isEmpty()) {
+            this.genres.add(genreToAdd);
+        } else {
+            this.genres.forEach(genre -> {
+                if(genre.isSubGenreOf(genreToAdd) || genre.equals(genreToAdd))
+                    return;
+                if(genreToAdd.isSubGenreOf(genre))
+                    this.genres.remove(genre);
+                this.genres.add(genreToAdd);
+            });
+        }
+        
+    }
+    
+    public void removeGenre(GenreModel genre) {
+        this.genres.remove(genre);
+    }
+    
+    protected void setGenres(Set<GenreModel> genres) {
         this.genres = genres;
+    }
+    
+    public UserModel getCreator() {
+        return this.creator;
+    }
+    
+    public void setCreator(UserModel creator) {
+        this.creator = creator;
+    }
+    
+    public UserModel getUpdater() {
+        return this.updater;
+    }
+    
+    public void setUpdater(UserModel updater) {
+        this.updater = updater;
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(!(obj instanceof LibraryEntityModel)) return false;
+        final LibraryEntityModel le = (LibraryEntityModel) obj;
+        return this.id.equals(le.id);
     }
     
 }

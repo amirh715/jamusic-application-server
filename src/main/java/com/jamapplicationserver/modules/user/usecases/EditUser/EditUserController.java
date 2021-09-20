@@ -18,9 +18,9 @@ import java.io.*;
  */
 public class EditUserController extends BaseController {
     
-    private final IUseCase useCase;
+    private final IUsecase useCase;
     
-    private EditUserController(IUseCase useCase) {
+    private EditUserController(IUsecase useCase) {
         this.useCase = useCase;
     }
     

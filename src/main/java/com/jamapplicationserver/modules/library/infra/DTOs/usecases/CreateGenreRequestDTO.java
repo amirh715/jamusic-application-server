@@ -7,7 +7,6 @@ package com.jamapplicationserver.modules.library.infra.DTOs.usecases;
 
 import com.google.gson.reflect.TypeToken;
 import com.jamapplicationserver.core.domain.IDTO;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.GenreDTO;
 import com.jamapplicationserver.core.infra.*;
 
 /**
@@ -16,10 +15,21 @@ import com.jamapplicationserver.core.infra.*;
  */
 public class CreateGenreRequestDTO implements IDTO {
     
-    public final GenreDTO genre;
+    public final String title;
+    public final String titleInPersian;
+    public final String parentGenreId;
+    public final String creatorId;
     
-    public CreateGenreRequestDTO(String title, String titleInPersian, String parentGenreId) {
-        this.genre = new GenreDTO(title, titleInPersian, parentGenreId);
+    public CreateGenreRequestDTO(
+            String title,
+            String titleInPersian,
+            String parentGenreId,
+            String creatorId
+    ) {
+        this.title = title;
+        this.titleInPersian = titleInPersian;
+        this.parentGenreId = parentGenreId;
+        this.creatorId = creatorId;
     }
     
 }

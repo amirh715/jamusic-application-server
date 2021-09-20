@@ -6,9 +6,7 @@
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.util.*;
-import java.time.LocalDateTime;
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  *
@@ -16,14 +14,11 @@ import java.io.Serializable;
  */
 @Entity
 @DiscriminatorValue("B")
-public class BandModel extends LibraryEntityModel {
+public class BandModel extends ArtistModel {
     
     public BandModel() {
-        
+        super();
     }
-    
-    @Column(name="instagram_id", unique=true)
-    private String instagramId;
     
     @ManyToMany
     @JoinTable(
@@ -36,43 +31,21 @@ public class BandModel extends LibraryEntityModel {
         }
     )
     private Set<SingerModel> members = new HashSet<SingerModel>();
-
-    @OneToMany(mappedBy="band")
-    private Set<AlbumModel> albums = new HashSet<AlbumModel>();
     
-    @OneToMany(mappedBy="band")
-    private Set<TrackModel> tracks = new HashSet<TrackModel>();
+    public void addMember(SingerModel member) {
+        this.members.add(member);
+    }
     
-    public String getInstagramId() {
-        return this.instagramId;
+    public void removeMember(SingerModel member) {
+        this.members.remove(member);
     }
     
     public Set<SingerModel> getMembers() {
         return this.members;
     }
     
-    public void setMembers(Set<SingerModel> members) {
+    private void setMembers(Set<SingerModel> members) {
         this.members = members;
     }
-    
-    public Set<AlbumModel> getAlbums() {
-        return this.albums;
-    }
-    
-    public Set<TrackModel> getTracks() {
-        return this.tracks;
-    }
-    
-    public void setInstagramId(String instagramId) {
-        this.instagramId = instagramId;
-    }
-    
-    public void setAlbums(Set<AlbumModel> albums) {
-        this.albums = albums;
-    }
-    
-    public void setTracks(Set<TrackModel> tracks) {
-        this.tracks = tracks;
-    }
-    
+
 }

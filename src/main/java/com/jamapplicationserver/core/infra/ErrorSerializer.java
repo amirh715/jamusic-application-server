@@ -23,7 +23,7 @@ public class ErrorSerializer implements JsonSerializer<BusinessError> {
         json.add("code", new JsonPrimitive(error.code));
         json.add("type", new JsonPrimitive(error.type));
         json.add("message", new JsonPrimitive(error.message));
-        json.add("description", new JsonPrimitive("This would be the desciprition"));
+        json.add("description", new JsonPrimitive(error.description));
         
         return json;
     }

@@ -5,13 +5,72 @@
  */
 package com.jamapplicationserver.modules.notification.domain;
 
-import com.jamapplicationserver.core.domain.ValueObject;
+import java.util.regex.*;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.core.domain.ValueObject;
 
 /**
  *
  * @author amirhossein
  */
-public class Recipient {
-
+public abstract class Recipient extends ValueObject {
+    
+    private final String value;
+    
+    protected Recipient(String value) {
+        this.value = value;
+    }
+    
+    @Override
+    public String getValue() {
+        return this.value;
+    }
+    
+    public static final Result<Recipient> create(String value) {
+        if(value == null) return Result.fail(new ValidationError("Recipient is required"));
+        
+        Recipient recipient;
+        
+        if(isFCMRecipient(value))
+            recipient = new FCMRecipient(value);
+        else if(isAppRecipient(value))
+            recipient = new AppRecipient(value);
+        else if(isSMSRecipient(value))
+            recipient = new SMSRecipient(value);
+        else if(isEmailRecipient(value))
+            recipient = new EmailRecipient(value);
+        else
+            return Result.fail(new ValidationError("Invalid recipient"));
+        
+        return Result.ok(recipient);
+    }
+    
+    private static boolean isFCMRecipient(String recipient) {
+        if(recipient == null) return false;
+        final Pattern pattern = Pattern.compile("");
+        final Matcher matcher = pattern.matcher(recipient);
+        return matcher.matches();
+    }
+    
+    private static boolean isAppRecipient(String recipient) {
+        if(recipient == null) return false;
+        final Pattern pattern = Pattern.compile("([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})");
+        final Matcher matcher = pattern.matcher(recipient);
+        return matcher.matches();
+    }
+    
+    private static boolean isSMSRecipient(String recipient) {
+        if(recipient == null) return false;
+        final Pattern pattern = Pattern.compile("");
+        final Matcher matcher = pattern.matcher(recipient);
+        return matcher.matches();
+    }
+    
+    private static boolean isEmailRecipient(String recipient) {
+        if(recipient == null) return false;
+        final Pattern pattern = Pattern.compile("");
+        final Matcher matcher = pattern.matcher(recipient);
+        return matcher.matches();
+    }
+    
 }

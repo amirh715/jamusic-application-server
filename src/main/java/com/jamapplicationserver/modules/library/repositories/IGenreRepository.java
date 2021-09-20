@@ -5,10 +5,11 @@
  */
 package com.jamapplicationserver.modules.library.repositories;
 
-import java.util.Set;
+import java.util.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
 import com.jamapplicationserver.core.infra.IRepository;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
+import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
 /**
  *
@@ -16,9 +17,14 @@ import com.jamapplicationserver.core.infra.IRepository;
  */
 public interface IGenreRepository extends IRepository<Genre> {
     
+    Map<UniqueEntityId, Genre> fetchAll();
+    
+    Set<Genre> fetchByIds(Set<UniqueEntityId> ids);
+    
     Genre fetchByTitle(GenreTitle title);
     
-    Set<Genre> fetchAll();
+    GenreModel toPersistence(Genre entity);
     
+    Genre toDomain(GenreModel model);
     
 }

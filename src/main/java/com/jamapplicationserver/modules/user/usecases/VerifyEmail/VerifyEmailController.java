@@ -7,7 +7,7 @@ package com.jamapplicationserver.modules.user.usecases.VerifyEmail;
 
 import java.util.Map;
 import com.jamapplicationserver.core.infra.BaseController;
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 
@@ -17,9 +17,9 @@ import com.jamapplicationserver.utils.MultipartFormDataUtil;
  */
 public class VerifyEmailController extends BaseController {
     
-    private final IUseCase useCase;
+    private final IUsecase useCase;
     
-    private VerifyEmailController(IUseCase useCase) {
+    private VerifyEmailController(IUsecase useCase) {
         this.useCase = useCase;
     }
     

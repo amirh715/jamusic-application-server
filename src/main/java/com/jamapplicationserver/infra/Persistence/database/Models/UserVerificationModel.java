@@ -70,7 +70,6 @@ public class UserVerificationModel implements Serializable {
     
     @Override
     public boolean equals(Object verif) {
-        System.out.println("UserVerificationModel.equals");
         if(verif == this)
             return true;
         if(!(verif instanceof UserVerificationModel))

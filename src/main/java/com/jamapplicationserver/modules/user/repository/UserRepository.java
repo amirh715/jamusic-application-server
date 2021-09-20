@@ -5,6 +5,9 @@
  */
 package com.jamapplicationserver.modules.user.repository;
 
+import com.jamapplicationserver.core.domain.UserRole;
+import com.jamapplicationserver.core.domain.MobileNo;
+import com.jamapplicationserver.core.domain.Email;
 import com.jamapplicationserver.infra.Persistence.database.Models.UserRoleEnum;
 import com.jamapplicationserver.infra.Persistence.database.Models.UserModel;
 import com.jamapplicationserver.infra.Persistence.database.Models.UserVerificationModel;
@@ -19,7 +22,7 @@ import java.nio.file.Path;
 import java.net.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.user.domain.*;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import java.util.stream.Collectors;
 import com.jamapplicationserver.core.domain.DateTime;
 import com.jamapplicationserver.core.logic.Result;
@@ -41,7 +44,7 @@ public class UserRepository implements IUserRepository {
     }
     
     @Override
-    public User fetchById(UniqueEntityID id) {
+    public User fetchById(UniqueEntityId id) {
         
         try {
             
@@ -53,6 +56,7 @@ public class UserRepository implements IUserRepository {
             return toDomain(model);
             
         } catch(Exception e) {
+            e.printStackTrace();
             return null;
         }
         
@@ -73,9 +77,12 @@ public class UserRepository implements IUserRepository {
                     getEntityManager().createQuery(cq);
 
             return toDomain(query.getSingleResult());
+        } catch(NoResultException e) {
+            return null;
         } catch(EntityNotFoundException e) {
             return null;
         } catch(Exception e) {
+            e.printStackTrace();
             throw e;
         }
     }
@@ -279,7 +286,7 @@ public class UserRepository implements IUserRepository {
     }
     
     @Override
-    public boolean exists(UniqueEntityID id) {
+    public boolean exists(UniqueEntityId id) {
         try {
             final UserModel model =
                     getEntityManager().find(UserModel.class, id.toValue());

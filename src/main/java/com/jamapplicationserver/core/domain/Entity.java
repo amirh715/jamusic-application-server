@@ -5,34 +5,63 @@
  */
 package com.jamapplicationserver.core.domain;
 
-import java.util.UUID;
-
 /**
  *
  * @author amirhossein
- * @param <U>
  * 
  */
 public abstract class Entity {
     
-    public final UniqueEntityID id;
+    public final UniqueEntityId id;
     
-    public Entity(UniqueEntityID id) {
+    private final DateTime createdAt;
+    private DateTime lastModifiedAt;
+    
+    public Entity(
+            UniqueEntityId id,
+            DateTime createdAt,
+            DateTime lastModifiedAt
+    ) {
         this.id = id;
+        this.createdAt = createdAt;
+        this.lastModifiedAt = lastModifiedAt;
     }
     
     public Entity() {
-        this.id = new UniqueEntityID();
+        this.id = new UniqueEntityId();
+        this.createdAt = DateTime.createNow();
+        this.lastModifiedAt = DateTime.createNow();
     }
     
-    public boolean equalsTo(Entity entity) {
-        
-        if(entity == null) return false;
-        
-        if(this == entity) return true;
-
-        return this.id.equals(entity.id);
-        
+    public final UniqueEntityId getId() {
+        return this.id;
+    }
+    
+    public final DateTime getCreatedAt() {
+        return this.createdAt;
+    }
+    
+    public final DateTime getLastModifiedAt() {
+        return this.lastModifiedAt;
+    }
+    
+    protected final void modified() {
+        this.lastModifiedAt = DateTime.createNow();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this)
+            return true;
+        if(!(obj instanceof Entity))
+            return false;
+        Entity e = (Entity) obj;
+        return e.id.equals(obj);
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
     }
     
     @Override

@@ -6,8 +6,8 @@
 package com.jamapplicationserver.modules.user.usecases.ActivateBlockUser;
 
 import com.jamapplicationserver.modules.user.domain.errors.*;
-import com.jamapplicationserver.core.domain.IUseCase;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.IUsecase;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.core.logic.*;
@@ -17,7 +17,7 @@ import com.jamapplicationserver.modules.user.repository.IUserRepository;
  *
  * @author amirhossein
  */
-public class ActivateBlockUserUseCase implements IUseCase<ActivateBlockUserRequestDTO, String> {
+public class ActivateBlockUserUseCase implements IUsecase<ActivateBlockUserRequestDTO, String> {
     
     private final IUserRepository repository;
     
@@ -32,9 +32,9 @@ public class ActivateBlockUserUseCase implements IUseCase<ActivateBlockUserReque
         
         try {
             
-            final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromString(request.id);
+            final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
             final Result<UserState> stateOrError = UserState.create(request.state);
-            final Result<UniqueEntityID> updaterIdOrError = UniqueEntityID.createFromString(request.updaterId);
+            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             
             final Result[] combinedProps = {
                 idOrError,
@@ -46,9 +46,9 @@ public class ActivateBlockUserUseCase implements IUseCase<ActivateBlockUserReque
             
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
-            final UniqueEntityID id = idOrError.getValue();
+            final UniqueEntityId id = idOrError.getValue();
             final UserState state = stateOrError.getValue();
-            final UniqueEntityID updaterId = updaterIdOrError.getValue();
+            final UniqueEntityId updaterId = updaterIdOrError.getValue();
             
             final User user = this.repository.fetchById(id);
             

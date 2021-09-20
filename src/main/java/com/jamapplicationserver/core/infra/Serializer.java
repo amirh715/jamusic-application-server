@@ -14,8 +14,12 @@ import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.infra.serializers.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.infra.serializers.*;
+import com.jamapplicationserver.modules.library.domain.Singer.Singer;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
+import com.jamapplicationserver.modules.library.domain.Band.Band;
+import com.jamapplicationserver.modules.reports.infra.serializers.ReportSerializer;
+import com.jamapplicationserver.modules.reports.domain.*;
 
 
 /**
@@ -53,12 +57,14 @@ public class Serializer implements ISerializer {
         private static final Serializer INSTANCE = new Serializer(
             new GsonBuilder()
             .setExclusionStrategies(new GsonExclusionStrategy(Path.class))
-            .registerTypeAdapter(User.class, new UserSerializer())
+//            .registerTypeAdapter(User.class, new UserSerializer())
+//            .registerTypeAdapter(Artist.class, new ArtistSerializer())
+//            .registerTypeAdapter(Album.class, new AlbumSerializer())
+//            .registerTypeAdapter(Track.class, new TrackSerializer())
+//            .registerTypeAdapter(Genre.class, new GenreSerializer())
+//            .registerTypeAdapter(Report.class, new ReportSerializer())
+            
             .registerTypeAdapter(BusinessError.class, new ErrorSerializer())
-            .registerTypeAdapter(Artist.class, new ArtistSerializer())
-            .registerTypeAdapter(Album.class, new AlbumSerializer())
-            .registerTypeAdapter(Track.class, new TrackSerializer())
-            .registerTypeAdapter(Genre.class, new GenreSerializer())
             .create()
         );
     }

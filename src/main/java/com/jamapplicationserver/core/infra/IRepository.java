@@ -18,11 +18,11 @@ import javax.persistence.EntityNotFoundException;
  * @param <T>
  */
 public interface IRepository<T> {
-    boolean exists(UniqueEntityID id);
+    boolean exists(UniqueEntityId id);
     void save(T t)
             throws
             Exception;
             
-    T fetchById(UniqueEntityID id);
+    T fetchById(UniqueEntityId id);
     void remove(T aggregate);
 }

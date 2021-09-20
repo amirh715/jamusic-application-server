@@ -19,9 +19,9 @@ import com.jamapplicationserver.utils.MultipartFormDataUtil;
  */
 public class GetUserProfileImageController extends BaseController {
     
-    private final IUseCase useCase;
+    private final IUsecase useCase;
     
-    private GetUserProfileImageController(IUseCase useCase) {
+    private GetUserProfileImageController(IUsecase useCase) {
         this.useCase = useCase;
     }
     

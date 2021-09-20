@@ -12,9 +12,9 @@ import com.jamapplicationserver.core.logic.*;
  *
  * @author amirhossein
  */
-public class Tag extends ValueObject {
+public class Tag extends ValueObject<String> {
     
-    public static final int MIN_LENGTH = 1;
+    public static final int MIN_LENGTH = 0;
     public static final int MAX_LENGTH = 20;
     
     private final String value;
@@ -42,5 +42,5 @@ public class Tag extends ValueObject {
         
         return Result.ok(new Tag(tag));
     }
-    
+   
 }

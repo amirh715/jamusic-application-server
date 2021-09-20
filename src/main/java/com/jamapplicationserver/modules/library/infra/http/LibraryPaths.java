@@ -11,20 +11,25 @@ package com.jamapplicationserver.modules.library.infra.http;
  */
 public class LibraryPaths {
     
-    public final static String CREATE_NEW_ENTITY = "/";
+    public final static String CREATE_NEW_ARTIST = "/artist/";
+    public final static String CREATE_NEW_ALBUM = "/album/";
+    public final static String CREATE_NEW_TRACK = "/track/";
     
     public static final String GET_ENTITIES_BY_FILTERS = "/";
     public static final String GET_ENTITY_BY_ID = "/:id";
     public static final String GET_ENTITY_IMAGE_BY_ID = "/image/:id";
     public static final String GET_TRACK_AUDIO = "/audio/:id";
     
-    public static final String EDIT_ENTITY = "/";
+    public static final String GET_COLLECTIONS = "/collections/";
+    
+    public static final String EDIT_ARTIST = "/artist";
+    public static final String EDIT_ARTWORK = "/artwork";
     
     public static final String PUBLISH_ARCHIVE_ENTITY = "/publish-archive";
     
-    public static final String REMOVE_ENTITY = "";
+    public static final String REMOVE_ENTITY = "/";
     
-    public static final String CREATE_NEW_GENRE = "/genres";
+    public static final String CREATE_NEW_GENRE = "/genres/";
     
     public static final String GET_ALL_GENRES = "/genres/";
     public static final String GET_GENRE_BY_TITLE = "/genres/:title";

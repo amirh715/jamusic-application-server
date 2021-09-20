@@ -23,7 +23,7 @@ public class LoginAuditManager {
     }
     
     public void audit(
-            UniqueEntityID userId,
+            UniqueEntityId userId,
             boolean wasSuccessful,
             BusinessError failureReason,
             String ip,
@@ -60,7 +60,7 @@ public class LoginAuditManager {
         
     }
     
-    public Set<LoginAuditModel> queryAudit(UniqueEntityID userId) {
+    public Set<LoginAuditModel> queryAudit(UniqueEntityId userId) {
         
         try {
             

@@ -5,11 +5,15 @@
  */
 package com.jamapplicationserver.modules.user.usecases.CreateUser;
 
+import com.jamapplicationserver.core.domain.UserRole;
+import com.jamapplicationserver.core.domain.FCMToken;
+import com.jamapplicationserver.core.domain.MobileNo;
+import com.jamapplicationserver.core.domain.Email;
 import com.jamapplicationserver.core.domain.DateTime;
 import com.jamapplicationserver.modules.user.domain.errors.*;
 import java.util.*;
-import com.jamapplicationserver.core.domain.IUseCase;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.IUsecase;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.exceptions.*;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
@@ -24,7 +28,7 @@ import org.hibernate.exception.ConstraintViolationException;
  *
  * @author amirhossein
  */
-public class CreateUserUseCase implements IUseCase<CreateUserRequestDTO, CreateUserResponseDTO> {
+public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, CreateUserResponseDTO> {
     
     private final IUserRepository repository;
     
@@ -57,8 +61,8 @@ public class CreateUserUseCase implements IUseCase<CreateUserRequestDTO, CreateU
             final Result<FCMToken> FCMTokenOrError =
                     FCMToken.create(request.FCMToken);
             
-            final Result<UniqueEntityID> creatorIdOrError =
-                    UniqueEntityID.createFromString(request.creatorId);
+            final Result<UniqueEntityId> creatorIdOrError =
+                    UniqueEntityId.createFromString(request.creatorId);
             
             final List<Result> combinedProps = new ArrayList<>();
             
@@ -88,7 +92,7 @@ public class CreateUserUseCase implements IUseCase<CreateUserRequestDTO, CreateU
             final Password password = passwordOrError.getValue();
             final Email email = request.email != null ? emailOrError.getValue() : null;
             final FCMToken fcmToken = request.FCMToken != null ? FCMTokenOrError.getValue() : null;
-            final UniqueEntityID creatorId = request.creatorId != null ? creatorIdOrError.getValue() : null;
+            final UniqueEntityId creatorId = request.creatorId != null ? creatorIdOrError.getValue() : null;
             final UserRole role = request.role != null ? roleOrError.getValue() : null;
             
             final Result<User> userOrError = User.create(

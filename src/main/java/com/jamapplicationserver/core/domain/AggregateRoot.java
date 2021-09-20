@@ -18,8 +18,12 @@ public abstract class AggregateRoot extends Entity {
     
     private List<DomainEvent> domainEvents;
     
-    public AggregateRoot(UniqueEntityID id) {
-        super(id);
+    public AggregateRoot(
+            UniqueEntityId id,
+            DateTime createdAt,
+            DateTime lastModifiedAt
+    ) {
+        super(id, createdAt, lastModifiedAt);
     }
     
     public AggregateRoot() {
@@ -28,10 +32,6 @@ public abstract class AggregateRoot extends Entity {
     
     public List<DomainEvent> getDomainEvents() {
         return this.domainEvents;
-    }
-
-    public UniqueEntityID getID() {
-        return this.id;
     }
     
     protected void addDomainEvent(DomainEvent event) {

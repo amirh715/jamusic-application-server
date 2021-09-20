@@ -16,7 +16,7 @@ import java.util.*;
 public class FilePersistenceManager implements IFilePersistenceManager {
     
     private static boolean isFileStructureSetup = false;
-    private static final String BASE_PATH = "/";
+    private static final String BASE_PATH = "/home/dada/Desktop/JamFS";
     
     private FilePersistenceManager() {
     }
@@ -26,7 +26,19 @@ public class FilePersistenceManager implements IFilePersistenceManager {
         
         setupFileStructure();
         
+        try (
+                final InputStream is = stream;
+                final OutputStream os = new FileOutputStream(path.toString());
+        ) {
+            is.transferTo(os);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         
+        final FileOutputStream outputStream = new FileOutputStream(path.toFile());
+        
+        stream.transferTo(outputStream);
+        outputStream.write(stream.readAllBytes());
         
         return path;
     }
@@ -78,38 +90,27 @@ public class FilePersistenceManager implements IFilePersistenceManager {
         
         final StringBuilder builder = new StringBuilder();
         
-        String prefix;
-        
-        switch (clazz.getSimpleName()) {
-            case "User":
-                prefix = "USER";
-                break;
-            case "Artist":
-                prefix = "ARTIST";
-                break;
-            case "Album":
-                prefix = "ALBUM";
-                break;
-            case "Track":
-                prefix = "TRACK";
-                break;
-            default:
-                prefix = "NA";
-                break;
-        }
+        final String prefix = clazz.getSimpleName().toUpperCase();
         
         final String fileName = builder
                 .append(prefix)
+                .append("_")
                 .append(UUID.randomUUID().toString())
                 .toString();
         
         return Path.of(BASE_PATH, fileName);
     }
     
+    @Override
+    public final Path buildPath(Class clazz, String extension) {
+        
+        return Path.of(this.buildPath(clazz).toString().concat(".").concat(extension));
+        
+    }
+    
     private static void setupFileStructure() throws IOException {
         
         if(isFileStructureSetup) return;
-        
         
         
         isFileStructureSetup = true;

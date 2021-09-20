@@ -21,6 +21,9 @@ public abstract class BaseController implements Route {
     protected Request req;
     private Response res;
     
+    protected String subjectId;
+    protected String subjectRole;
+    
     protected abstract void executeImpl();
     
     protected static final ISerializer serializer = Serializer.getInstance();
@@ -30,6 +33,8 @@ public abstract class BaseController implements Route {
         
         this.req = req;
         this.res = res;
+        this.subjectId = this.req.session().attribute("subjectId");
+        this.subjectRole = this.req.session().attribute("role");
         
         this.executeImpl();
         

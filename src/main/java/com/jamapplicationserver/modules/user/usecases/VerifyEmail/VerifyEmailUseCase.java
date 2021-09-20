@@ -5,7 +5,7 @@
  */
 package com.jamapplicationserver.modules.user.usecases.VerifyEmail;
 
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.modules.user.domain.*;
@@ -17,7 +17,7 @@ import java.net.URL;
  *
  * @author amirhossein
  */
-public class VerifyEmailUseCase implements IUseCase<VerifyEmailRequestDTO, String> {
+public class VerifyEmailUseCase implements IUsecase<VerifyEmailRequestDTO, String> {
     
     private final IUserRepository repository;
     

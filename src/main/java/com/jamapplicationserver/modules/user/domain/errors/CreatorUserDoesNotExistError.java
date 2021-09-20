@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.user.domain.errors;
 
 import com.jamapplicationserver.core.logic.NotFoundError;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 
 /**
  *
@@ -16,7 +16,7 @@ public class CreatorUserDoesNotExistError extends NotFoundError {
     
     private static final int CODE = 203;
     
-    public CreatorUserDoesNotExistError(UniqueEntityID id) {
+    public CreatorUserDoesNotExistError(UniqueEntityId id) {
         super("Creator user with id " + id.toString() + " does not exist", CODE);
     }
     

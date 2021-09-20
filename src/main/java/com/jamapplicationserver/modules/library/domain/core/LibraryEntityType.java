@@ -21,20 +21,46 @@ public enum LibraryEntityType {
         return this.type;
     }
     
+    public boolean isArtist() {
+        return (type.equals("B") || type.equals("S"));
+    }
+    
+    public boolean isSinger() {
+        return type.equals("S");
+    }
+    
+    public boolean isBand() {
+        return type.equals("B");
+    }
+    
+    public boolean isTrack() {
+        return type.equals("T");
+    }
+    
+    public boolean isAlbum() {
+        return type.equals("A");
+    }
+    
     private LibraryEntityType(String type) {
         this.type = type;
     }
     
     public static final Result<LibraryEntityType> create(String value) {
-        if(value == null)
-            return Result.fail(new ValidationError("Library entity type is required"));
         
-        final LibraryEntityType type = LibraryEntityType.valueOf(value);
+        try {
+            
+            if(value == null) return Result.fail(new ValidationError("Library entity type is required"));
+            
+            final LibraryEntityType type = LibraryEntityType.valueOf(value.toUpperCase());
+            
+            if(type == null) return Result.fail(new ValidationError("Library entity type is invalid"));
+            
+            return Result.ok(type);
+            
+        } catch(IllegalArgumentException e) {
+            return Result.fail(new ValidationError("Library entity type is invalid"));
+        }
         
-        if(type == null)
-            return Result.fail(new ValidationError("Library entity type is incorrect"));
-        
-        return Result.ok(type);
     }
     
 }

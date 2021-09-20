@@ -18,10 +18,19 @@ public class Identifier<T> {
         this.value = value;
     }
     
-    public boolean equalsTo(Identifier<T> id) {
-        if(id == null) return false;
-        if(id.getClass() == this.getClass()) return false;
-        return this.value == id;
+    @Override
+    public boolean equals(Object id) {
+        if(id == this)
+            return true;
+        if(!(id instanceof Identifier))
+            return false;
+        Identifier i = (Identifier) id;
+        return i.value.equals(id);
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.value.hashCode();
     }
     
     public T toValue() {

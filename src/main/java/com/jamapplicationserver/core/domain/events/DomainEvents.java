@@ -31,14 +31,14 @@ public class DomainEvents {
         markedAggregates.remove(aggregate);
     }
     
-    public static AggregateRoot findMarkedAggregateById(UniqueEntityID id) {
+    public static AggregateRoot findMarkedAggregateById(UniqueEntityId id) {
         AggregateRoot found = null;
         for(AggregateRoot aggregate : markedAggregates)
             if(aggregate.id.equals(id)) found = aggregate;
         return found;
     }
     
-    public static void dispatchEventsForAggregate(UniqueEntityID id) {
+    public static void dispatchEventsForAggregate(UniqueEntityId id) {
         final AggregateRoot aggregate = findMarkedAggregateById(id);
         if(aggregate != null) {
             dispatchAggregateEvents(aggregate);

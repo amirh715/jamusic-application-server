@@ -5,8 +5,10 @@
  */
 package com.jamapplicationserver.modules.library.domain.Playlist;
 
-import java.util.Set;
+import java.util.*;
+import java.time.*;
 import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
@@ -19,23 +21,72 @@ public class Playlist extends AggregateRoot {
     
     private static final int MAX_ALLOWED_TRACKS_PER_PLAYLIST = 150;
     
-    public Title title;
+    private Title title;
     
-    public Set<Track> tracks;
+    private Set<Track> tracks;
     
+    private Duration duration;
+    
+    // creation constructor
     private Playlist(
-            UniqueEntityID id,
             Title title
     ) {
-        super(id);
+        super();
         this.title = title;
+        this.duration = Duration.ZERO;
     }
     
+    // reconstitution constructor
     private Playlist(
-            Title title
+            UniqueEntityId id,
+            Title title,
+            DateTime createdAt,
+            DateTime lastModifiedAt
     ) {
-        super(new UniqueEntityID());
+        super(id, createdAt, lastModifiedAt);
         this.title = title;
+        this.tracks = new HashSet<>();
+    }
+    
+    public final Result addTrack(Track track) {
+        
+        if(this.tracks.size() >= MAX_ALLOWED_TRACKS_PER_PLAYLIST)
+            return Result.fail(new MaxAllowedTracksPerPlaylistExceededError());
+        
+        this.duration = this.duration.plus(track.getDuration());
+        
+        this.tracks.add(track);
+        
+        this.modified();
+        
+        return Result.ok();
+    }
+    
+    public final void removeTrack(Track track) {
+        
+        if(this.tracks.isEmpty()) return;
+        
+        if(!this.tracks.contains(track)) return;
+        
+        this.duration = this.duration.minus(track.getDuration());
+        
+        this.modified();
+        
+        this.tracks.remove(track);
+
+    }
+    
+    public void changeTitle(Title title) {
+        this.title = title;
+        this.modified();
+    }
+    
+    public Title getTitle() {
+        return this.title;
+    }
+    
+    public Set<Track> getTracks() {
+        return this.tracks;
     }
     
     public static Result create(
@@ -45,35 +96,45 @@ public class Playlist extends AggregateRoot {
         
         Playlist instance = new Playlist(title);
         
-        final Result replaceTracksOrError = instance.replaceTracks(tracks);
-        
-        if(replaceTracksOrError.isFailure) return replaceTracksOrError;
+        for(Track track : tracks) {
+            
+            final Result result = instance.addTrack(track);
+            
+            if(result.isFailure) return result;
+            
+        }
         
         return Result.ok(instance);
     }
     
-    public static Result reconstitute(
-            UniqueEntityID id,
-            Title title,
+    public static Result<Playlist> reconstitute(
+            UUID id,
+            String title,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
             Set<Track> tracks
     ) {
-        
-        Playlist instance = new Playlist(id, title);
-        
-        final Result replaceTracksOrError = instance.replaceTracks(tracks);
-        
-        if(replaceTracksOrError.isFailure) return replaceTracksOrError;
-        
-        return Result.ok(instance);
-    }
-    
-    public Result replaceTracks(Set<Track> tracks) {
-        
-        if(tracks.size() > MAX_ALLOWED_TRACKS_PER_PLAYLIST)
-            return Result.fail(new ValidationError("Playlists can have " + MAX_ALLOWED_TRACKS_PER_PLAYLIST + " tracks max."));
-        
-        this.tracks.retainAll(tracks);
 
+        final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromUUID(id);
+        final Result<Title> titleOrError = Title.create(title);
+        final Result<DateTime> createdAtOrError = DateTime.create(createdAt);
+        final Result<DateTime> lastModifiedAtOrError = DateTime.create(lastModifiedAt);
+
+        Playlist instance = new Playlist(
+                idOrError.getValue(),
+                titleOrError.getValue(),
+                createdAtOrError.getValue(),
+                lastModifiedAtOrError.getValue()
+        );
+        
+        for(Track track : tracks) {
+            
+            final Result result = instance.addTrack(track);
+            
+            if(result.isFailure) return result;
+            
+        }
+        
         return Result.ok();
     }
     

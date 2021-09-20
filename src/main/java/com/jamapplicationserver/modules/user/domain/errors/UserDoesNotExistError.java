@@ -5,7 +5,7 @@
  */
 package com.jamapplicationserver.modules.user.domain.errors;
 
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.core.logic.NotFoundError;
 
 /**
@@ -20,7 +20,7 @@ public class UserDoesNotExistError extends NotFoundError {
         super("User does not exist.", CODE);
     }
     
-    public UserDoesNotExistError(UniqueEntityID id) {
+    public UserDoesNotExistError(UniqueEntityId id) {
         super("User with ID '" + id.toString() + "' does not exist.", CODE);
     }
     

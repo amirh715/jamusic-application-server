@@ -6,8 +6,10 @@
 package com.jamapplicationserver.modules.library.domain.core;
 
 import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.core.logic.*;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.*;
 
 /**
  *
@@ -29,15 +31,15 @@ public abstract class LibraryEntity extends AggregateRoot {
     
     protected Path imagePath;
     
-    protected DateTime createdAt;
-    
-    protected DateTime lastModifiedAt;
-    
     protected long totalPlayedCount;
     
     protected Duration duration;
     
     protected Rate rate;
+    
+    protected final UniqueEntityId creatorId;
+    
+    protected UniqueEntityId updaterId;
     
     // creation constructor
     protected LibraryEntity(
@@ -45,7 +47,8 @@ public abstract class LibraryEntity extends AggregateRoot {
             Description description,
             Flag flag,
             TagList tags,
-            GenreList genres
+            GenreList genres,
+            UniqueEntityId creatorId
     ) {
         super();
         this.title = title;
@@ -58,13 +61,13 @@ public abstract class LibraryEntity extends AggregateRoot {
         this.duration = Duration.ZERO;
         this.totalPlayedCount = 0;
         this.rate = Rate.createZero();
-        this.createdAt = DateTime.createNow();
-        this.lastModifiedAt = DateTime.createNow();
+        this.creatorId = creatorId;
+        this.updaterId = creatorId;
     }
     
     // reconstitution constructor
     protected LibraryEntity(
-            UniqueEntityID id,
+            UniqueEntityId id,
             Title title,
             Description description,
             boolean published,
@@ -76,9 +79,11 @@ public abstract class LibraryEntity extends AggregateRoot {
             long totalPlayedCount,
             Rate rate,
             DateTime createdAt,
-            DateTime lastModifiedAt
+            DateTime lastModifiedAt,
+            UniqueEntityId creatorId,
+            UniqueEntityId updaterId
     ) {
-        super(id);
+        super(id, createdAt, lastModifiedAt);
         this.title = title;
         this.description = description;
         this.published = published;
@@ -89,8 +94,8 @@ public abstract class LibraryEntity extends AggregateRoot {
         this.duration = duration;
         this.totalPlayedCount = totalPlayedCount;
         this.rate = rate;
-        this.createdAt = createdAt;
-        this.lastModifiedAt = lastModifiedAt;
+        this.creatorId = creatorId;
+        this.updaterId = updaterId;
     }
     
     public Title getTitle() {
@@ -129,53 +134,42 @@ public abstract class LibraryEntity extends AggregateRoot {
         return this.rate;
     }
     
-    public DateTime getCreatedAt() {
-        return this.createdAt;
+    public UniqueEntityId getCreatorId() {
+        return this.creatorId;
     }
     
-    public DateTime getLastModifiedAt() {
-        return this.lastModifiedAt;
+    public UniqueEntityId getUpdaterId() {
+        return this.updaterId;
     }
     
     public abstract void publish();
     
+    public abstract void publish(UniqueEntityId updaterId);
+    
     public abstract void archive();
     
-    public void changeImage(Path path) {
+    public abstract void archive(UniqueEntityId updaterId);
+    
+    public abstract void rate(Rate rate);
+
+    public void changeImage(Path path, UniqueEntityId updaterId) {
         this.imagePath = path;
+        this.updaterId = updaterId;
+        modified();
     }
     
-    public void removeImage() {
+    public void removeImage(UniqueEntityId updaterId) {
         this.imagePath = null;
+        this.updaterId = updaterId;
+        modified();
     }
     
     public boolean hasImage() {
         return this.imagePath != null;
     }
     
-    public void edit(
-            Title title,
-            Description description,
-            TagList tags,
-            GenreList genres
-    ) {
-        this.title = title;
-        this.description = description;
-        this.tags = tags;
-        this.genres = genres;
-    }
-    
     public final boolean isPublished() {
         return this.published;
     }
-    
-    public void flag(Flag flag) {
-        this.flag = flag;
-    }
-    
-    public void unflag() {
-        this.flag = null;
-    }
-    
     
 }

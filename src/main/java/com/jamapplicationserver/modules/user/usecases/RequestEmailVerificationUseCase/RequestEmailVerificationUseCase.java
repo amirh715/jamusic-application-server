@@ -5,9 +5,9 @@
  */
 package com.jamapplicationserver.modules.user.usecases.RequestEmailVerificationUseCase;
 
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
@@ -16,7 +16,7 @@ import com.jamapplicationserver.modules.user.domain.errors.*;
  *
  * @author amirhossein
  */
-public class RequestEmailVerificationUseCase implements IUseCase<UniqueEntityID, Result> {
+public class RequestEmailVerificationUseCase implements IUsecase<UniqueEntityId, Result> {
     
     private final IUserRepository repository;
     
@@ -25,7 +25,7 @@ public class RequestEmailVerificationUseCase implements IUseCase<UniqueEntityID,
     }
     
     @Override
-    public Result execute(UniqueEntityID id) throws GenericAppException {
+    public Result execute(UniqueEntityId id) throws GenericAppException {
         
         System.out.println("RequestEmailVerificationUseCase");
         

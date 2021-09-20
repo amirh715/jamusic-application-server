@@ -9,4 +9,4 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
  *
  * @author amirhossein
  */
-public enum NotificationSenderTypeEnum { USER, SYSTEM }
+public enum NotificationSenderTypeEnum { USER, SYS }

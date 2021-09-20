@@ -23,7 +23,13 @@ public class TrackSerializer implements JsonSerializer<Track> {
         
         json.add("id", new JsonPrimitive(track.id.toString()));
         json.add("title", new JsonPrimitive(track.getTitle().getValue()));
-        json.add("description", new JsonPrimitive(track.getDescription().getValue()));
+//        json.add("description",
+//                new JsonPrimitive(
+//                        track.getDescription() != null ?
+//                                track.getDescription().getValue()
+//                                : null
+//                )
+//        );
 
         json.add("published", new JsonPrimitive(track.isPublished()));
         

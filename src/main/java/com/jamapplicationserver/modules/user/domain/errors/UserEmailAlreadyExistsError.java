@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.user.domain.errors;
 
 import com.jamapplicationserver.core.logic.ConflictError;
-import com.jamapplicationserver.modules.user.domain.Email;
+import com.jamapplicationserver.core.domain.Email;
 
 /**
  *

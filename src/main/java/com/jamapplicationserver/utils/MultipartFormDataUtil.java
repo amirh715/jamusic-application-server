@@ -5,7 +5,6 @@
  */
 package com.jamapplicationserver.utils;
 
-import javax.sound.sampled.AudioInputStream;
 import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -89,9 +88,18 @@ public class MultipartFormDataUtil {
     }
     
     public static final Map<String, InputStream> toInputStream(Collection<Part> parts) {
-
-        
-        return null;
+        final HashMap<String, InputStream> map = new HashMap<>();
+        try {
+            for(Part part : parts) {
+                final String key = part.getSubmittedFileName();
+                final InputStream value = part.getInputStream();
+                map.put(key, value);
+            }
+            return map;
+        } catch(IOException e) {
+            e.printStackTrace();
+            return Map.of();
+        }
     }
     
 }

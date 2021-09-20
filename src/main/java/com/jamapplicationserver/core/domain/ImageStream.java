@@ -15,6 +15,8 @@ import com.jamapplicationserver.utils.TikaUtils;
  */
 public class ImageStream extends FilterInputStream {
     
+    private static final int MAX_ALLOWED_SIZE = 5000000;
+    
     public final long size;
     public final ImageFileFormat format;
     
@@ -30,19 +32,29 @@ public class ImageStream extends FilterInputStream {
         this.format = format;
     }
     
+    public final InputStream getStream() {
+        return this.in;
+    }
+    
     public static final Result<ImageStream> createAndValidate(InputStream stream) throws GenericAppException {
         
         
         try {
             
-            if(!tika.isImage(stream)) return Result.fail(new ValidationError(""));
+            if(!tika.isImage(stream)) return Result.fail(new ValidationError("File must be an image"));
             
             final String subType = tika.getSubtype(stream);
+            System.out.println(subType);
             final Result<ImageFileFormat> formatOrError = ImageFileFormat.create(subType);
             if(formatOrError.isFailure) return Result.fail(formatOrError.getError());
             final ImageFileFormat format = formatOrError.getValue();
             
-            final long size = 0;
+            final ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
+            stream.transferTo(byteArray);
+                
+            final long size = byteArray.size();
+            if(size > MAX_ALLOWED_SIZE)
+                return Result.fail(new ValidationError("Image size is over the limit"));
             
             return Result.ok(new ImageStream(stream, size, format));
             

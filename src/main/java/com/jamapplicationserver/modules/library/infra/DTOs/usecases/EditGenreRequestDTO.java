@@ -16,11 +16,18 @@ public class EditGenreRequestDTO implements IDTO {
     public final String id;
     public final String title;
     public final String titleInPersian;
+    public final String updaterId;
     
-    public EditGenreRequestDTO(String id, String title, String titleInPersian) {
+    public EditGenreRequestDTO(
+            String id,
+            String title,
+            String titleInPersian,
+            String updaterId
+    ) {
         this.id = id;
         this.title = title;
         this.titleInPersian = titleInPersian;
+        this.updaterId = updaterId;
     }
     
 }

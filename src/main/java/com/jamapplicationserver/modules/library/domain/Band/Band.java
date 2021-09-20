@@ -10,6 +10,7 @@ import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.core.logic.*;
 import java.util.*;
+import java.util.stream.*;
 import java.nio.file.Path;
 import java.time.*;
 import com.jamapplicationserver.core.domain.*;
@@ -20,7 +21,7 @@ import com.jamapplicationserver.core.domain.*;
  */
 public class Band extends Artist {
     
-    public static final int MAX_ALLOWED_MEMBERS_PER_BAND = 15;
+    public static final int MAX_ALLOWED_MEMBERS_PER_BAND = 20;
     
     private Set<Singer> members = new HashSet<>();
     
@@ -31,7 +32,8 @@ public class Band extends Artist {
             Flag flag,
             TagList tags,
             GenreList genres,
-            InstagramId instagramId
+            InstagramId instagramId,
+            UniqueEntityId creatorId
     ) {
         super(
                 title,
@@ -39,13 +41,14 @@ public class Band extends Artist {
                 flag,
                 tags,
                 genres,
-                instagramId
+                instagramId,
+                creatorId
         );
     }
     
     // reconstitution constructor
     private Band(
-        UniqueEntityID id,
+        UniqueEntityId id,
         Title title,
         Description description,
         boolean published,
@@ -59,8 +62,10 @@ public class Band extends Artist {
         Rate rate,
         DateTime createdAt,
         DateTime lastModifiedAt,
-        Set<UniqueEntityID> albumsIds,
-        Set<UniqueEntityID> tracksIds,
+        UniqueEntityId creatorId,
+        UniqueEntityId updaterId,
+        Set<UniqueEntityId> albumsIds,
+        Set<UniqueEntityId> tracksIds,
         Set<Singer> members
     ) {
         super(
@@ -78,6 +83,8 @@ public class Band extends Artist {
                 rate,
                 createdAt,
                 lastModifiedAt,
+                creatorId,
+                updaterId,
                 albumsIds,
                 tracksIds
         );
@@ -90,10 +97,12 @@ public class Band extends Artist {
             Flag flag,
             TagList tags,
             GenreList genres,
-            InstagramId instagramId
+            InstagramId instagramId,
+            UniqueEntityId creatorId
     ) {
         
-        if(title == null) return Result.fail(new ValidationError("Title is required for bands."));
+        if(title == null)
+            return Result.fail(new ValidationError("Title is required for bands."));
         
         Band instance = new Band(
                 title,
@@ -101,7 +110,8 @@ public class Band extends Artist {
                 flag,
                 tags,
                 genres,
-                instagramId
+                instagramId,
+                creatorId
         );
         
         return Result.ok(instance);
@@ -115,72 +125,93 @@ public class Band extends Artist {
             String flag,
             Set<Tag> tags,
             Set<Genre> genres,
-            String instagramId,
             String imagePath,
             long totalPlayedCount,
             double rate,
             long totalDuration,
             LocalDateTime createdAt,
             LocalDateTime lastModifiedAt,
-            Set<UUID> albumsIDs,
-            Set<UUID> tracksIDs,
+            UUID creatorId,
+            UUID updaterId,
+            String instagramId,
+            Set<UUID> albumsIds,
+            Set<UUID> tracksIds,
             Set<Singer> members
     ) {
         
-        final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromUUID(id);
+        final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromUUID(id);
         final Result<Title> titleOrError = Title.create(title);
         final Result<Description> descriptionOrError = Description.create(description);
         final Result<Flag> flagOrError = Flag.create(flag);
-        final Result<TagList> tagListOrErrors = TagList.create(tags);
-        final Result<GenreList> genreListOrErrors = GenreList.create(genres);
+        final Result<TagList> tagListOrError = TagList.create(tags);
+        final Result<GenreList> genreListOrError = GenreList.create(genres);
         final Result<Rate> rateOrError = Rate.create(rate);
         final Result<InstagramId> instagramIdOrError = InstagramId.create(instagramId);
         final Result<DateTime> createdAtOrError = DateTime.create(createdAt);
         final Result<DateTime> lastModifiedAtOrError = DateTime.create(lastModifiedAt);
+        final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromUUID(creatorId);
+        final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromUUID(updaterId);
         
-        final Result<Set<UniqueEntityID>> albumsIDsOrErrors =
-                UniqueEntityID.createFromUUIDs(albumsIDs);
+        final Result<Set<Result<UniqueEntityId>>> albumsIdsOrErrors =
+                UniqueEntityId.createFromUUIDs(albumsIds);
         
-        final Result<Set<UniqueEntityID>> tracksIDsOrErrors =
-                UniqueEntityID.createFromUUIDs(tracksIDs);
+        final Result<Set<Result<UniqueEntityId>>> tracksIdsOrErrors =
+                UniqueEntityId.createFromUUIDs(tracksIds);
         
-        final Result[] combinedProps = {
-            idOrError,
-            titleOrError,
-            descriptionOrError,
-            flagOrError,
-            tagListOrErrors,
-            genreListOrErrors,
-            rateOrError,
-            instagramIdOrError,
-            createdAtOrError,
-            lastModifiedAtOrError,
-            albumsIDsOrErrors,
-            tracksIDsOrErrors
-        };
+        final ArrayList<Result> combinedProps = new ArrayList<>();
+        
+        combinedProps.add(idOrError);
+        combinedProps.add(titleOrError);
+        combinedProps.add(rateOrError);
+        combinedProps.add(createdAtOrError);
+        combinedProps.add(lastModifiedAtOrError);
+        combinedProps.add(creatorIdOrError);
+        combinedProps.add(updaterIdOrError);
+        
+        if(description != null) combinedProps.add(descriptionOrError);
+        if(flag != null) combinedProps.add(flagOrError);
+        if(tags != null && !tags.isEmpty()) combinedProps.add(tagListOrError);
+        if(genres != null && !genres.isEmpty()) combinedProps.add(genreListOrError);
+        if(instagramId != null) combinedProps.add(instagramIdOrError);
         
         final Result combinedPropsResult = Result.combine(combinedProps);
         
         if(combinedPropsResult.isFailure) return combinedPropsResult;
         
+        final Set<UniqueEntityId> albumsIdsValues =
+                albumsIdsOrErrors.getValue()
+                .stream()
+                .map(result -> result.getValue())
+                .collect(Collectors.toSet());
+        
+        final Set<UniqueEntityId> tracksIdsValues =
+                tracksIdsOrErrors.getValue()
+                .stream()
+                .map(result -> result.getValue())
+                .collect(Collectors.toSet());
+        
         Band instance = new Band(
                 idOrError.getValue(),
                 titleOrError.getValue(),
-                descriptionOrError.getValue(),
+                description != null ? descriptionOrError.getValue() : null,
                 published,
-                flagOrError.getValue(),
-                tagListOrErrors.getValue(),
-                genreListOrErrors.getValue(),
-                instagramIdOrError.getValue(),
-                Path.of(imagePath),
+                flag != null ? flagOrError.getValue() : null,
+                tags != null && !tags.isEmpty() ? tagListOrError.getValue() : null,
+                genres != null && !genres.isEmpty() ? genreListOrError.getValue() : null,
+                instagramId != null ? instagramIdOrError.getValue() : null,
+                imagePath != null ? Path.of(imagePath) : null,
                 Duration.ofSeconds(totalDuration),
                 totalPlayedCount,
                 rateOrError.getValue(),
                 createdAtOrError.getValue(),
                 lastModifiedAtOrError.getValue(),
-                albumsIDsOrErrors.getValue(),
-                tracksIDsOrErrors.getValue(),
-                members
+                creatorIdOrError.getValue(),
+                updaterIdOrError.getValue(),
+                albumsIds != null && !albumsIds.isEmpty() ?
+                        albumsIdsValues : null,
+                tracksIds != null && !tracksIds.isEmpty() ?
+                        tracksIdsValues : null,
+                members != null && !members.isEmpty() ? members : null
         );
         
         return Result.ok(instance);
@@ -200,6 +231,8 @@ public class Band extends Artist {
         
         this.members.add(member);
         
+        this.modified();
+        
         return Result.ok();
     }
     
@@ -209,11 +242,17 @@ public class Band extends Artist {
         
         this.members.remove(member);
         
+        this.modified();
+        
         return Result.ok();
     }
     
     public final Set<Singer> getMembers() {
         return this.members;
+    }
+    
+    public final boolean hasMembers() {
+        return !this.members.isEmpty();
     }
     
 }

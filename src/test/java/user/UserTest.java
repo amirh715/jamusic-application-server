@@ -5,6 +5,10 @@
  */
 package user;
 
+import com.jamapplicationserver.core.domain.UserRole;
+import com.jamapplicationserver.core.domain.FCMToken;
+import com.jamapplicationserver.core.domain.MobileNo;
+import com.jamapplicationserver.core.domain.Email;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +31,7 @@ import java.util.UUID;
  */
 public class UserTest {
     
-    private UniqueEntityID id;
+    private UniqueEntityId id;
     private UserName name;
     private MobileNo mobile;
     private Password password;
@@ -38,8 +42,8 @@ public class UserTest {
     private FCMToken fcmToken;
     private DateTime createdAt;
     private DateTime lastModifiedAt;
-    private UniqueEntityID creatorId;
-    private UniqueEntityID updaterId;
+    private UniqueEntityId creatorId;
+    private UniqueEntityId updaterId;
     
     private User admin;
     private User libraryManager;
@@ -51,7 +55,7 @@ public class UserTest {
     @BeforeEach
     public void setup() throws MalformedURLException {
         
-        this.id = UniqueEntityID.createFromUUID(UUID.randomUUID()).getValue();
+        this.id = UniqueEntityId.createFromUUID(UUID.randomUUID()).getValue();
         this.name = UserName.create("Amirhossein Al.").getValue();
         this.mobile = MobileNo.create("989124974163").getValue();
         this.password = Password.create("12345678", false).getValue();

@@ -5,11 +5,15 @@
  */
 package com.jamapplicationserver.modules.user.domain;
 
+import com.jamapplicationserver.core.domain.UserRole;
+import com.jamapplicationserver.core.domain.FCMToken;
+import com.jamapplicationserver.core.domain.MobileNo;
+import com.jamapplicationserver.core.domain.Email;
 import java.nio.file.*;
 import java.net.URL;
 import java.util.*;
 import java.time.LocalDateTime;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.core.domain.AggregateRoot;
 import com.jamapplicationserver.core.domain.DateTime;
 import com.jamapplicationserver.core.logic.*;
@@ -37,10 +41,6 @@ public class User extends AggregateRoot {
     
     private Path imagePath;
     
-    private final DateTime createdAt;
-    
-    private final DateTime lastModifiedAt;
-    
     private FCMToken fcmToken;
     
     private UserVerification verification;
@@ -49,9 +49,9 @@ public class User extends AggregateRoot {
     
     private PasswordResetCode passwordResetVerification;
     
-    private final UniqueEntityID creatorId;
+    private final UniqueEntityId creatorId;
     
-    private UniqueEntityID updaterId;
+    private UniqueEntityId updaterId;
 
     // creation constructor
     private User(
@@ -62,7 +62,7 @@ public class User extends AggregateRoot {
             Email email,
             Path imagePath,
             FCMToken FCMToken,
-            UniqueEntityID creatorId
+            UniqueEntityId creatorId
     ) {
         super();
         this.name = name;
@@ -74,15 +74,13 @@ public class User extends AggregateRoot {
         this.isEmailVerified = false;
         this.imagePath = imagePath;
         this.fcmToken = FCMToken;
-        this.createdAt = DateTime.createNow();
-        this.lastModifiedAt = DateTime.createNow();
         this.creatorId = creatorId != null ? creatorId : this.id;
         this.updaterId = creatorId;
     }
     
     // reconstitution constructor
     private User(
-            UniqueEntityID id,
+            UniqueEntityId id,
             UserName name,
             MobileNo mobile,
             Password password,
@@ -94,13 +92,13 @@ public class User extends AggregateRoot {
             FCMToken FCMToken,
             DateTime createdAt,
             DateTime lastModifiedAt,
-            UniqueEntityID creatorId,
-            UniqueEntityID updaterId,
+            UniqueEntityId creatorId,
+            UniqueEntityId updaterId,
             UserVerification verification,
             EmailVerification emailVerification,
             PasswordResetCode passwordResetVerification
     ) {
-        super(id);
+        super(id, createdAt, lastModifiedAt);
         this.name = name;
         this.mobile = mobile;
         this.password = password;
@@ -110,8 +108,6 @@ public class User extends AggregateRoot {
         this.isEmailVerified = isEmailVerified;
         this.imagePath = imagePath;
         this.fcmToken = FCMToken;
-        this.createdAt = createdAt;
-        this.lastModifiedAt = lastModifiedAt;
         this.creatorId = creatorId;
         this.updaterId = updaterId;
         this.verification = verification;
@@ -126,7 +122,7 @@ public class User extends AggregateRoot {
             Email email,
             Path imagePath,
             FCMToken FCMToken,
-            UniqueEntityID creatorId
+            UniqueEntityId creatorId
     ) {
         
         if(name == null) return Result.fail(new ValidationError("User name is required."));
@@ -167,7 +163,7 @@ public class User extends AggregateRoot {
             PasswordResetCode passwordResetVerification
     ) {
 
-        final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromUUID(id);
+        final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromUUID(id);
         final Result<UserName> nameOrError = UserName.create(name);
         final Result<MobileNo> mobileOrError = MobileNo.create(mobile);
         final Result<Password> passwordOrError = Password.create(password, true);
@@ -178,8 +174,8 @@ public class User extends AggregateRoot {
         final Result<FCMToken> fcmTokenOrError = FCMToken.create(fcmToken);
         final Result<DateTime> createdAtOrError = DateTime.create(createdAt);
         final Result<DateTime> lastModifiedAtOrError = DateTime.create(lastModifiedAt);
-        final Result<UniqueEntityID> creatorIdOrError = UniqueEntityID.createFromUUID(creatorId);
-        final Result<UniqueEntityID> updaterIdOrError = UniqueEntityID.createFromUUID(updaterId);
+        final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromUUID(creatorId);
+        final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromUUID(updaterId);
 
         final List<Result> combinedProps = new ArrayList<>();
         
@@ -285,23 +281,15 @@ public class User extends AggregateRoot {
         return this.imagePath;
     }
     
-    public DateTime getCreatedAt() {
-        return this.createdAt;
-    }
-    
-    public DateTime getLastModifiedAt() {
-        return this.lastModifiedAt;
-    }
-    
     public FCMToken getFCMToken() {
         return this.fcmToken;
     }
     
-    public UniqueEntityID getCreatorId() {
+    public UniqueEntityId getCreatorId() {
         return this.creatorId;
     }
     
-    public UniqueEntityID getUpdaterId() {
+    public UniqueEntityId getUpdaterId() {
         return this.updaterId;
     }
     
@@ -482,6 +470,12 @@ public class User extends AggregateRoot {
         
         return Result.ok();
         
+    }
+    
+    public void removeEmail() {
+        
+        this.unverifyEmail();
+        this.email = null;
     }
     
     public Result changeProfileImage(Path imagePath, User updater) {

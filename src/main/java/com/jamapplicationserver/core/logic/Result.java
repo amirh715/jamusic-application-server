@@ -73,7 +73,7 @@ public class Result<T> {
     }
     
     public static Result combine(Collection<Result> results) {
-        for (Result result : results)
+        for(Result result : results)
             if(result.isFailure) return result;
         return Result.ok(results);
     }
@@ -85,7 +85,7 @@ public class Result<T> {
     }
     
     public static Result combine(Result[] results) {
-        for (Result result : results)
+        for(Result result : results)
             if(result.isFailure) return result;
         return Result.ok(results);
     }

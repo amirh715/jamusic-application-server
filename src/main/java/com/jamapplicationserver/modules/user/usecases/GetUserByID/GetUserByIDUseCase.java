@@ -6,10 +6,10 @@
 package com.jamapplicationserver.modules.user.usecases.GetUserByID;
 
 import com.jamapplicationserver.modules.user.domain.errors.UserDoesNotExistError;
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.Result;
 import com.jamapplicationserver.modules.user.domain.*;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.repository.IUserRepository;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.core.logic.*;
@@ -18,7 +18,7 @@ import com.jamapplicationserver.core.logic.*;
  *
  * @author amirhossein
  */
-public class GetUserByIDUseCase implements IUseCase<String, User> {
+public class GetUserByIDUseCase implements IUsecase<String, User> {
     
     private final IUserRepository repository;
     
@@ -33,12 +33,12 @@ public class GetUserByIDUseCase implements IUseCase<String, User> {
         
         try {
             
-            final Result<UniqueEntityID> userIdOrError = UniqueEntityID.createFromString(userID);
+            final Result<UniqueEntityId> userIdOrError = UniqueEntityId.createFromString(userID);
             
             if(userIdOrError.isFailure)
                 return Result.fail(userIdOrError.getError());
             
-            final UniqueEntityID id = userIdOrError.getValue();
+            final UniqueEntityId id = userIdOrError.getValue();
             
             final User user = repository.fetchById(id);
 

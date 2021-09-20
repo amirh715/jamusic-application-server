@@ -5,18 +5,18 @@
  */
 package com.jamapplicationserver.modules.user.domain.errors;
 
-import com.jamapplicationserver.core.logic.ClientErrorError;
+import com.jamapplicationserver.core.logic.*;
 
 /**
  *
  * @author amirhossein
  */
-public class UserMobileOrPasswordIsIncorrectError extends ClientErrorError {
+public class UserMobileOrPasswordIsIncorrectError extends ConflictError {
     
     private static final int CODE = 111;
     
     public UserMobileOrPasswordIsIncorrectError() {
-        super("Mobile or password is incorrect", CODE);
+        super("شماره موبایل یا رمز درست نیست", CODE);
     }
     
 }

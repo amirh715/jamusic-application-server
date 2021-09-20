@@ -7,8 +7,8 @@ package com.jamapplicationserver.modules.user.usecases.GetUserProfileImage;
 
 import com.jamapplicationserver.infra.Persistence.filesystem.FilePersistenceManager;
 import java.io.*;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.user.domain.User;
 import com.jamapplicationserver.modules.user.domain.errors.*;
 import com.jamapplicationserver.modules.user.repository.*;
@@ -19,7 +19,7 @@ import com.jamapplicationserver.infra.Persistence.filesystem.IFilePersistenceMan
  *
  * @author amirhossein
  */
-public class GetUserProfileImageUseCase implements IUseCase<String, Result> {
+public class GetUserProfileImageUseCase implements IUsecase<String, Result> {
     
     private final IUserRepository repository;
     private final IFilePersistenceManager persistence;
@@ -34,11 +34,11 @@ public class GetUserProfileImageUseCase implements IUseCase<String, Result> {
         
         try {
             
-            final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromString(idString);
+            final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(idString);
             
             if(idOrError.isFailure) return idOrError;
             
-            final UniqueEntityID id = idOrError.getValue();
+            final UniqueEntityId id = idOrError.getValue();
             
             final User user = this.repository.fetchById(id);
             

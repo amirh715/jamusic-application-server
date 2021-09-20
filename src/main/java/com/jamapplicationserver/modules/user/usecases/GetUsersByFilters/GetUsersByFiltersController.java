@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.user.usecases.GetUsersByFilters;
 
 import com.jamapplicationserver.core.infra.BaseController;
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import spark.QueryParamsMap;
 
@@ -16,9 +16,9 @@ import spark.QueryParamsMap;
  */
 public class GetUsersByFiltersController extends BaseController {
     
-    private final IUseCase<GetUsersByFiltersRequestDTO, GetUsersByFiltersResponseDTO> useCase;
+    private final IUsecase<GetUsersByFiltersRequestDTO, GetUsersByFiltersResponseDTO> useCase;
     
-    private GetUsersByFiltersController(IUseCase useCase) {
+    private GetUsersByFiltersController(IUsecase useCase) {
         this.useCase = useCase;
     }
     

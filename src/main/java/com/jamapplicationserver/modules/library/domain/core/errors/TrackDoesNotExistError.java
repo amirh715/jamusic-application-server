@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.NotFoundError;
  */
 public class TrackDoesNotExistError extends NotFoundError {
     
-    private static final String DEFAULT_MESSAGE = "";
+    private static final String DEFAULT_MESSAGE = "آهنگ وجود ندارد.";
     private static final int CODE = 111;
     
     public TrackDoesNotExistError() {

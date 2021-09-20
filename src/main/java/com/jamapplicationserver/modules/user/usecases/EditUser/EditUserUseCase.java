@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.user.usecases.EditUser;
 
+import com.jamapplicationserver.core.domain.Email;
 import com.jamapplicationserver.infra.Persistence.filesystem.FilePersistenceManager;
 import java.util.*;
 import java.io.*;
@@ -12,10 +13,10 @@ import java.nio.file.Path;
 import org.hibernate.exception.*;
 import javax.persistence.EntityNotFoundException;
 import com.jamapplicationserver.modules.user.domain.errors.*;
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.Result;
 import com.jamapplicationserver.modules.user.domain.*;
-import com.jamapplicationserver.core.domain.UniqueEntityID;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.repository.IUserRepository;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.core.logic.*;
@@ -25,7 +26,7 @@ import com.jamapplicationserver.infra.Persistence.filesystem.IFilePersistenceMan
  *
  * @author amirhossein
  */
-public class EditUserUseCase implements IUseCase<EditUserRequestDTO, String> {
+public class EditUserUseCase implements IUsecase<EditUserRequestDTO, String> {
     
     private final IUserRepository repository;
     private final IFilePersistenceManager persistence;
@@ -42,8 +43,8 @@ public class EditUserUseCase implements IUseCase<EditUserRequestDTO, String> {
         
         try {
             
-            final Result<UniqueEntityID> idOrError = UniqueEntityID.createFromString(request.id);
-            final Result<UniqueEntityID> updaterIdOrError = UniqueEntityID.createFromString(request.updaterId);
+            final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
+            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             final Result<UserName> nameOrError = UserName.create(request.name);
             final Result<Email> emailOrError = Email.create(request.email);
             
@@ -62,9 +63,9 @@ public class EditUserUseCase implements IUseCase<EditUserRequestDTO, String> {
             
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
-            final UniqueEntityID id =
+            final UniqueEntityId id =
                     request.id != null ? idOrError.getValue() : null;
-            final UniqueEntityID updaterId =
+            final UniqueEntityId updaterId =
                     request.updaterId != null ? updaterIdOrError.getValue() : null;
             final UserName name =
                     request.name != null ? nameOrError.getValue() : null;

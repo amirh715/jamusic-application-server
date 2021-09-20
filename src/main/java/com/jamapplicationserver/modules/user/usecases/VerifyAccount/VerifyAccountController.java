@@ -7,7 +7,7 @@ package com.jamapplicationserver.modules.user.usecases.VerifyAccount;
 
 import java.util.*;
 import com.jamapplicationserver.core.infra.BaseController;
-import com.jamapplicationserver.core.domain.IUseCase;
+import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 
@@ -17,7 +17,7 @@ import com.jamapplicationserver.utils.MultipartFormDataUtil;
  */
 public class VerifyAccountController extends BaseController {
     
-    private final IUseCase useCase;
+    private final IUsecase useCase;
     
     @Override
     public void executeImpl() {
@@ -59,7 +59,7 @@ public class VerifyAccountController extends BaseController {
         
     }
     
-    private VerifyAccountController(IUseCase useCase) {
+    private VerifyAccountController(IUsecase useCase) {
         this.useCase = useCase;
     }
     
