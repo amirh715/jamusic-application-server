@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jamapplicationserver.modules.library.infra.DTOs.entities;
+package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
 import com.jamapplicationserver.core.domain.*;

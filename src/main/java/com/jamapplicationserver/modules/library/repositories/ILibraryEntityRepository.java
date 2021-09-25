@@ -41,8 +41,4 @@ public interface ILibraryEntityRepository {
     
     LibraryEntityQueryScope<LibraryEntity> fetchByFilters(LibraryEntityFilters filters);
     
-    LibraryEntity toDomain(LibraryEntityModel model);
-    
-    LibraryEntityModel toPersistence(LibraryEntity entity);
-    
 }

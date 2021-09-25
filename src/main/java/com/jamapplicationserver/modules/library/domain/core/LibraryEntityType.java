@@ -17,6 +17,10 @@ public enum LibraryEntityType {
     
     private final String type;
 
+    private LibraryEntityType(String type) {
+        this.type = type;
+    }
+
     public String getValue() {
         return this.type;
     }
@@ -33,6 +37,10 @@ public enum LibraryEntityType {
         return type.equals("B");
     }
     
+    public boolean isArtwork() {
+        return (type.equals("A") || type.equals("T"));
+    }
+    
     public boolean isTrack() {
         return type.equals("T");
     }
@@ -41,17 +49,14 @@ public enum LibraryEntityType {
         return type.equals("A");
     }
     
-    private LibraryEntityType(String type) {
-        this.type = type;
-    }
-    
     public static final Result<LibraryEntityType> create(String value) {
         
         try {
             
             if(value == null) return Result.fail(new ValidationError("Library entity type is required"));
             
-            final LibraryEntityType type = LibraryEntityType.valueOf(value.toUpperCase());
+            final LibraryEntityType type =
+                    LibraryEntityType.valueOf(value.toUpperCase());
             
             if(type == null) return Result.fail(new ValidationError("Library entity type is invalid"));
             

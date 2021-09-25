@@ -5,8 +5,11 @@
  */
 package com.jamapplicationserver.modules.library.infra.services;
 
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.GenreDetails;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntitySummary;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.PlaylistDetails;
 import java.util.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.repositories.LibraryEntityFilters;
 import com.jamapplicationserver.infra.Persistence.database.Models.*;
@@ -18,6 +21,8 @@ import com.jamapplicationserver.infra.Persistence.database.Models.*;
 public interface ILibraryQueryService {
     
     Set<LibraryEntityDetails> getLibraryEntitiesByFilters(LibraryEntityFilters filters);
+    
+//    Set<LibraryEntityDetaisl> getLibraryEntitiesByFilters(LibraryEntityFilters filters, AccessorRole role);
     
     Set<LibraryEntitySummary> getLibraryEntitiesSummaryByFilters(LibraryEntityFilters filters);
     

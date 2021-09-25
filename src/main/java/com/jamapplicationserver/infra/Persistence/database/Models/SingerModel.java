@@ -18,6 +18,7 @@ public class SingerModel extends ArtistModel {
     
     public SingerModel() {
         super();
+        this.bands = new HashSet<>();
     }
     
     @ManyToMany(mappedBy="members")

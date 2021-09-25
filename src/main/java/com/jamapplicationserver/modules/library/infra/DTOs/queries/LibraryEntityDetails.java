@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jamapplicationserver.modules.library.infra.DTOs.entities;
+package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
+import java.time.Duration;
 import com.jamapplicationserver.core.domain.IDTO;
 import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import java.util.stream.Collectors;
@@ -22,11 +23,11 @@ public abstract class LibraryEntityDetails implements IDTO {
     public final boolean published;
     public final Set<String> tags;
     public final Set<GenreIdAndTitle> genres;
-    public final long monthlyPlayedCount;
-    public final double rate;
+    public final String monthlyPlayedCount;
+    public final String rate;
     public final String flagNote;
-    public final long totalPlayedCount;
-    public final long duration;
+    public final String totalPlayedCount;
+    public final String duration;
     
     public LibraryEntityDetails(
             String id,
@@ -47,11 +48,11 @@ public abstract class LibraryEntityDetails implements IDTO {
         this.published = published;
         this.tags = tags;
         this.genres = genres;
-        this.monthlyPlayedCount = monthlyPlayedCount;
-        this.rate = rate;
+        this.monthlyPlayedCount = Long.toString(totalPlayedCount);
+        this.rate = Double.toString(rate);
         this.flagNote = flagNote;
-        this.totalPlayedCount = totalPlayedCount;
-        this.duration = duration;
+        this.totalPlayedCount = Long.toString(totalPlayedCount);
+        this.duration = 0;
     }
     
     public static LibraryEntityDetails create(LibraryEntityModel entity) {
@@ -75,7 +76,7 @@ public abstract class LibraryEntityDetails implements IDTO {
                             entity.isPublished(),
                             entity.getTags(),
                             genres,
-                            0,
+                            entity.getTotalPlayedCount(),
                             entity.getRate(),
                             entity.getFlagNote(),
                             entity.getTotalPlayedCount(),
@@ -97,7 +98,7 @@ public abstract class LibraryEntityDetails implements IDTO {
                             entity.isPublished(),
                             entity.getTags(),
                             genres,
-                            0, // monthly played count
+                            entity.getTotalPlayedCount(),
                             entity.getRate(),
                             entity.getFlagNote(),
                             entity.getTotalPlayedCount(),
@@ -115,7 +116,7 @@ public abstract class LibraryEntityDetails implements IDTO {
                             entity.isPublished(),
                             entity.getTags(),
                             genres,
-                            0, // monthly played count
+                            entity.getTotalPlayedCount(),
                             entity.getRate(),
                             entity.getFlagNote(),
                             entity.getTotalPlayedCount(),
@@ -136,7 +137,7 @@ public abstract class LibraryEntityDetails implements IDTO {
                             entity.isPublished(),
                             entity.getTags(),
                             genres,
-                            0, // monthly played count
+                            entity.getTotalPlayedCount(),
                             entity.getRate(),
                             entity.getFlagNote(),
                             entity.getTotalPlayedCount(),

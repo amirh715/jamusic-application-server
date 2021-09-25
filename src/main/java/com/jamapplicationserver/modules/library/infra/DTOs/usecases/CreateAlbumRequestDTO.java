@@ -26,7 +26,7 @@ public class CreateAlbumRequestDTO implements IDTO {
     public final String creatorId;
     public final String recordLabel;
     public final String producer;
-    public final Integer releaseYear;
+    public final String releaseDate;
     
     public final InputStream image;
     
@@ -40,7 +40,7 @@ public class CreateAlbumRequestDTO implements IDTO {
             String creatorId,
             String recordLabel,
             String producer,
-            String releaseYear,
+            String releaseDate,
             InputStream image
     ) {
         
@@ -55,7 +55,7 @@ public class CreateAlbumRequestDTO implements IDTO {
         this.creatorId = creatorId;
         this.recordLabel = recordLabel;
         this.producer = producer;
-        this.releaseYear = Integer.parseInt(releaseYear);
+        this.releaseDate = releaseDate;
         this.image = image;
         
     }

@@ -6,13 +6,14 @@
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import javax.persistence.*;
+import java.time.*;
+import com.jamapplicationserver.infra.Persistence.database.AttributeConverters.YearMonthDateAttributeConverter;
 
 /**
  *
  * @author dada
  */
 @Entity
-//@MappedSuperclass
 public abstract class ArtworkModel extends LibraryEntityModel {
     
     @Column(name="record_label")
@@ -21,10 +22,11 @@ public abstract class ArtworkModel extends LibraryEntityModel {
     @Column(name="record_producer")
     private String producer;
     
-    @Column(name="release_year")
-    private Integer releaseYear;
+    @Column(name="release_date", columnDefinition="date")
+    @Convert(converter=YearMonthDateAttributeConverter.class)
+    private YearMonth releaseDate;
     
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     private ArtistModel artist;
     
     public String getRecordLabel() {
@@ -35,12 +37,12 @@ public abstract class ArtworkModel extends LibraryEntityModel {
         this.recordLabel = recordLabel;
     }
     
-    public Integer getReleaseYear() {
-        return this.releaseYear;
+    public YearMonth getReleaseDate() {
+        return this.releaseDate;
     }
     
-    public void setReleaseYear(int releaseYear) {
-        this.releaseYear = releaseYear;
+    public void setReleaseDate(YearMonth releaseDate) {
+        this.releaseDate = releaseDate;
     }
     
     public String getProducer() {

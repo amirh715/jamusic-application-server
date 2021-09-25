@@ -5,19 +5,20 @@
  */
 package com.jamapplicationserver.modules.library.infra.services;
 
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.PlaylistDetails;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.GenreDetails;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntitySummary;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
 import java.util.*;
 import java.util.stream.*;
 import javax.persistence.*;
 import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.*;
+import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.library.repositories.LibraryEntityFilters;
 import java.time.LocalDateTime;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
 /**
  *
@@ -33,14 +34,53 @@ public class LibraryQueryService implements ILibraryQueryService {
         try {
             
             final CriteriaBuilder cb = em.getCriteriaBuilder();
+            
+            // fetch and cache associations of Band and Album
+            // ref: https://thorben-janssen.com/fetch-association-of-subclass/
+            {
+                // fetch and cache bands and their members
+                final CriteriaQuery<BandModel> cq = cb.createQuery(BandModel.class);
+                final Root<BandModel> root = cq.from(BandModel.class);
+                final Join members = (Join) root.fetch("members", JoinType.LEFT);
+                filters.type = LibraryEntityType.B;
+                final ArrayList<Predicate> predicates =
+                        buildCriteriaPredicates(cb, cq, filters);
+                cq.where(
+                        cb.and(
+                                predicates.toArray(
+                                        new Predicate[predicates.size()]
+                                )
+                        )
+                );
+                cq.multiselect(members);
+                em.createQuery(cq).getResultList();
+            }
+            
+            {
+                // fetch and cache albums and their tracks
+                final CriteriaQuery<AlbumModel> cq = cb.createQuery(AlbumModel.class);
+                final Root<AlbumModel> root = cq.from(AlbumModel.class);
+                final Join tracks = (Join) root.fetch("tracks", JoinType.LEFT);
+                filters.type = LibraryEntityType.A;
+                final ArrayList<Predicate> predicates =
+                        buildCriteriaPredicates(cb, cq, filters);
+                cq.where(
+                        cb.and(
+                                predicates.toArray(
+                                        new Predicate[predicates.size()]
+                                )
+                        )
+                );
+                cq.multiselect(tracks);
+                em.createQuery(cq).getResultList();
+            }            
+            
             final CriteriaQuery<LibraryEntityModel> cq = cb.createQuery(LibraryEntityModel.class);
-            final Root<LibraryEntityModel> root = cq.from(LibraryEntityModel.class);
             
             final ArrayList<Predicate> predicates =
                     buildCriteriaPredicates(
                             cb,
                             cq,
-                            root,
                             filters
                     );
             
@@ -59,8 +99,7 @@ public class LibraryQueryService implements ILibraryQueryService {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
-            e.printStackTrace();
-            return null;
+            throw e;
         }
         
     }
@@ -78,7 +117,6 @@ public class LibraryQueryService implements ILibraryQueryService {
                     buildCriteriaPredicates(
                             cb,
                             cq,
-                            root,
                             filters
                     );
             
@@ -163,7 +201,7 @@ public class LibraryQueryService implements ILibraryQueryService {
         try {
             
             final List<GenreModel> genres =
-                    em.createQuery("SELECT genre FROM GenreModel genre")
+                    em.createQuery("SELECT genre FROM GenreModel genre WHERE genre.parentGenre IS NULL", GenreModel.class)
                     .getResultList();
             
             return genres
@@ -232,18 +270,42 @@ public class LibraryQueryService implements ILibraryQueryService {
     
     private ArrayList<Predicate> buildCriteriaPredicates(
             CriteriaBuilder cb,
-            CriteriaQuery<LibraryEntityModel> cq,
-            Root<LibraryEntityModel> root,
+            CriteriaQuery cq,
             LibraryEntityFilters filters
     ) {
         
-        cq.select(root);
-        
-        cq.orderBy();
-        
         List<Predicate> predicates = new ArrayList<>();
         
+        Root<LibraryEntityModel> root = null;
+        
         if(filters != null) {
+            
+            // entity type
+            if(filters.type != null) {
+                final LibraryEntityType type = filters.type;
+                if(type.isArtist()) { // type: ArtistModel
+                    if(type.isBand())
+                        root = cq.from(BandModel.class);
+                    else
+                        root = cq.from(SingerModel.class);
+                } else { // type: ArtworkModel
+                    if(type.isAlbum())
+                        root = cq.from(AlbumModel.class);
+                    else
+                        root = cq.from(TrackModel.class);
+                }
+            }
+            
+            // artist's artworks
+            if(filters.artistId != null) {
+                root = cq.from(ArtworkModel.class);
+                predicates.add(
+                        cb.equal(
+                                root.get("artist").get("id"),
+                                filters.artistId.toValue()
+                        )
+                );
+            }
 
             // searchTerm
             if(filters.searchTerm != null) {
@@ -253,13 +315,6 @@ public class LibraryQueryService implements ILibraryQueryService {
                             cb.like(root.get("description"), toSearchPattern(filters.searchTerm)),
                             cb.like(root.get("tags"), toSearchPattern(filters.searchTerm))
                         )
-                );
-            }
-            
-            // entity type
-            if(filters.type != null) {
-                predicates.add(
-                        cb.equal(root.get("entityType"), filters.type)
                 );
             }
             
@@ -289,6 +344,61 @@ public class LibraryQueryService implements ILibraryQueryService {
                     predicates.add(cb.isNull(root.get("imagePath")));
                 
             }
+            
+            // genres
+            if(filters.genreIds != null) {
+                Set<UUID> genreIds =
+                        filters
+                                .genreIds
+                                .stream()
+                                .map(genreId -> genreId.toValue())
+                                .collect(Collectors.toSet());
+                predicates.add(
+                        root.get("genres").in(genreIds)
+                );
+            }
+            
+            // rate from to
+            if(filters.rateFrom != null || filters.rateTo != null) {
+                final double from =
+                        filters.rateFrom != null ?
+                        filters.rateFrom.getValue() :
+                        0.0;
+                final double to =
+                        filters.rateTo != null ?
+                        filters.rateTo.getValue() :
+                        5.0;
+                predicates.add(
+                        cb.between(
+                                root.get("rate"),
+                                from,
+                                to
+                        )
+                );
+            }
+            
+            // total played count from to
+            if(filters.totalPlayedCountFrom != null || filters.totalPlayedCountTo != null) {
+                final long from =
+                        filters.totalPlayedCountFrom != null || filters.totalPlayedCountFrom < 0 ?
+                        filters.totalPlayedCountFrom :
+                        0;
+                final long to =
+                        filters.totalPlayedCountTo != null || filters.totalPlayedCountTo > Long.MAX_VALUE ?
+                        filters.totalPlayedCountTo :
+                        Long.MAX_VALUE;
+                predicates.add(
+                        cb.between(root.get("totalPlayedCount"), from, to)
+                );
+            }
+            
+            // creator Id
+            if(filters.creatorId != null)
+                predicates.add(cb.equal(root.get("creator").get("id"), filters.creatorId));
+            
+            // updater Id
+            if(filters.updaterId != null)
+                predicates.add(cb.equal(root.get("updater").get("id"), filters.updaterId));
             
             // createdAt from till
             if(
@@ -334,28 +444,13 @@ public class LibraryQueryService implements ILibraryQueryService {
                 );
             }
             
-            // genres
-            if(filters.genreIds != null) {
-                Set<UUID> genreIds =
-                        filters
-                                .genreIds
-                                .stream()
-                                .map(genreId -> genreId.toValue())
-                                .collect(Collectors.toSet());
-                predicates.add(
-                        root.get("genres").in(genreIds)
-                );
-            }
-            
-            // creator Id
-            if(filters.creatorId != null)
-                predicates.add(cb.equal(root.get("creator").get("id"), filters.creatorId));
-            
-            // updater Id
-            if(filters.updaterId != null)
-                predicates.add(cb.equal(root.get("updater").get("id"), filters.updaterId));
-            
-        } // if filters != null ENDS
+        }
+        
+        final Join genres = (Join) root.fetch("genres", JoinType.LEFT);
+        
+        cq.multiselect(root, genres);
+        
+        cq.orderBy();
         
         return new ArrayList(predicates);
     }

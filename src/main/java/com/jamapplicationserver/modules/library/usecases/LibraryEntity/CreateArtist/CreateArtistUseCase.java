@@ -118,7 +118,8 @@ public class CreateArtistUseCase implements IUsecase<CreateArtistRequestDTO, Str
             // save image
             if(request.image != null) {
                 final Path path = this.persistence.buildPath(
-                        artist.getClass()
+                        artist.getClass(),
+                        image.format.getValue()
                 );
                 artist.changeImage(path, creatorId);
                 this.persistence.write(image, path);

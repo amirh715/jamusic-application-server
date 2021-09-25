@@ -8,7 +8,6 @@ package com.jamapplicationserver.modules.library.infra.serializers;
 import java.lang.reflect.Type;
 import com.google.gson.*;
 import com.jamapplicationserver.modules.library.domain.core.Genre;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.*;
 
 /**
  *

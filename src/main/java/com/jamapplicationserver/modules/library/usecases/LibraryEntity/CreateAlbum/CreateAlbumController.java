@@ -50,7 +50,7 @@ public class CreateAlbumController extends BaseController {
                             fields.get("tags"),
                             fields.get("flagNote"),
                             fields.get("artistId"),
-                            this.subjectId,
+                            subjectId,
                             fields.get("recordLabel"),
                             fields.get("producer"),
                             fields.get("releaseYear"),
@@ -64,18 +64,18 @@ public class CreateAlbumController extends BaseController {
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
             
             final Album album = (Album) result.getValue();
             
-            this.ok(album);
+            ok(album);
             
         } catch(Exception e) {
             e.printStackTrace();

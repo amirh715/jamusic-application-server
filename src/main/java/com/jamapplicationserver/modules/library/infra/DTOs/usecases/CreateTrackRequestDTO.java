@@ -25,7 +25,7 @@ public class CreateTrackRequestDTO implements IDTO {
     public final String creatorId;
     public final String recordLabel;
     public final String producer;
-    public final Integer releaseYear;
+    public final String releaseDate;
     
     public final InputStream image;
     public InputStream audio;
@@ -46,7 +46,7 @@ public class CreateTrackRequestDTO implements IDTO {
             String artistId,
             String recordLabel,
             String producer,
-            String releaseYear,
+            String releaseDate,
             InputStream image,
             InputStream audio,
             String albumId
@@ -64,7 +64,7 @@ public class CreateTrackRequestDTO implements IDTO {
         this.artistId = artistId;
         this.recordLabel = recordLabel;
         this.producer = producer;
-        this.releaseYear = Integer.parseInt(releaseYear);
+        this.releaseDate = releaseDate;
         this.image = image;
         this.audio = audio;
         this.albumId = albumId;

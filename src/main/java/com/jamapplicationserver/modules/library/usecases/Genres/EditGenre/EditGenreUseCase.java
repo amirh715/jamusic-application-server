@@ -13,6 +13,7 @@ import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.usecases.EditGenreRequestDTO;
+import com.jamapplicationserver.infra.Persistence.database.UpdaterOrCreatorDoesNotExistException;
 import org.hibernate.exception.ConstraintViolationException;
 
 /**
@@ -71,6 +72,8 @@ public class EditGenreUseCase implements IUsecase<EditGenreRequestDTO, String> {
             
         } catch(ConstraintViolationException e) {
             return Result.fail(new GenreAlreadyExistsError());
+        } catch(UpdaterOrCreatorDoesNotExistException e) {
+            return Result.fail(new UpdaterOrCreatorDoesNotExistError());
         } catch(Exception e) {
             throw new GenericAppException(e);
         }

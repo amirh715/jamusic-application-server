@@ -54,42 +54,10 @@ public class AppMain {
         before("/*", (req, res) -> req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp")));
                 
         post("/test", (req, res) -> {
-                
-//            try {
-//                
+
             final EntityManager em = EntityManagerFactoryHelper.getInstance().getEntityManager();
             
-            em.createQuery("SELECT u FROM UserModel u", UserModel.class)
-                    .getResultStream()
-                    .forEach(user -> {
-                        System.out.println("#####");
-                        System.out.println(user.getPlayedTracks());
-                    });
-//                
-//                final List<GenreModel> genres = 
-//                        em.createQuery("SELECT g FROM GenreModel g")
-//                        .getResultList();
-//                
-//                final StringBuilder builder = new StringBuilder();
-//                
-//                genres.forEach(g -> {
-//                    int tab = 2;
-//                    System.out.println("Genre : " + g.getTitle());
-//                    builder.append("Genre title: " + g.getTitle() + "\n");
-//                    g.getSubGenres().forEach(gg -> {
-//                        int tt = tab * 2;
-//                        System.out.println("SubGenre : " + gg.getTitle());
-//                        builder.append("-".repeat(tt));
-//                        builder.append("Sub-genre title : " + gg.getTitle() + "\n");
-//                    });
-//                });
-//                
-//                return builder.toString();
-//                        
-//            } catch(Exception e) {
-//                e.printStackTrace();
-//                return e.getMessage();
-//            }
+            
             
             return "";
         });

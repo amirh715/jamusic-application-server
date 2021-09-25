@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jamapplicationserver.modules.library.infra.DTOs.entities;
+package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
 
@@ -26,7 +26,7 @@ public class BandDetails extends ArtistDetails {
             double rate,
             String flagNote,
             long totalPlayedCount,
-            long duration,
+            String duration,
             String instagramId,
             Set<LibraryEntityIdAndTitle> members
     ) {

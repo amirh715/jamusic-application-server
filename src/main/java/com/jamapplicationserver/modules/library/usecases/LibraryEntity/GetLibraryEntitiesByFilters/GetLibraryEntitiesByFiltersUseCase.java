@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibraryEntitiesByFilters;
 
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.jamapplicationserver.core.domain.IUsecase;
@@ -13,7 +14,6 @@ import com.jamapplicationserver.modules.library.infra.DTOs.usecases.GetLibraryEn
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.*;
 import com.jamapplicationserver.modules.library.infra.services.*;
 
 /**
@@ -33,32 +33,91 @@ public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEn
     @Override
     public Result execute(GetLibraryEntitiesByFiltersRequestDTO request) throws GenericAppException {
         
+        System.out.println("GetLibraryEntitiesByFiltersUsecase");
+        
         try {
             
             final ArrayList<Result> combinedProps = new ArrayList<>();
                         
+            final Result<LibraryEntityType> typeOrError = LibraryEntityType.create(request.type);
             final String searchTerm = request.searchTerm != null ? request.searchTerm : null;
+            final Boolean published = request.published != null ? request.published : null;
+            final Boolean flagged = request.flagged != null ? request.flagged : null;
+            final Boolean hasImage = request.hasImage != null ? request.hasImage : null;
+            final Result<Set<UniqueEntityId>> genreIdsOrError = UniqueEntityId.createFromStrings(request.genreIds);
+            final Result<Rate> rateFromOrError = Rate.create(request.rateFrom);
+            final Result<Rate> rateToOrError = Rate.create(request.rateTo);
+            
+            final Result<UniqueEntityId> albumIdOrError = UniqueEntityId.createFromString(request.albumId);
+            final Result<UniqueEntityId> artistIdOrError = UniqueEntityId.createFromString(request.artistId);
+            final Result<ReleaseDate> releaseDateFromOrError = ReleaseDate.create(request.releaseDateFrom);
+            final Result<ReleaseDate> releaseDateTillOrError = ReleaseDate.create(request.releaseDateTill);
+            
+            final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromString(request.creatorId);
+            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             final Result<DateTime> createdAtFromOrError = DateTime.create(request.createdAtFrom);
             final Result<DateTime> createdAtTillOrError = DateTime.create(request.createdAtTill);
             final Result<DateTime> lastModifiedAtFromOrError = DateTime.create(request.lastModifiedAtFrom);
             final Result<DateTime> lastModifiedAtTillOrError = DateTime.create(request.lastModifiedAtTill);
-            final Result<LibraryEntityType> typeOrError = LibraryEntityType.create(request.type);
-            final Result<Set<UniqueEntityId>> genreIdsOrError = UniqueEntityId.createFromStrings(request.genreIds);
-            final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromString(request.creatorId);
-            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             
+            if(request.type != null) combinedProps.add(typeOrError);
+            if(request.rateFrom != null) combinedProps.add(rateFromOrError);
+            if(request.rateTo != null) combinedProps.add(rateToOrError);
+            if(request.rateFrom != null) combinedProps.add(rateFromOrError);
+            if(request.genreIds != null) combinedProps.add(genreIdsOrError);
+            
+            if(request.albumId != null) combinedProps.add(albumIdOrError);
+            if(request.artistId != null) combinedProps.add(artistIdOrError);
+            if(request.releaseDateFrom != null) combinedProps.add(releaseDateFromOrError);
+            if(request.releaseDateTill != null) combinedProps.add(releaseDateTillOrError);
+            
+            if(request.creatorId != null) combinedProps.add(creatorIdOrError);
+            if(request.updaterId != null) combinedProps.add(updaterIdOrError);
             if(request.createdAtFrom != null) combinedProps.add(createdAtFromOrError);
             if(request.createdAtTill != null) combinedProps.add(createdAtTillOrError);
             if(request.lastModifiedAtFrom != null) combinedProps.add(lastModifiedAtFromOrError);
             if(request.lastModifiedAtTill != null) combinedProps.add(lastModifiedAtTillOrError);
-            if(request.type != null) combinedProps.add(typeOrError);
-            if(request.genreIds != null) combinedProps.add(genreIdsOrError);
-            if(request.creatorId != null) combinedProps.add(creatorIdOrError);
-            if(request.updaterId != null) combinedProps.add(updaterIdOrError);
             
             final Result combinedPropsResult = Result.combine(combinedProps);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
+            final LibraryEntityType type =
+                    request.type != null ?
+                    typeOrError.getValue() : null;
+            final Set<UniqueEntityId> genreIds =
+                    request.genreIds != null && !request.genreIds.isEmpty() ?
+                    genreIdsOrError.getValue() :
+                    null;
+            final Rate rateFrom =
+                    request.rateFrom != null ?
+                    rateFromOrError.getValue() : null;
+            final Rate rateTo =
+                    request.rateTo != null ?
+                    rateToOrError.getValue() : null;
+            final Long totalPlayedCountFrom =
+                    request.totalPlayedCountFrom;
+            final Long totalPlayedCountTo =
+                    request.totalPlayedCountTo;
+            
+            final UniqueEntityId albumId =
+                    request.albumId != null ?
+                    albumIdOrError.getValue() : null;
+            final UniqueEntityId artistId =
+                    request.artistId != null ?
+                    artistIdOrError.getValue() : null;
+            final ReleaseDate releaseDateFrom =
+                    request.releaseDateFrom != null ?
+                    releaseDateFromOrError.getValue() : null;
+            final ReleaseDate releaseDateTill =
+                    request.releaseDateTill != null ?
+                    releaseDateTillOrError.getValue() : null;
+            
+            final UniqueEntityId creatorId =
+                    request.creatorId != null ?
+                    creatorIdOrError.getValue() : null;
+            final UniqueEntityId updaterId =
+                    request.updaterId != null ?
+                    updaterIdOrError.getValue() : null;
             final DateTime createdAtFrom =
                     request.createdAtFrom != null ?
                     createdAtFromOrError.getValue() : null;
@@ -71,36 +130,28 @@ public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEn
             final DateTime lastModifiedAtTill =
                     request.lastModifiedAtTill != null ?
                     lastModifiedAtTillOrError.getValue() : null;
-            final LibraryEntityType type =
-                    request.type != null ?
-                    typeOrError.getValue() : null;
-            
-            final Set<UniqueEntityId> genreIds =
-                    request.genreIds != null && !request.genreIds.isEmpty() ?
-                    genreIdsOrError.getValue() :
-                    null;
-            final UniqueEntityId creatorId =
-                    request.creatorId != null ?
-                    creatorIdOrError.getValue() : null;
-            final UniqueEntityId updaterId =
-                    request.updaterId != null ?
-                    updaterIdOrError.getValue() : null;
             
             final LibraryEntityFilters filters = new LibraryEntityFilters(
+                    type,
+                    searchTerm,
+                    published,
+                    flagged,
+                    hasImage,
+                    genreIds,
+                    rateFrom,
+                    rateTo,
+                    totalPlayedCountFrom,
+                    totalPlayedCountTo,
+                    albumId,
+                    artistId,
+                    releaseDateFrom,
+                    releaseDateTill,
+                    creatorId,
+                    updaterId,
                     createdAtFrom,
                     createdAtTill,
                     lastModifiedAtFrom,
-                    lastModifiedAtTill,
-                    searchTerm,
-                    type,
-                    request.rateFrom,
-                    request.rateTo,
-                    request.published,
-                    request.flagged,
-                    request.hasImage,
-                    genreIds,
-                    creatorId,
-                    updaterId
+                    lastModifiedAtTill
             );
             
             final Set<LibraryEntityDetails> entities =

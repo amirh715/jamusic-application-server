@@ -6,9 +6,9 @@
 package com.jamapplicationserver.modules.library.domain.Album;
 
 import java.util.*;
+import java.util.stream.*;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.*;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.core.domain.*;
@@ -35,7 +35,7 @@ public class Album extends Artwork {
             UniqueEntityId creatorId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             Artist artist
     ) {
         super(
@@ -63,7 +63,7 @@ public class Album extends Artwork {
             UniqueEntityId creatorId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             Artist artist,
             Set<Track> tracks
     ) {
@@ -101,7 +101,7 @@ public class Album extends Artwork {
             UniqueEntityId updaterId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             Artist artist,
             Set<Track> tracks
     ) {
@@ -138,7 +138,7 @@ public class Album extends Artwork {
             UniqueEntityId creatorId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             Artist artist
     ) {
         
@@ -156,6 +156,28 @@ public class Album extends Artwork {
                 releaseYear,
                 artist
         );
+        
+        if(instance.genres != null) {
+            
+            if(instance.artist != null && instance.artist.getGenres() != null) {
+                
+                final boolean areAlbumGenresThoseOfArtistsGenres =
+                        instance.genres.getValue()
+                        .stream()
+                        .allMatch(albumGenre ->
+                                instance.artist.getGenres().getValue()
+                                .stream()
+                                .anyMatch(artistGenre ->
+                                        artistGenre.equals(albumGenre) ||
+                                        artistGenre.isSubGenreOf(albumGenre)
+                                )
+                        );
+                if(!areAlbumGenresThoseOfArtistsGenres)
+                    return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+                
+            }
+            
+        }
         
         return Result.ok(instance);
         
@@ -179,7 +201,7 @@ public class Album extends Artwork {
             UUID updaterId,
             String recordLabel,
             String producer,
-            Integer releaseYear,
+            YearMonth releaseDate,
             Artist artist,
             Set<Track> tracks
     ) {
@@ -199,7 +221,7 @@ public class Album extends Artwork {
         final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromUUID(updaterId);
         final Result<RecordLabel> recordLabelOrError = RecordLabel.create(recordLabel);
         final Result<RecordProducer> producerOrError = RecordProducer.create(producer);
-        final Result<ReleaseYear> releaseYearOrError = ReleaseYear.create(releaseYear);
+        final Result<ReleaseDate> releaseDateOrError = ReleaseDate.create(releaseDate);
         
         combinedProps.add(idOrError);
         combinedProps.add(titleOrError);
@@ -212,7 +234,7 @@ public class Album extends Artwork {
         if(genres != null) combinedProps.add(genreListOrError);
         if(recordLabel != null) combinedProps.add(recordLabelOrError);
         if(producer != null) combinedProps.add(producerOrError);
-        if(releaseYear != null) combinedProps.add(releaseYearOrError);
+        if(releaseDate != null) combinedProps.add(releaseDateOrError);
         
         final Result combinedPropsResult = Result.combine(combinedProps);
         if(combinedPropsResult.isFailure) return combinedPropsResult;
@@ -235,7 +257,7 @@ public class Album extends Artwork {
                 updaterIdOrError.getValue(),
                 recordLabel != null ? recordLabelOrError.getValue() : null,
                 producer != null ? producerOrError.getValue() : null,
-                releaseYear != null ? releaseYearOrError.getValue() : null,
+                releaseDate != null ? releaseDateOrError.getValue() : null,
                 artist,
                 tracks
         );
@@ -243,30 +265,29 @@ public class Album extends Artwork {
         // set tracks album
         if(tracks != null)
             tracks.forEach(track -> track.setAlbum(instance));
-
-        //
-        if(
-                artist != null && artist.getGenres() != null
-        ) {
+        
+        if(instance.genres != null) {
             
-            // album's genres must be a subset of album's artist genres
-            for(Genre genre : artist.getGenres().getValue()) {
+            if(instance.artist != null && instance.artist.getGenres() != null) {
 
-                final boolean doesGenreMatchOneOfArtistsGenres =
-                        artist.getGenres()
-                        .getValue()
+                final Set<Genre> albumGenres =
+                        instance.genres.getValue()
                         .stream()
-                        .anyMatch(genreOfArtist -> {
-                            return
-                                    genreOfArtist.equals(genre) ||
-                                    genreOfArtist.isSubGenreOf(genre);
-                        });
-
-                if(!doesGenreMatchOneOfArtistsGenres)
-                    return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
-
+                        .dropWhile(albumGenre ->
+                                instance.artist.getGenres().getValue()
+                                .stream()
+                                .allMatch(artistGenre ->
+                                        !artistGenre.equals(albumGenre) ||
+                                        !artistGenre.isSubGenreOf(albumGenre)
+                                )
+                        )
+                        .collect(Collectors.toSet());
+                
+                if(!albumGenres.isEmpty())
+                    instance.genres = GenreList.create(albumGenres).getValue();
+                
             }
-
+            
         }
         
         return Result.ok(instance);
@@ -274,13 +295,13 @@ public class Album extends Artwork {
     
     @Override
     public void publish() {
-        if(this.isPublished()) return;
-        if(this.tracks.isEmpty() || !this.artist.isPublished())
-            this.archive();
+        if(isPublished()) return;
+        if(tracks.isEmpty() || !artist.isPublished())
+            archive();
         else {
-            this.published = true;
-            this.tracks.forEach(track -> track.publish());
-            this.modified();
+            published = true;
+            tracks.forEach(track -> track.publish());
+            modified();
         }
     }
     
@@ -292,7 +313,7 @@ public class Album extends Artwork {
     
     @Override
     public void archive() {
-        if(!this.isPublished()) return;
+        if(!isPublished()) return;
         published = false;
         tracks.forEach(track -> track.archive());
         modified();
@@ -300,7 +321,7 @@ public class Album extends Artwork {
     
     @Override
     public void archive(UniqueEntityId updaterId) {
-        this.archive();
+        archive();
         this.updaterId = updaterId;
     }
     
@@ -318,7 +339,7 @@ public class Album extends Artwork {
             Flag flag,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             UniqueEntityId updaterId
     ) {
         
@@ -331,26 +352,28 @@ public class Album extends Artwork {
         this.releaseYear = releaseYear != null ? releaseYear : this.releaseYear;
 
         if(genres != null) {
-            // album's genres must be a subset of album's artist genres
-            for(Genre genre : genres.getValue()) {
-
-                final boolean doesGenreMatchOneOfArtistsGenres =
-                        artist.getGenres()
-                        .getValue()
+            
+            if(artist != null && artist.getGenres() != null) {
+                
+                final boolean areAlbumGenresThoseOfArtistsGenres =
+                        genres.getValue()
                         .stream()
-                        .anyMatch(genreOfArtist -> {
-                            return
-                                    genreOfArtist.equals(genre) ||
-                                    genreOfArtist.isSubGenreOf(genre);
-                        });
-
-                if(!doesGenreMatchOneOfArtistsGenres)
+                        .allMatch(albumGenre ->
+                                artist.getGenres().getValue()
+                                .stream()
+                                .anyMatch(artistGenre ->
+                                        artistGenre.equals(albumGenre) ||
+                                        artistGenre.isSubGenreOf(albumGenre)
+                                )
+                        );
+                if(!areAlbumGenresThoseOfArtistsGenres)
                     return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
-
+                
             }
+            
+            this.genres = genres;
+            
         }
-        
-        this.genres = genres;
 
         for(Track track : tracks) {
             track.setAlbum(this);
@@ -428,10 +451,6 @@ public class Album extends Artwork {
     
     public final Set<Track> getTracks() {
         return tracks;
-    }
-    
-    public final Artist getArtist() {
-        return artist;
     }
     
     @Override

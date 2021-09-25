@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.*;
 import com.jamapplicationserver.core.infra.QueryScope;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
@@ -30,18 +29,20 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class LibraryEntityRepository implements ILibraryEntityRepository {
     
-    private final EntityManager em;
+    private final EntityManagerFactory emf;
     
-    private LibraryEntityRepository(EntityManager em) {
-        this.em = em;
+    private LibraryEntityRepository(EntityManagerFactory emf) {
+        this.emf = emf;
     }
     
     @Override
     public LibraryEntityQueryScope<LibraryEntity> fetchById(UniqueEntityId id) {
         
+        final EntityManager em = emf.createEntityManager();
+        
         try {
             
-            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
             final CriteriaQuery<LibraryEntityModel> cq = cb.createQuery(LibraryEntityModel.class);
             final Root root = cq.from(LibraryEntityModel.class);
             
@@ -49,7 +50,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             predicates.add(cb.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
-                    this.em,
+                    em,
                     cb,
                     cq,
                     root,
@@ -58,8 +59,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             );
 
         } catch(Exception e) {
-            e.printStackTrace();
-            return null;
+            throw e;
         }
         
     }
@@ -67,9 +67,11 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Artist> fetchArtistById(UniqueEntityId id) {
         
+        final EntityManager em = emf.createEntityManager();
+        
         try {
             
-            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
             final CriteriaQuery<ArtistModel> cq = cb.createQuery(ArtistModel.class);
             final Root<ArtistModel> root = cq.from(ArtistModel.class);
             
@@ -77,7 +79,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             predicates.add(cb.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
-                    this.em,
+                    em,
                     cb,
                     cq,
                     root,
@@ -86,7 +88,6 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             );
             
         } catch(Exception e) {
-            e.printStackTrace();
             throw e;
         }
         
@@ -95,9 +96,11 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Artwork> fetchArtworkById(UniqueEntityId id) {
         
+        final EntityManager em = emf.createEntityManager();
+        
         try {
             
-            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
             final CriteriaQuery<ArtworkModel> cq = cb.createQuery(ArtworkModel.class);
             final Root<ArtworkModel> root = cq.from(ArtworkModel.class);
             
@@ -105,7 +108,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             predicates.add(cb.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
-                    this.em,
+                    em,
                     cb,
                     cq,
                     root,
@@ -114,7 +117,6 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             );
             
         } catch(Exception e) {
-            e.printStackTrace();
             throw e;
         }
         
@@ -123,9 +125,11 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Band> fetchBandById(UniqueEntityId id) {
         
+        final EntityManager em = emf.createEntityManager();
+        
         try {
             
-            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
             final CriteriaQuery<BandModel> cq = cb.createQuery(BandModel.class);
             final Root<BandModel> root = cb.createQuery().from(BandModel.class);
             
@@ -133,7 +137,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             predicates.add(cb.equal(root.get("id"), id.toValue()));
 
             return new LibraryEntityQueryScope(
-                    this.em,
+                    em,
                     cb,
                     cq,
                     root,
@@ -142,8 +146,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             );
             
         } catch(Exception e) {
-            e.printStackTrace();
-            return null;
+            throw e;
         }
         
     }
@@ -151,9 +154,11 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Singer> fetchSingerById(UniqueEntityId id) {
         
+        final EntityManager em = emf.createEntityManager();
+        
         try {
             
-            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
             final CriteriaQuery<SingerModel> cq = cb.createQuery(SingerModel.class);
             final Root<SingerModel> root = cq.from(SingerModel.class);
             
@@ -161,7 +166,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             predicates.add(cb.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
-                    this.em,
+                    em,
                     cb,
                     cq,
                     root,
@@ -170,8 +175,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             );
             
         } catch(Exception e) {
-            e.printStackTrace();
-            return null;
+            throw e;
         }
         
     }
@@ -179,9 +183,11 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Album> fetchAlbumById(UniqueEntityId id) {
         
+        final EntityManager em = emf.createEntityManager();
+        
         try {
             
-            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
             final CriteriaQuery<AlbumModel> cq = cb.createQuery(AlbumModel.class);
             final Root<AlbumModel> root = cq.from(AlbumModel.class);
             
@@ -189,7 +195,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             predicates.add(cb.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
-                    this.em,
+                    em,
                     cb,
                     cq,
                     root,
@@ -198,8 +204,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             );
             
         } catch(Exception e) {
-            e.printStackTrace();
-            return null;
+            throw e;
         }
         
     }
@@ -207,9 +212,11 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Track> fetchTrackById(UniqueEntityId id) {
         
+        final EntityManager em = emf.createEntityManager();
+        
         try {
             
-            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
             final CriteriaQuery<TrackModel> cq = cb.createQuery(TrackModel.class);
             final Root<TrackModel> root = cq.from(TrackModel.class);
             
@@ -217,7 +224,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             predicates.add(cb.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
-                    this.em,
+                    em,
                     cb,
                     cq,
                     root,
@@ -226,8 +233,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             );
             
         } catch(Exception e) {
-            e.printStackTrace();
-            return null;
+            throw e;
         }
         
     }
@@ -235,9 +241,11 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<LibraryEntity> fetchByFilters(LibraryEntityFilters filters) {
         
+        final EntityManager em = emf.createEntityManager();
+        
         try {
             
-            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
             final CriteriaQuery<LibraryEntityModel> cq = cb.createQuery(LibraryEntityModel.class);
             final Root<LibraryEntityModel> root = cq.from(LibraryEntityModel.class);
             
@@ -250,7 +258,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                     );
             
             return new LibraryEntityQueryScope(
-                    this.em,
+                    em,
                     cb,
                     cq,
                     root,
@@ -259,7 +267,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             );
             
         } catch(Exception e) {
-            return null;
+            throw e;
         }
         
     }
@@ -267,9 +275,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public void save(LibraryEntity entity) throws EntityNotFoundException, Exception {
         
+        final EntityManager em = emf.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
-        
-        System.out.println("Repository.save : " + entity.getClass().getSimpleName());
         
         try {
                                     
@@ -277,16 +284,13 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             
             tnx.begin();
             
-            model = this.toPersistence(entity);
+            model = toPersistence(entity, em);
             
-            if(this.exists(entity.getId())) {
+            if(exists(entity.getId())) {
                 em.merge(model);
             } else {
                 em.persist(model);
             }
-            
-            em.flush();
-            em.clear();
             
             tnx.commit();
 
@@ -302,6 +306,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             e.printStackTrace();
             tnx.rollback();
             throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -309,6 +315,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public void remove(LibraryEntity entity) {
         
+        final EntityManager em = emf.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         try {
@@ -316,7 +323,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             tnx.begin();
             
             final LibraryEntityModel model =
-                    this.em.find(LibraryEntityModel.class, entity.id.toValue());
+                    em.find(LibraryEntityModel.class, entity.id.toValue());
             
             if(entity instanceof Band) {
                 
@@ -345,7 +352,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                 
             }
             
-            this.em.remove(model);
+            em.remove(model);
             
             tnx.commit();
             
@@ -358,9 +365,11 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public boolean exists(UniqueEntityId id) {
         
+        final EntityManager em = emf.createEntityManager();
+        
         try {
             
-            final LibraryEntityModel model = this.em.find(LibraryEntityModel.class, id.toValue());
+            final LibraryEntityModel model = em.find(LibraryEntityModel.class, id.toValue());
             
             return model != null;
             
@@ -375,6 +384,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     }
     
     private Set<TrackModel> getSingleTracks() {
+        final EntityManager em = emf.createEntityManager();
         return
                 em.createNamedQuery("Artist_FetchSingleTracks", TrackModel.class)
                 .getResultList()
@@ -513,8 +523,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
         return new ArrayList(predicates);
     }
     
-    @Override
-    public LibraryEntity toDomain(LibraryEntityModel model) {
+//    @Override
+    public static LibraryEntity toDomain(LibraryEntityModel model, EntityManager em) {
         
         LibraryEntity entity;
         
@@ -554,7 +564,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                 final Set<Singer> members =
                         ((BandModel) model).getMembers()
                         .stream()
-                        .map(member -> (Singer) toDomain(member))
+                        .map(member -> (Singer) toDomain(member, em))
                         .collect(Collectors.toSet());
                 
                 entity = Band.reconstitute(
@@ -607,16 +617,16 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             
             Artist artist;
             if(model instanceof AlbumModel)
-                artist = (Artist) this.toDomain(((AlbumModel) model).getArtist());
+                artist = (Artist) toDomain(((AlbumModel) model).getArtist(), em);
             else
-                artist = (Artist) this.toDomain(((TrackModel) model).getArtist());
+                artist = (Artist) toDomain(((TrackModel) model).getArtist(), em);
             
             if(model instanceof AlbumModel) { // Album
                 
                 final Set<Track> tracks =
                         ((AlbumModel) model).getTracks()
                         .stream()
-                        .map(track -> (Track) this.toDomain(track))
+                        .map(track -> (Track) toDomain(track, em))
                         .collect(Collectors.toSet());
             
                 entity = Album.reconstitute(
@@ -637,7 +647,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                         model.getUpdater().getId(),
                         ((AlbumModel) model).getRecordLabel(),
                         ((AlbumModel) model).getProducer(),
-                        ((AlbumModel) model).getReleaseYear(),
+                        ((AlbumModel) model).getReleaseDate(),
                         artist,
                         tracks
                 ).getValue();
@@ -672,8 +682,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                             ((TrackModel) model).getAlbum().getUpdater().getId(),
                             ((TrackModel) model).getAlbum().getRecordLabel(),
                             ((TrackModel) model).getAlbum().getProducer(),
-                            ((TrackModel) model).getAlbum().getReleaseYear(),
-                            (Artist) this.toDomain(((TrackModel) model).getAlbum().getArtist()),
+                            ((TrackModel) model).getAlbum().getReleaseDate(),
+                            (Artist) toDomain(((TrackModel) model).getAlbum().getArtist(), em),
                             null
                     ).getValue();
 
@@ -696,7 +706,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                         model.getCreator().getId(),
                         ((TrackModel) model).getRecordLabel(),
                         ((TrackModel) model).getProducer(),
-                        ((TrackModel) model).getReleaseYear(),
+                        ((TrackModel) model).getReleaseDate(),
                         model.getUpdater().getId(),
                         ((TrackModel) model).getAudioPath(),
                         ((TrackModel) model).getFormat(),
@@ -713,8 +723,10 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
         return entity;
     }
     
-    @Override
-    public LibraryEntityModel toPersistence(LibraryEntity entity) {
+//    @Override
+    public static LibraryEntityModel toPersistence(LibraryEntity entity, EntityManager em) {
+        
+//        final EntityManager em = emf.createEntityManager();
      
         LibraryEntityModel model;
         if(entity instanceof Band)
@@ -766,13 +778,39 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
         if(genres != null && !genres.isEmpty())
             genres.forEach(genre -> model.addGenre(genre));
 
-
+        if(entity instanceof Artist) {
+            ((ArtistModel) model).setInstagramId(
+                    ((Artist) entity).getInstagramId() != null ?
+                    ((Artist) entity).getInstagramId().getValue()
+                            : null
+            );
+        }
+        
+        if(entity instanceof Artwork) {
+            ((ArtworkModel) model)
+                    .setRecordLabel(
+                            ((Artwork) entity).getRecordLabel() != null ?
+                                    ((Artwork) entity).getRecordLabel().getValue()
+                                    : null
+                    );
+            ((ArtworkModel) model)
+                    .setProducer(
+                            ((Artwork) entity).getProducer() != null ?
+                                    ((Artwork) entity).getProducer().getValue()
+                                    : null
+                    );
+            ((ArtworkModel) model).setReleaseDate(
+                    ((Artwork) entity).getReleaseYear() != null ?
+                            ((Artwork) entity).getReleaseYear().getValue()
+                            : null
+            );
+        }
+        
         if(entity instanceof Band) {
-            ((BandModel) model).setInstagramId(((Band) entity).getInstagramId().getValue());
             ((Band) entity).getMembers()
                 .forEach(member ->
                         ((BandModel) model).addMember(
-                                (SingerModel) toPersistence(member)
+                                (SingerModel) toPersistence(member, em)
                         )
                 );
             ((Band) entity).getAlbumsIds()
@@ -807,9 +845,10 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
         }
         
         if(entity instanceof Album) {
+            
             ((Album) entity).getTracks()
                     .forEach(track -> {
-                        ((AlbumModel) model).addTrack((TrackModel) toPersistence(track));
+                        ((AlbumModel) model).addTrack((TrackModel) toPersistence(track, em));
                     });
             ((AlbumModel) model).setArtist(
                     em.getReference(
@@ -862,13 +901,12 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     
     public static class LibraryEntityRepositoryHolder {
         
-        final static EntityManager em =
+        final static EntityManagerFactory emf =
                 EntityManagerFactoryHelper.getInstance()
-                .getFactory()
-                .createEntityManager();
+                .getFactory();
         
         private static final LibraryEntityRepository INSTANCE =
-                new LibraryEntityRepository(em);
+                new LibraryEntityRepository(emf);
         
     }
     

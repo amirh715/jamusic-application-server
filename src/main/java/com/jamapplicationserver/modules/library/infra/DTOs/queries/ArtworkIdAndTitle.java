@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jamapplicationserver.modules.library.infra.DTOs.entities;
+package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
@@ -11,22 +11,21 @@ import com.jamapplicationserver.infra.Persistence.database.Models.*;
  *
  * @author dada
  */
-public class LibraryEntityIdAndTitle {
+public class ArtworkIdAndTitle {
     
     public final String id;
     public final String title;
     
-    protected LibraryEntityIdAndTitle(String id, String title) {
+    protected ArtworkIdAndTitle(String id, String title) {
         this.id = id;
         this.title = title;
     }
     
-    public static final LibraryEntityIdAndTitle create(LibraryEntityModel model) {
-        return new LibraryEntityIdAndTitle(
-                model.getId().toString(),
-                model.getTitle()
+    public static final ArtworkIdAndTitle create(ArtworkModel artwork) {
+        return new ArtworkIdAndTitle(
+                artwork.getId().toString(),
+                artwork.getTitle()
         );
     }
-    
     
 }

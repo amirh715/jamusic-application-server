@@ -26,10 +26,10 @@ public abstract class ArtistModel extends LibraryEntityModel implements Serializ
     @Column(name="instagram_id")
     private String instagramId;
     
-    @OneToMany(mappedBy="artist")
+    @OneToMany(mappedBy="artist", fetch=FetchType.LAZY)
     private Set<AlbumModel> albums = new HashSet<AlbumModel>();
     
-    @OneToMany(mappedBy="artist")
+    @OneToMany(mappedBy="artist", fetch=FetchType.LAZY)
     private Set<TrackModel> tracks = new HashSet<TrackModel>();
     
     protected ArtistModel() {

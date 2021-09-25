@@ -19,6 +19,9 @@
 <!--        <Logger name="org.hibernate.type.descriptor.sql" level="TRACE" additivity="false">
             <AppenderRef ref="Console-Appender"/>
         </Logger>-->
+        <Logger name="org.hibernate.stat" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console-Appender"></AppenderRef>
+        </Logger>
         <Root level="info">
             <AppenderRef ref="Console-Appender"/>
         </Root>

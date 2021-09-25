@@ -35,12 +35,13 @@ public class MobileNo extends ValueObject<String> {
             if(!isValid) return Result.fail(new ValidationError("Mobile number is not correct"));
             
             final PhoneNumberUtil.PhoneNumberType type = phoneUtil.getNumberType(phoneNo);
-            if(!type.equals(PhoneNumberUtil.PhoneNumberType.MOBILE))
-                return Result.fail(new ValidationError("Mobile number is not correct"));
+            if(type.equals(PhoneNumberUtil.PhoneNumberType.FIXED_LINE))
+                return Result.fail(new ValidationError("Mobile number can not be a fixed line number"));
             
             return Result.ok(new MobileNo(phoneNo));
             
         } catch(NumberParseException e) {
+            e.printStackTrace();
             return Result.fail(new ValidationError("Mobile number is not correct"));
         }
         

@@ -44,7 +44,7 @@ public class PlaylistModel implements Serializable {
     )
     private Set<TrackModel> tracks;
     
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name="player_id")
     private UserModel player;
     

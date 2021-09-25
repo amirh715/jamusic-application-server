@@ -6,7 +6,6 @@
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.CreateTrack;
 
 import java.util.*;
-import java.util.stream.*;
 import java.nio.file.Path;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.repositories.*;
@@ -60,7 +59,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromString(request.creatorId);
             final Result<RecordLabel> recordLabelOrError = RecordLabel.create(request.recordLabel);
             final Result<RecordProducer> producerOrError = RecordProducer.create(request.producer);
-            final Result<ReleaseYear> releaseYearOrError = ReleaseYear.create(request.releaseYear);
+            final Result<ReleaseDate> releaseDateOrError = ReleaseDate.create(request.releaseDate);
             
             if(
                     (request.artistId == null && request.albumId == null) ||
@@ -87,6 +86,8 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                 combinedProps.add(artistIdOrError);
             if(request.albumId != null)
                 combinedProps.add(albumIdOrError);
+            if(request.releaseDate != null)
+                combinedProps.add(releaseDateOrError);
 
             final Result combinedPropsResult = Result.combine(combinedProps);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
@@ -111,8 +112,8 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             final RecordProducer producer =
                     request.producer != null ? producerOrError.getValue()
                     : null;
-            final ReleaseYear releaseYear =
-                    request.releaseYear != null ? releaseYearOrError.getValue()
+            final ReleaseDate releaseYear =
+                    request.releaseDate != null ? releaseDateOrError.getValue()
                     : null;
             final Lyrics lyrics =
                     request.lyrics != null ? lyricsOrError.getValue()
@@ -131,7 +132,30 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                     : null;
             final AudioStream audio = audioOrError.getValue();
             
-            final Path audioPath = this.persistence.buildPath(Track.class);
+            final Path audioPath = persistence.buildPath(Track.class, audio.format.getValue());
+            
+            Album album = null;
+            Artist artist = null;
+            
+            if(albumId != null) {
+                
+                album =
+                        repository.fetchAlbumById(albumId)
+                        .includeUnpublished()
+                        .getSingleResult();
+                if(album == null) return Result.fail(new AlbumDoesNotExistError());
+                
+                artist = album.getArtist();
+                
+            } else if(artistId != null) {
+                
+                artist =
+                        repository.fetchArtistById(artistId)
+                            .includeUnpublished()
+                            .getSingleResult();
+                if(artist == null) return Result.fail(new ArtistDoesNotExistError());
+                
+            }
             
             final Result<Track> trackOrError =
                     Track.create(
@@ -149,53 +173,31 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                             producer,
                             releaseYear,
                             lyrics,
-                            null,
-                            null
+                            artist,
+                            album
                     );
             if(trackOrError.isFailure) return trackOrError;
             
+            // write image to disk
+            if(image != null) {
+                final Path imagePath = persistence.buildPath(Track.class, image.format.getValue());
+                persistence.write(image, imagePath);
+            }
+            
+            // write audio to disk
+            persistence.write(audio, audioPath);
+            
             final Track track = trackOrError.getValue();
-            
-            Album album = null;
-            Artist artist = null;
-            
-            if(albumId != null) { // album track
-                
-                album =
-                        this.repository.fetchAlbumById(albumId)
-                        .includeUnpublished()
-                        .getSingleResult();
-                if(album == null) return Result.fail(new AlbumDoesNotExistError());
-                
+
+            if(album != null) {
                 final Result result = album.addTrack(track, creatorId);
                 if(result.isFailure) return result;
-                
-            } else { // single track
-                
-                artist =
-                        this.repository.fetchArtistById(artistId)
-                        .includeUnpublished()
-                        .getSingleResult();
-                if(artist == null) return Result.fail(new ArtistDoesNotExistError());
-                
+                repository.save(album);
+            } else if(artist != null) {
                 final Result result = artist.addTrack(track, creatorId);
                 if(result.isFailure) return result;
-                
-            }
-            
-            // save track audio file
-            this.persistence.write(audio, audioPath);
-            
-            // save track image file
-            if(image != null) {
-                this.persistence.write(image, audioPath);
-            }
-            
-            if(albumId != null) { // save album
-                this.repository.save(album);
-            } else { // save artist
-                this.repository.save(track);
-                this.repository.save(artist);
+                repository.save(track);
+                repository.save(artist);
             }
             
             return Result.ok();
@@ -221,7 +223,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             
             final Map<UniqueEntityId, Genre> allGenres = this.genreRepository.fetchAll();
             
-            final boolean doGenresExist = genreIds.containsAll(ids);
+            final boolean doGenresExist = allGenres.keySet().containsAll(ids);
             if(!doGenresExist) return Result.fail(new GenreDoesNotExistError());
             
             final Set<Genre> genres = new HashSet<>();

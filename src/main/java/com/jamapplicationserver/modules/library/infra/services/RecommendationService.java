@@ -5,6 +5,8 @@
  */
 package com.jamapplicationserver.modules.library.infra.services;
 
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.ArtworkIdAndTitle;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.RecommendedCollection;
 import java.util.*;
 import java.util.stream.*;
 import javax.persistence.*;
@@ -14,7 +16,6 @@ import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryH
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.Player.*;
 import com.jamapplicationserver.infra.Persistence.database.Models.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.*;
 import com.jamapplicationserver.modules.library.repositories.*;
 
 /**
@@ -55,14 +56,14 @@ public class RecommendationService implements IRecommendationService {
             final Map<GenreModel, Long> favoriteGenres =
                 player.getPlayedTracks().stream()
                 // filter played tracks within the past week
-//                .filter(played -> {
-//                    final LocalDateTime playedAt =
-//                            played.getPlayedAt().getValue();
-//                    final LocalDateTime thePastWeek =
-//                            LocalDateTime.now()
-//                            .minusDays(5);
-//                    return playedAt.isAfter(thePastWeek);
-//                })
+                .filter(played -> {
+                    final LocalDateTime playedAt =
+                            played.getPlayedAt().getValue();
+                    final LocalDateTime thePastWeek =
+                            LocalDateTime.now()
+                            .minusDays(5);
+                    return playedAt.isAfter(thePastWeek);
+                })
                 // extract genres from played tracks genre lists
                 .flatMap(played -> played.getTrack().getGenres().getValue().stream())
                 .map(genre -> genreRepository.toPersistence(genre))
@@ -87,19 +88,13 @@ public class RecommendationService implements IRecommendationService {
                     .getResultStream()
                     .map(artwork -> ArtworkIdAndTitle.create(artwork))
                     .collect(Collectors.toSet());
-            System.out.println(favoriteGenres.keySet());
-            System.out.println(favoriteGenres.values());
-            collections.add(
-                    new RecommendedCollection(
-                            title,
-                            items
-                    )
-            );
+            collections.add(new RecommendedCollection(title, items));
         }
         
         // recommended artworks based on being repetitively played
         {
             final String title = "قفلی زدی";
+            final LocalDateTime from = LocalDateTime.now().minusDays(5);
 //            final Set<UUID> repetitivelyPlayedTracksIds =
 //                    player.getPlayedTracks()
 //                    .stream()
@@ -120,12 +115,7 @@ public class RecommendationService implements IRecommendationService {
                     .getResultStream()
                     .map(artwork -> ArtworkIdAndTitle.create(artwork))
                     .collect(Collectors.toSet());
-            collections.add(
-                    new RecommendedCollection(
-                            title,
-                            items
-                    )
-            );
+            collections.add(new RecommendedCollection(title, items));
         }
 
         // recommended artworks based on what others are listening to
@@ -137,7 +127,7 @@ public class RecommendationService implements IRecommendationService {
                     + "WHERE artworks.id = played.playedTrack.id AND "
                     + "played.playedAt BETWEEN :from AND :till AND "
                     + "played.player.id <> :playerId ";
-            final LocalDateTime from = LocalDateTime.now().minusMonths(12);
+            final LocalDateTime from = LocalDateTime.now().minusDays(5);
             final LocalDateTime till = LocalDateTime.now();
             final Set<ArtworkIdAndTitle> items =
                     em.createQuery(query, ArtworkModel.class)
@@ -148,18 +138,23 @@ public class RecommendationService implements IRecommendationService {
                     .getResultStream()
                     .map(artwork -> ArtworkIdAndTitle.create(artwork))
                     .collect(Collectors.toSet());
-            collections.add(
-                    new RecommendedCollection(
-                            title,
-                            items
-                    )
-            );
+            collections.add(new RecommendedCollection(title, items));
         }
         
         // recommended artworks based on their release year
         {
-            final String title = "آلبوم ها و آهنگ های امسال";
-        
+            final String title = "آلبوم ها و آهنگ های جدید";
+            final String query = "SELECT artworks FROM ArtworkModel artworks "
+                    + "WHERE artworks.releaseDate = :thisYearMonth";
+            final YearMonth thisYearMonth = YearMonth.now();
+            final Set<ArtworkIdAndTitle> items =
+                    em.createQuery(query, ArtworkModel.class)
+                    .setParameter("thisYearMonth", thisYearMonth)
+                    .setMaxResults(20)
+                    .getResultStream()
+                    .map(artwork -> ArtworkIdAndTitle.create(artwork))
+                    .collect(Collectors.toSet());
+            collections.add(new RecommendedCollection(title, items));
         }
         
         return collections;

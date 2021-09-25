@@ -264,7 +264,7 @@ public class UserRepository implements IUserRepository {
     }
     
     @Override
-    public void remove(User user) {
+    public void remove(User user) throws Exception {
         
         try {
             

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jamapplicationserver.modules.library.infra.DTOs.entities;
+package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
 
@@ -11,7 +11,7 @@ import java.util.*;
  *
  * @author dada
  */
-public class AlbumDetails extends LibraryEntityDetails {
+public class AlbumDetails extends ArtworkDetails {
     
     public final Set<LibraryEntitySummary> tracks;
     
@@ -26,7 +26,11 @@ public class AlbumDetails extends LibraryEntityDetails {
             double rate,
             String flagNote,
             long totalPlayedCount,
-            long duration,
+            String duration,
+            String recordLabel,
+            String producer,
+            String releaseDate,
+            LibraryEntityIdAndTitle artist,
             Set<LibraryEntitySummary> tracks
     ) {
         super(
@@ -40,7 +44,11 @@ public class AlbumDetails extends LibraryEntityDetails {
                 rate,
                 flagNote,
                 totalPlayedCount,
-                duration
+                duration,
+                recordLabel,
+                producer,
+                releaseDate,
+                artist
         );
         this.tracks = tracks;
     }

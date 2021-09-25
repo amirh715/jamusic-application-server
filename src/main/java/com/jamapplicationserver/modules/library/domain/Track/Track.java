@@ -7,6 +7,7 @@ package com.jamapplicationserver.modules.library.domain.Track;
 
 import java.time.*;
 import java.util.*;
+import java.util.stream.*;
 import java.nio.file.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
@@ -44,7 +45,7 @@ public class Track extends Artwork {
             UniqueEntityId creatorId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             Lyrics lyrics,
             Artist artist,
             Album album
@@ -91,7 +92,7 @@ public class Track extends Artwork {
             UniqueEntityId updaterId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             Lyrics lyrics,
             Artist artist,
             Album album
@@ -138,7 +139,7 @@ public class Track extends Artwork {
             UniqueEntityId creatorId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             Lyrics lyrics,
             Artist artist,
             Album album
@@ -167,6 +168,40 @@ public class Track extends Artwork {
                 album
         );
         
+        // track's genres must be a subset of its artist/album.
+        if(instance.genres != null) {
+            
+            if(instance.album != null && instance.album.getGenres() != null) {
+                instance.genres = instance.album.getGenres();
+            }
+            
+            System.out.println("instance.album == null -> " + (instance.album == null));
+            System.out.println("instance.artist == null -> " + (instance.artist == null));
+            
+            if(instance.album == null && instance.artist != null) {
+                
+                if(instance.artist.getGenres() != null) {
+                    
+                    final boolean areTracksGenresThoseOfArtistsGenres =
+                            instance.genres.getValue()
+                            .stream()
+                            .allMatch(trackGenre ->
+                                    instance.artist.getGenres().getValue()
+                                    .stream()
+                                    .anyMatch(artistGenre ->
+                                            artistGenre.equals(trackGenre) ||
+                                            artistGenre.isSubGenreOf(trackGenre)
+                                    )
+                            );
+                    if(!areTracksGenresThoseOfArtistsGenres)
+                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+                    
+                }
+                
+            }
+            
+        }
+
         return Result.ok(instance);
     }
     
@@ -187,7 +222,7 @@ public class Track extends Artwork {
             UUID creatorId,
             String recordLabel,
             String producer,
-            Integer releaseYear,
+            YearMonth releaseDate,
             UUID updaterId,
             String audioPath,
             String format,
@@ -212,7 +247,7 @@ public class Track extends Artwork {
         final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromUUID(creatorId);
         final Result<RecordLabel> recordLabelOrError = RecordLabel.create(recordLabel);
         final Result<RecordProducer> producerOrError = RecordProducer.create(producer);
-        final Result<ReleaseYear> releaseYearOrError = ReleaseYear.create(releaseYear);
+        final Result<ReleaseDate> releaseDateOrError = ReleaseDate.create(releaseDate);
         final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromUUID(updaterId);
         final Result<Lyrics> lyricsOrError = Lyrics.create(lyrics);
         
@@ -229,7 +264,7 @@ public class Track extends Artwork {
         if(lyrics != null) combinedProps.add(lyricsOrError);
         if(recordLabel != null) combinedProps.add(recordLabelOrError);
         if(producer != null) combinedProps.add(producerOrError);
-        if(releaseYear != null) combinedProps.add(releaseYearOrError);
+        if(releaseDate != null) combinedProps.add(releaseDateOrError);
         
         final Result combinedPropsResult = Result.combine(combinedProps);
         
@@ -256,51 +291,38 @@ public class Track extends Artwork {
                 updaterIdOrError.getValue(),
                 recordLabel != null ? recordLabelOrError.getValue() : null,
                 producer != null ? producerOrError.getValue() : null,
-                releaseYear != null ? releaseYearOrError.getValue() : null,
+                releaseDate != null ? releaseDateOrError.getValue() : null,
                 lyrics != null ? lyricsOrError.getValue() : null,
                 artist,
                 album
         );
         
         // track's genres must be a substitute of its artist/album.
-        if(genres != null && !genres.isEmpty()) {
+        if(instance.genres != null) {
             
             if(instance.album != null) {
-                
-                //
-                for(Genre genre : instance.genres.getValue()) {
-
-                    final boolean doesGenreMatchOneOfAlbumsGenres =
-                            album.getGenres()
-                            .getValue()
-                            .stream()
-                            .anyMatch(genreOfAlbum ->
-                                        genreOfAlbum.equals(genre) ||
-                                        genreOfAlbum.isSubGenreOf(genre)
-                            );
-
-                    if(!doesGenreMatchOneOfAlbumsGenres)
-                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
-
-                }
-                    
+                instance.genres = instance.album.getGenres();
             }
             
-            if(instance.album == null) {
+            if(instance.album == null && instance.artist != null) {
                 
-                for(Genre genre : instance.genres.getValue()) {
+                if(instance.artist.getGenres() != null) {
                     
-                    final boolean doesGenreMatchOneOfArtistsGenre =
-                            artist.getGenres()
-                            .getValue()
+                    final Set<Genre> trackGenres =
+                            instance.genres.getValue()
                             .stream()
-                            .anyMatch(genreOfArtist ->
-                                    genreOfArtist.equals(genre) ||
-                                    genreOfArtist.isSubGenreOf(genre)
-                            );
+                            .dropWhile(trackGenre ->
+                                    instance.artist.getGenres().getValue()
+                                    .stream()
+                                    .allMatch(artistGenre ->
+                                            !artistGenre.equals(trackGenre) ||
+                                            !artistGenre.isSubGenreOf(trackGenre)
+                                    )
+                            )
+                            .collect(Collectors.toSet());
                     
-                    if(!doesGenreMatchOneOfArtistsGenre)
-                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+                    if(!trackGenres.isEmpty())
+                        instance.genres = GenreList.create(trackGenres).getValue();
                     
                 }
                 
@@ -358,7 +380,7 @@ public class Track extends Artwork {
             Flag flag,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             UniqueEntityId updaterId
     ) {
         
@@ -367,50 +389,30 @@ public class Track extends Artwork {
         this.tags = tags;
         
         if(genres != null) {
-            
-            if(this.album != null) {
-                
-                // album's genres must be a subset of album's artist genres
-                for(Genre genre : genres.getValue()) {
 
-                    final boolean doesGenreMatchOneOfAlbumsGenres =
-                            album.getGenres()
-                            .getValue()
-                            .stream()
-                            .anyMatch(genreOfAlbum ->
-                                        genreOfAlbum.equals(genre) ||
-                                        genreOfAlbum.isSubGenreOf(genre)
-                            );
-
-                    if(!doesGenreMatchOneOfAlbumsGenres)
-                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
-
-                }
-                    
+            if(album != null) {
+                genres = album.getGenres();
             }
             
-            if(this.album == null) {
+            if(album == null && artist != null) {
                 
-                for(Genre genre : genres.getValue()) {
-                    
-                    final boolean doesGenreMatchOneOfArtistsGenre =
-                            artist.getGenres()
-                            .getValue()
-                            .stream()
-                            .anyMatch(genreOfArtist ->
-                                    genreOfArtist.equals(genre) ||
-                                    genreOfArtist.isSubGenreOf(genre)
-                            );
-                    
-                    if(!doesGenreMatchOneOfArtistsGenre)
-                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
-                    
-                }
+                final boolean areTracksGenresThoseOfArtistsGenres =
+                        genres.getValue()
+                        .stream()
+                        .allMatch(albumGenre ->
+                                artist.getGenres().getValue()
+                                .stream()
+                                .anyMatch(artistGenre ->
+                                        artistGenre.equals(albumGenre) ||
+                                        artistGenre.isSubGenreOf(albumGenre)
+                                )
+                        );
+                if(!areTracksGenresThoseOfArtistsGenres)
+                    return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
                 
             }
             
             this.genres = genres;
-            
         }
 
         this.updaterId = updaterId;
@@ -421,7 +423,7 @@ public class Track extends Artwork {
     
     public void changeLyrics(Lyrics lyrics) {
         this.lyrics = lyrics;
-        this.modified();
+        modified();
     }
 
     public final long getSize() {

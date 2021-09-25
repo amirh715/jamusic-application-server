@@ -20,7 +20,6 @@ import com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetTrackA
 import com.jamapplicationserver.modules.library.usecases.Genres.CreateGenre.CreateGenreController;
 import com.jamapplicationserver.modules.library.usecases.Genres.EditGenre.EditGenreController;
 import com.jamapplicationserver.modules.library.usecases.Genres.GetAllGenres.GetAllGenresController;
-import com.jamapplicationserver.modules.library.usecases.Genres.GetGenreByTitle.GetGenreByTitleController;
 import com.jamapplicationserver.modules.library.usecases.Genres.RemoveGenre.RemoveGenreController;
 import com.jamapplicationserver.modules.library.usecases.Genres.GetGenreById.GetGenreByIdController;
 import com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetRecommendedCollections.GetRecommendedCollectionsController;
@@ -128,13 +127,7 @@ public class LibraryRoutes implements RouteGroup {
                 LibraryPaths.GET_GENRE_BY_ID,
                 GetGenreByIdController.getInstance()
         );
-        
-        // get genre by title
-        get(
-                LibraryPaths.GET_GENRE_BY_TITLE,
-                GetGenreByTitleController.getInstance()
-        );
-        
+
         // remove genre
         delete(
                 LibraryPaths.REMOVE_GENRE,

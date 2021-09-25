@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jamapplicationserver.modules.library.infra.DTOs.entities;
+package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
 import java.time.*;
@@ -21,8 +21,8 @@ public class GenreDetails implements IDTO {
     public final String id;
     public final String title;
     public final String titleInPersian;
-    public final DateTime createdAt;
-    public final DateTime lastModifiedAt;
+    public final String createdAt;
+    public final String lastModifiedAt;
     public final String creatorName;
     public final String creatorId;
     public final String updaterName;
@@ -44,8 +44,8 @@ public class GenreDetails implements IDTO {
         this.id = id;
         this.title = title;
         this.titleInPersian = titleInPersian;
-        this.createdAt = DateTime.createWithoutValidation(createdAt);
-        this.lastModifiedAt = DateTime.createWithoutValidation(lastModifiedAt);
+        this.createdAt = DateTime.createWithoutValidation(createdAt).toJalali();
+        this.lastModifiedAt = DateTime.createWithoutValidation(lastModifiedAt).toJalali();
         this.creatorName = creatorName;
         this.creatorId = creatorId;
         this.updaterName = updaterName;

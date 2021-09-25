@@ -75,10 +75,10 @@ public abstract class LibraryEntityModel implements Serializable {
     )
     protected Set<GenreModel> genres = new HashSet<GenreModel>();
     
-    @ManyToOne(optional=true) // false for production
+    @ManyToOne(optional=true, fetch=FetchType.LAZY) // false for production
     private UserModel creator;
     
-    @ManyToOne(optional=true) // false for production
+    @ManyToOne(optional=true, fetch=FetchType.LAZY) // false for production
     private UserModel updater;
     
     public UUID getId() {

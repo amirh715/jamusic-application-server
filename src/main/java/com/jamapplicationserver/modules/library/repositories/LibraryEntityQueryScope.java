@@ -92,7 +92,7 @@ public class LibraryEntityQueryScope<T>
                 this.manager.createQuery(this.cq).getResultList();
         return (Set<T>) results
                 .stream()
-                .map(model -> this.repository.toDomain(model))
+                .map(model -> LibraryEntityRepository.toDomain(model, manager))
                 .collect(Collectors.toSet());
     }
     
@@ -115,9 +115,9 @@ public class LibraryEntityQueryScope<T>
             }
 
             final LibraryEntityModel result =
-                    (LibraryEntityModel) this.manager.createQuery(this.cq).getSingleResult();
+                    (LibraryEntityModel) manager.createQuery(this.cq).getSingleResult();
             
-            return (T) this.repository.toDomain(result);
+            return (T) LibraryEntityRepository.toDomain(result, manager);
             
         } catch(NoResultException e) {
             e.printStackTrace();

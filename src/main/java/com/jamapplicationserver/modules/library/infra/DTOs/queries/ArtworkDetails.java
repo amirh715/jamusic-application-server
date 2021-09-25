@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jamapplicationserver.modules.library.infra.DTOs.entities;
+package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
 
@@ -11,11 +11,14 @@ import java.util.*;
  *
  * @author dada
  */
-public abstract class ArtistDetails extends LibraryEntityDetails {
+public abstract class ArtworkDetails extends LibraryEntityDetails {
     
-    public final String instagramId;
+    public final String recordLabel;
+    public final String producer;
+    public final String releaseDate;
+    public final LibraryEntityIdAndTitle artist;
     
-    protected ArtistDetails(
+    public ArtworkDetails(
             String id,
             String title,
             String description,
@@ -26,8 +29,11 @@ public abstract class ArtistDetails extends LibraryEntityDetails {
             double rate,
             String flagNote,
             long totalPlayedCount,
-            long duration,
-            String instagramId
+            String duration,
+            String recordLabel,
+            String producer,
+            String releaseDate,
+            LibraryEntityIdAndTitle artist
     ) {
         super(
                 id,
@@ -42,8 +48,10 @@ public abstract class ArtistDetails extends LibraryEntityDetails {
                 totalPlayedCount,
                 duration
         );
-        this.instagramId = instagramId;
+        this.recordLabel = recordLabel;
+        this.producer = producer;
+        this.releaseDate = releaseDate;
+        this.artist = artist;
     }
-    
     
 }

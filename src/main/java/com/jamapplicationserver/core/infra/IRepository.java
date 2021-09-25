@@ -24,5 +24,5 @@ public interface IRepository<T> {
             Exception;
             
     T fetchById(UniqueEntityId id);
-    void remove(T aggregate);
+    void remove(T aggregate) throws Exception;
 }

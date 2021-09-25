@@ -56,7 +56,7 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
             final Result<UniqueEntityId> artistIdOrError = UniqueEntityId.createFromString(request.artistId);
             final Result<RecordLabel> recordLabelOrError = RecordLabel.create(request.recordLabel);
             final Result<RecordProducer> producerOrError = RecordProducer.create(request.producer);
-            final Result<ReleaseYear> releaseYearOrError = ReleaseYear.create(request.releaseYear);
+            final Result<ReleaseDate> releaseDateOrError = ReleaseDate.create(request.releaseDate);
             final Result<ImageStream> imageOrError = ImageStream.createAndValidate(request.image);
             
             combinedProps.add(titleOrError);
@@ -75,8 +75,8 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
                 combinedProps.add(recordLabelOrError);
             if(request.producer != null)
                 combinedProps.add(producerOrError);
-            if(request.releaseYear != null)
-                combinedProps.add(releaseYearOrError);
+            if(request.releaseDate != null)
+                combinedProps.add(releaseDateOrError);
             if(request.image != null)
                 combinedProps.add(imageOrError);
             
@@ -105,8 +105,8 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
             final RecordProducer producer =
                     request.producer != null ? producerOrError.getValue()
                     : null;
-            final ReleaseYear releaseYear =
-                    request.releaseYear != null ? releaseYearOrError.getValue()
+            final ReleaseDate releaseYear =
+                    request.releaseDate != null ? releaseDateOrError.getValue()
                     : null;
             final UniqueEntityId artistId = artistIdOrError.getValue();
             final ImageStream image =
@@ -115,7 +115,7 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
             
             // fetch artist
             final Artist artist =
-                    this.repository
+                    repository
                             .fetchArtistById(artistId)
                             .includeUnpublished()
                             .getSingleResult();
@@ -144,16 +144,16 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
                         
             // save album image
             if(request.image != null) {
-                final Path path = this.persistence.buildPath(Album.class);
+                final Path path = persistence.buildPath(Album.class);
                 album.changeImage(path, creatorId);
-                this.persistence.write(image, path);
+                persistence.write(image, path);
             }
             
             // save album to database
-            this.repository.save(album);
+            repository.save(album);
             
             // save artist to database
-            this.repository.save(artist);
+            repository.save(artist);
             
             return Result.ok(album);
         } catch(Exception e) {

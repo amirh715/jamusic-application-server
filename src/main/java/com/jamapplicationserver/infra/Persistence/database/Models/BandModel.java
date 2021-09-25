@@ -18,19 +18,25 @@ public class BandModel extends ArtistModel {
     
     public BandModel() {
         super();
+        this.members = new HashSet<>();
     }
+    
+    public BandModel(Set<SingerModel> members) {
+        super();
+        this.members = members;
+    } 
     
     @ManyToMany
     @JoinTable(
         name="band_members",
         joinColumns = {
-            @JoinColumn(name="singer_id")
+            @JoinColumn(name="member_id", referencedColumnName="id")
         },
         inverseJoinColumns = {
-            @JoinColumn(name="band_id")
+            @JoinColumn(name="band_id", referencedColumnName="id")
         }
     )
-    private Set<SingerModel> members = new HashSet<SingerModel>();
+    private Set<SingerModel> members;
     
     public void addMember(SingerModel member) {
         this.members.add(member);
@@ -44,7 +50,7 @@ public class BandModel extends ArtistModel {
         return this.members;
     }
     
-    private void setMembers(Set<SingerModel> members) {
+    public void setMembers(Set<SingerModel> members) {
         this.members = members;
     }
 

@@ -18,7 +18,7 @@ public abstract class Artwork extends LibraryEntity {
     
     protected RecordLabel recordLabel;
     protected RecordProducer producer;
-    protected ReleaseYear releaseYear;
+    protected ReleaseDate releaseYear;
     protected Artist artist;
     
     // creation constructor
@@ -31,7 +31,7 @@ public abstract class Artwork extends LibraryEntity {
             UniqueEntityId creatorId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             Artist artist
     ) {
         super(
@@ -67,7 +67,7 @@ public abstract class Artwork extends LibraryEntity {
             UniqueEntityId updaterId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             Artist artist
     ) {
         super(
@@ -101,7 +101,7 @@ public abstract class Artwork extends LibraryEntity {
             Flag flag,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseYear releaseYear,
+            ReleaseDate releaseYear,
             UniqueEntityId updaterId
     );
     
@@ -109,7 +109,7 @@ public abstract class Artwork extends LibraryEntity {
         return this.recordLabel;
     }
     
-    public ReleaseYear getReleaseYear() {
+    public ReleaseDate getReleaseYear() {
         return this.releaseYear;
     }
     

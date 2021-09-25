@@ -23,7 +23,9 @@ public class Rate extends NumericValueObject<Double> {
         return this.value;
     }
     
-    public static final Result<Rate> create(double value) {
+    public static final Result<Rate> create(Double value) {
+        
+        if(value == null) return Result.fail(new ValidationError("Rate is required"));
         
         if(value > 5 && value < 0) return Result.fail(new ValidationError());
         

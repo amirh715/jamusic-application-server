@@ -35,8 +35,6 @@ public class CreateTrackController extends BaseController {
             final HttpServletRequest raw = this.req.raw();
             final Map<String, String> fields = MultipartFormDataUtil.toMap(raw);
             
-            System.out.println("Audio" + raw.getPart("audio"));
-            
             final InputStream image = MultipartFormDataUtil.toInputStream(raw.getPart("image"));
             final InputStream audio = MultipartFormDataUtil.toInputStream(raw.getPart("audio"));
             
@@ -49,7 +47,7 @@ public class CreateTrackController extends BaseController {
                             fields.get("genreIds"),
                             fields.get("tags"),
                             fields.get("flagNote"),
-                            this.subjectId,
+                            subjectId,
                             fields.get("lyrcis"),
                             fields.get("artistId"),
                             fields.get("recordLabel"),
@@ -67,21 +65,21 @@ public class CreateTrackController extends BaseController {
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
             
             final Track track = (Track) result.getValue();
             
-            this.ok(track);
+            ok(track);
             
         } catch(Exception e) {
-            
+            fail(e);
         }
         
     }

@@ -13,6 +13,7 @@ import com.jamapplicationserver.modules.library.infra.DTOs.usecases.CreateGenreR
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.repositories.exceptions.*;
+import com.jamapplicationserver.infra.Persistence.database.*;
 import org.hibernate.exception.ConstraintViolationException;
 
 /**
@@ -85,7 +86,7 @@ public class CreateGenreUseCase implements IUsecase<CreateGenreRequestDTO, Genre
             return Result.ok(genre);
             
         } catch(ConstraintViolationException e) {
-            
+                        
             final String constraintName = e.getConstraintName();
             
             if(constraintName.equals("title_unique_key"))
@@ -97,6 +98,8 @@ public class CreateGenreUseCase implements IUsecase<CreateGenreRequestDTO, Genre
             throw new GenericAppException(e);
         } catch(MaxAllowedGenresExceededException e) {
             return Result.fail(new MaxAllowedGenresExceededError());
+        } catch(UpdaterOrCreatorDoesNotExistException e) {
+            return Result.fail(new UpdaterOrCreatorDoesNotExistError());
         } catch(Exception e) {
             throw new GenericAppException(e);
         }

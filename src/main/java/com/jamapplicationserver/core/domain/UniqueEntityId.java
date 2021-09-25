@@ -35,6 +35,7 @@ public class UniqueEntityId extends Identifier<UUID> {
     }
     
     public static Result<Set<UniqueEntityId>> createFromStrings(Set<String> uuids) {
+        if(uuids == null || uuids.isEmpty()) return Result.fail(new ValidationError(""));
         final Result<Set<Result<UniqueEntityId>>> result = Result.combine(uuids
                 .stream()
                 .map(uuid -> UniqueEntityId.createFromString(uuid))

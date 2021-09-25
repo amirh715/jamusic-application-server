@@ -72,12 +72,13 @@ public class Genre extends Entity {
                 this.title.equals(title) &&
                 this.titleInPersian.equals(titleInPersian)
         ) return;
+        if(updaterId == null) return;
         
         this.title = title;
         this.titleInPersian = titleInPersian;
         this.updaterId = updaterId;
         
-        this.modified();
+        modified();
     }
 
     public static Result<Genre> create(

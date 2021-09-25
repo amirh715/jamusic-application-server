@@ -143,11 +143,11 @@ public class PlaylistRepository implements IPlaylistRepository {
     @Override
     public Playlist toDomain(PlaylistModel model) {
         
-        final Set<Track> tracks =
-                model.getTracks()
-                .stream()
-                .map(track -> (Track) libraryRepository.toDomain(track))
-                .collect(Collectors.toSet());
+        final Set<Track> tracks = Set.of();
+//                model.getTracks()
+//                .stream()
+//                .map(track -> (Track) libraryRepository.toDomain(track))
+//                .collect(Collectors.toSet());
         
         Playlist instance =
                 Playlist.reconstitute(
@@ -171,12 +171,12 @@ public class PlaylistRepository implements IPlaylistRepository {
         model.setCreatedAt(entity.getCreatedAt().getValue());
         model.setLastModifiedAt(entity.getLastModifiedAt().getValue());
         
-        entity.getTracks()
-                .forEach(track -> {
-                    final TrackModel t =
-                            (TrackModel) libraryRepository.toPersistence(track);
-                    model.addTrack(t);
-                });
+//        entity.getTracks()
+//                .forEach(track -> {
+//                    final TrackModel t =
+//                            (TrackModel) libraryRepository.toPersistence(track);
+//                    model.addTrack(t);
+//                });
         
         return model;
     }

@@ -44,7 +44,6 @@ public class ImageStream extends FilterInputStream {
             if(!tika.isImage(stream)) return Result.fail(new ValidationError("File must be an image"));
             
             final String subType = tika.getSubtype(stream);
-            System.out.println(subType);
             final Result<ImageFileFormat> formatOrError = ImageFileFormat.create(subType);
             if(formatOrError.isFailure) return Result.fail(formatOrError.getError());
             final ImageFileFormat format = formatOrError.getValue();

@@ -133,17 +133,17 @@ public class PlayerRepository implements IPlayerRepository {
         final Set<PlayedTrack> playedTracks = new HashSet<>();
                 
         if(!model.getPlayedTracks().isEmpty()) {
-            model.getPlayedTracks()
-                    .stream()
-                    .map(p -> {
-                        final Track playedTrack =
-                                (Track) libraryRepository.toDomain((TrackModel) p.getPlayedTrack());
-                        final DateTime playedAt =
-                                DateTime.createWithoutValidation(p.getPlayedAt());
-                        return new PlayedTrack(playedTrack, playedAt);
-                    })
-                    .collect(Collectors.toSet())
-                    .forEach(p -> playedTracks.add(p));
+//            model.getPlayedTracks()
+//                    .stream()
+//                    .map(p -> {
+//                        final Track playedTrack =
+//                                (Track) libraryRepository.toDomain((TrackModel) p.getPlayedTrack());
+//                        final DateTime playedAt =
+//                                DateTime.createWithoutValidation(p.getPlayedAt());
+//                        return new PlayedTrack(playedTrack, playedAt);
+//                    })
+//                    .collect(Collectors.toSet())
+//                    .forEach(p -> playedTracks.add(p));
         }
         
         final Set<Playlist> playlists = new HashSet<>();
@@ -178,13 +178,13 @@ public class PlayerRepository implements IPlayerRepository {
         
         final UserModel model = em.getReference(UserModel.class, entity.getId().toValue());
         
-        entity.getPlayedTracks()
-                .forEach(played ->
-                        model.addPlayedTrack(
-                            (TrackModel) libraryRepository.toPersistence(played.track),
-                            played.playedAt.getValue()
-                        )
-                );
+//        entity.getPlayedTracks()
+//                .forEach(played ->
+//                        model.addPlayedTrack(
+//                            (TrackModel) libraryRepository.toPersistence(played.track),
+//                            played.playedAt.getValue()
+//                        )
+//                );
         
         entity.getPlaylists()
                 .forEach(playlist ->

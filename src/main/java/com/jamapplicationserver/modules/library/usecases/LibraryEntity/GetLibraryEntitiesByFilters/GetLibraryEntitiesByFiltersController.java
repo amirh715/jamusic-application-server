@@ -29,22 +29,27 @@ public class GetLibraryEntitiesByFiltersController extends BaseController {
         
         try {
             
-            final QueryParamsMap fields = this.req.queryMap();
+            System.out.println("GetLibraryEntitiesByFiltersController");
+            
+            final QueryParamsMap fields = req.queryMap();
+            System.out.println(fields.toMap());
                         
             final GetLibraryEntitiesByFiltersRequestDTO dto =
                     new GetLibraryEntitiesByFiltersRequestDTO(
-                            fields.get("searchTerm").value(),
                             fields.get("type").value(),
+                            fields.get("searchTerm").value(),
+                            fields.get("published").value(),
+                            fields.get("flagged").value(),
+                            fields.get("hasImage").value(),
                             fields.get("genreIds").value(),
                             fields.get("rateFrom").value(),
-                            fields.get("rateTo").value(),
-                            fields.get("tags").value(),
-                            fields.get("isFlagged").value() != null ?
-                                    Boolean.valueOf(fields.get("isFlagged").value()) : null,
-                            fields.get("published").value() != null ?
-                                    Boolean.valueOf(fields.get("published").value()) : null,
-                            fields.get("hasImage").value() != null ?
-                                    Boolean.valueOf(fields.get("hasImage").value()) : null,
+                            fields.get("rateTill").value(),
+                            fields.get("totalPlayedCountFrom").value(),
+                            fields.get("totalPlayedCountTo").value(),
+                            fields.get("albumId").value(),
+                            fields.get("artistId").value(),
+                            fields.get("releaseDateFrom").value(),
+                            fields.get("releaseDateTill").value(),
                             fields.get("creatorId").value(),
                             fields.get("updaterId").value(),
                             fields.get("createdAtFrom").value(),
@@ -53,27 +58,27 @@ public class GetLibraryEntitiesByFiltersController extends BaseController {
                             fields.get("lastModifiedAtTill").value()
                     );
                         
-            final Result result = this.usecase.execute(dto);
+            final Result result = usecase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
             
-            this.ok(result.getValue());
+            ok(result.getValue());
             
         } catch(Exception e) {
             e.printStackTrace();
-            this.fail(e);
+            fail(e);
         }
         
     }

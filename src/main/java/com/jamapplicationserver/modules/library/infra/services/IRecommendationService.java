@@ -5,10 +5,10 @@
  */
 package com.jamapplicationserver.modules.library.infra.services;
 
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.ArtworkIdAndTitle;
 import java.util.*;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.entities.RecommendedCollection;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.RecommendedCollection;
 
 /**
  *

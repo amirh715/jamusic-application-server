@@ -64,16 +64,16 @@ public class UserModel implements Serializable {
     @Column(name="last_modified_at", nullable=false)
     private LocalDateTime lastModifiedAt;
     
-    @OneToMany(mappedBy="player", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy="player", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private Set<PlayedModel> playedTracks = new HashSet<PlayedModel>();
     
-    @OneToMany(mappedBy="recipient")
+    @OneToMany(mappedBy="recipient", fetch=FetchType.LAZY)
     private Set<NotificationRecipientModel> notifications = new HashSet<>();
     
-    @OneToMany
+    @OneToMany(fetch=FetchType.LAZY, mappedBy="player")
     private final Set<PlaylistModel> playlists = new HashSet<>();
 
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinColumn(
             name="creator_id",
             referencedColumnName="id",
@@ -82,7 +82,7 @@ public class UserModel implements Serializable {
     )
     private UserModel creator;
     
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinColumn(
             name="updater_id",
             referencedColumnName="id",
@@ -274,7 +274,6 @@ public class UserModel implements Serializable {
     }
     
     public Set<PlayedModel> getPlayedTracks() {
-        System.out.println("UserModel::getPlayedTracks size: " + this.playedTracks.size() + " - isEmpty? " + this.playedTracks.isEmpty());
         return this.playedTracks;
     }
     

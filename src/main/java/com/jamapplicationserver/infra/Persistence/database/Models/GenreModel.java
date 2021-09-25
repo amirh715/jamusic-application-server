@@ -78,6 +78,7 @@ public class GenreModel implements Serializable {
     }
     
     public UserModel getCreator() {
+        System.out.println("GenreModel::getCreator() (is null? => " + (this.creator == null) + ")");
         return this.creator;
     }
     
