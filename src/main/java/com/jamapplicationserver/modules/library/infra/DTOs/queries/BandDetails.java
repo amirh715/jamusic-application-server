@@ -26,7 +26,7 @@ public class BandDetails extends ArtistDetails {
             double rate,
             String flagNote,
             long totalPlayedCount,
-            String duration,
+            long duration,
             String instagramId,
             Set<LibraryEntityIdAndTitle> members
     ) {

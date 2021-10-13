@@ -35,13 +35,11 @@ public class ChangePasswordUseCase implements IUsecase<ChangePasswordRequestDTO,
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
             final Result<Password> currentPasswordOrError = Password.create(request.currentPassword, false);
             final Result<Password> newPasswordOrError = Password.create(request.newPassword, false);
-            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             
             final Result[] combinedProps = {
                 idOrError,
                 currentPasswordOrError,
-                newPasswordOrError,
-                updaterIdOrError
+                newPasswordOrError
             };
             
             final Result combinedPropsResult = Result.combine(combinedProps);
@@ -51,7 +49,6 @@ public class ChangePasswordUseCase implements IUsecase<ChangePasswordRequestDTO,
             final UniqueEntityId id = idOrError.getValue();
             final Password currentPassword = currentPasswordOrError.getValue();
             final Password newPassword = newPasswordOrError.getValue();
-            final UniqueEntityId updaterId = updaterIdOrError.getValue();
             
             final User user = this.repository.fetchById(id);
             
@@ -59,8 +56,8 @@ public class ChangePasswordUseCase implements IUsecase<ChangePasswordRequestDTO,
             
             User updater;
             
-            if(!user.id.equals(updaterId)) {
-                updater = this.repository.fetchById(updaterId);
+            if(!user.id.equals(request.subjectId)) {
+                updater = this.repository.fetchById(request.subjectId);
                 if(updater == null)
                     return Result.fail(new UpdaterUserDoesNotExistError());
             } else

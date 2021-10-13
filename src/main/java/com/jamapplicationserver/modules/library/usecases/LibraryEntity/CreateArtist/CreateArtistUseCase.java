@@ -7,14 +7,13 @@ package com.jamapplicationserver.modules.library.usecases.LibraryEntity.CreateAr
 
 import java.util.*;
 import java.nio.file.Path;
-import java.util.stream.Collectors;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.CreateArtistRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateArtistRequestDTO;
 import com.jamapplicationserver.modules.library.domain.Band.Band;
 import com.jamapplicationserver.modules.library.domain.Singer.Singer;
 
@@ -60,11 +59,9 @@ public class CreateArtistUseCase implements IUsecase<CreateArtistRequestDTO, Str
             final Result<TagList> tagListOrError = TagList.createFromString(request.tags);
             final Result<Flag> flagOrError = Flag.create(request.flagNote);
             final Result<InstagramId> instagramIdOrError = InstagramId.create(request.instagramId);
-            final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromString(request.creatorId);
             final Result<ImageStream> imageOrError = ImageStream.createAndValidate(request.image);
             
             combinedProps.add(titleOrError);
-            combinedProps.add(creatorIdOrError);
             
             if(request.description != null)
                 combinedProps.add(descriptionOrError);
@@ -95,13 +92,13 @@ public class CreateArtistUseCase implements IUsecase<CreateArtistRequestDTO, Str
             final Flag flag =
                     request.flagNote != null ? flagOrError.getValue()
                     : null;
-            final UniqueEntityId creatorId = creatorIdOrError.getValue();
             final InstagramId instagramId =
                     request.instagramId != null ? instagramIdOrError.getValue()
                     : null;
             final ImageStream image =
                     request.image != null ? imageOrError.getValue()
                     : null;
+            final UniqueEntityId creatorId = request.creatorId;
             
             Result artistOrError;
             Artist artist;

@@ -9,7 +9,8 @@ import java.util.*;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import javax.persistence.*;
-import java.io.Serializable;
+import org.hibernate.envers.*;
+import com.jamapplicationserver.infra.Persistence.database.EntityListeners.*;
 
 /**
  *
@@ -18,17 +19,15 @@ import java.io.Serializable;
 @Entity
 @Table(name="library_entities", schema="jamschema")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="entity_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name="entity_type", discriminatorType=DiscriminatorType.STRING)
 @org.hibernate.annotations.DiscriminatorOptions(force=true)
-public abstract class LibraryEntityModel implements Serializable {
+@EntityListeners(DomainEventDispatcher.class)
+@Audited
+public abstract class LibraryEntityModel extends EntityModel {
     
     public LibraryEntityModel() {
         
     }
-    
-    @Id
-    @Column(name="id")
-    private UUID id;
 
     @Column(name="title", unique=false, nullable=false, columnDefinition="")
     private String title;
@@ -75,19 +74,11 @@ public abstract class LibraryEntityModel implements Serializable {
     )
     protected Set<GenreModel> genres = new HashSet<GenreModel>();
     
-    @ManyToOne(optional=true, fetch=FetchType.LAZY) // false for production
+    @ManyToOne(optional=false, fetch=FetchType.LAZY) // false for production
     private UserModel creator;
     
-    @ManyToOne(optional=true, fetch=FetchType.LAZY) // false for production
+    @ManyToOne(optional=false, fetch=FetchType.LAZY) // false for production
     private UserModel updater;
-    
-    public UUID getId() {
-        return this.id;
-    }
-    
-    public void setId(UUID id) {
-        this.id = id;
-    }
     
     public String getTitle() {
         return this.title;
@@ -122,7 +113,7 @@ public abstract class LibraryEntityModel implements Serializable {
     }
     
     public Set<String> getTags() {
-        if(this.tags == null || this.tags.isEmpty()) return Set.of();
+        if(this.tags == null || this.tags.isEmpty()) return new HashSet<>();
         final String separator = "#";
         final List<String> tagsList = Arrays.asList(this.tags.split(separator));
         return tagsList.stream().collect(Collectors.toSet());
@@ -139,6 +130,10 @@ public abstract class LibraryEntityModel implements Serializable {
                             .concat(separator);
                 })
                 .collect(Collectors.joining());
+    }
+    
+    public void addTag(String tag) {
+        if(tag == null || tag.isEmpty()) return;
     }
     
     public String getFlagNote() {
@@ -191,6 +186,11 @@ public abstract class LibraryEntityModel implements Serializable {
     
     public Set<GenreModel> getGenres() {
         return this.genres;
+    }
+    
+    public void replaceGenres(Set<GenreModel> genres) {
+        this.genres.addAll(genres);
+        this.genres.removeIf(g -> !genres.contains(g));
     }
     
     public void addGenre(GenreModel genreToAdd) {

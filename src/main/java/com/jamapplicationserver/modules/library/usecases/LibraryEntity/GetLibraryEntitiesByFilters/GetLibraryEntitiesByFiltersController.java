@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibraryEntitiesByFilters;
 
 import java.util.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.GetLibraryEntitiesByFiltersRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.GetLibraryEntitiesByFiltersRequestDTO;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
@@ -46,7 +46,8 @@ public class GetLibraryEntitiesByFiltersController extends BaseController {
                             fields.get("rateTill").value(),
                             fields.get("totalPlayedCountFrom").value(),
                             fields.get("totalPlayedCountTo").value(),
-                            fields.get("albumId").value(),
+                            fields.get("durationFrom").value(),
+                            fields.get("durationTo").value(),
                             fields.get("artistId").value(),
                             fields.get("releaseDateFrom").value(),
                             fields.get("releaseDateTill").value(),
@@ -55,7 +56,9 @@ public class GetLibraryEntitiesByFiltersController extends BaseController {
                             fields.get("createdAtFrom").value(),
                             fields.get("createdAtTill").value(),
                             fields.get("lastModifiedAtFrom").value(),
-                            fields.get("lastModifiedAtTill").value()
+                            fields.get("lastModifiedAtTill").value(),
+                            subjectId,
+                            subjectRole
                     );
                         
             final Result result = usecase.execute(dto);

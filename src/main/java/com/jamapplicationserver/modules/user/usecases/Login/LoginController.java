@@ -30,13 +30,13 @@ public class LoginController extends BaseController {
         
         System.out.println("LoginController");
         
-        final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+        final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         
         final Parser userAgentParser = new Parser();
-        final Client client = userAgentParser.parse(this.req.userAgent());
+        final Client client = userAgentParser.parse(req.userAgent());
         final Device device = client.device;
         final OS os = client.os;
-        final String ip = this.req.ip();
+        final String ip = req.ip();
         
         final LoginRequestDTO dto =
                 new LoginRequestDTO(
@@ -49,20 +49,20 @@ public class LoginController extends BaseController {
         
         try {
             
-            final Result result = this.useCase.execute(dto);
+            final Result result = useCase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
             
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
@@ -70,7 +70,7 @@ public class LoginController extends BaseController {
             this.ok(result.getValue());
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

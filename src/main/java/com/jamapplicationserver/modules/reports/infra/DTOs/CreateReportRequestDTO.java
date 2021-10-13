@@ -6,24 +6,25 @@
 package com.jamapplicationserver.modules.reports.infra.DTOs;
 
 import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.core.infra.*;
 
 /**
  *
  * @author dada
  */
-public class CreateReportRequestDTO implements IDTO {
+public class CreateReportRequestDTO extends DTOWithAuthClaims {
     
     public final String message;
-    public final String reporterId;
     public final String reportedEntityId;
     
     public CreateReportRequestDTO(
             String message,
-            String reporterId,
-            String reportedEntityId
+            String reportedEntityId,
+            UniqueEntityId creatorId,
+            UserRole creatorRole
     ) {
+        super(creatorId, creatorRole);
         this.message = message;
-        this.reporterId = reporterId;
         this.reportedEntityId = reportedEntityId;
     }
     

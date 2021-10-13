@@ -5,9 +5,8 @@
  */
 package com.jamapplicationserver.core.domain;
 
-import java.util.List;
-import com.jamapplicationserver.core.domain.events.DomainEvent;
-import com.jamapplicationserver.core.domain.events.DomainEvents;
+import java.util.*;
+import com.jamapplicationserver.core.domain.events.*;
 
 /**
  *
@@ -16,8 +15,8 @@ import com.jamapplicationserver.core.domain.events.DomainEvents;
  */
 public abstract class AggregateRoot extends Entity {
     
-    private List<DomainEvent> domainEvents;
-    
+    private Set<DomainEvent> domainEvents = new HashSet<>();
+        
     public AggregateRoot(
             UniqueEntityId id,
             DateTime createdAt,
@@ -30,17 +29,17 @@ public abstract class AggregateRoot extends Entity {
         super();
     }
     
-    public List<DomainEvent> getDomainEvents() {
-        return this.domainEvents;
-    }
-    
-    protected void addDomainEvent(DomainEvent event) {
-        this.domainEvents.add(event);
+    public void addDomainEvent(DomainEvent domainEvent) {
+        domainEvents.add(domainEvent);
         DomainEvents.markAggregateForDispatch(this);
     }
     
-    public void clearEvents() {
-        this.domainEvents.clear();
+    public final Set<DomainEvent> getDomainEvents() {
+        return domainEvents;
+    }
+    
+    public final void clearEvents() {
+        domainEvents = new HashSet<>();
     }
     
     @Override

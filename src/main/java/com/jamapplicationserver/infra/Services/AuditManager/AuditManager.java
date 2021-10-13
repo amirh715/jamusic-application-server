@@ -19,17 +19,18 @@ import java.time.LocalDateTime;
  */
 public class AuditManager {
     
-    private final EntityManagerFactoryHelper em;
+    private final EntityManagerFactoryHelper emfh;
     private final Gson gson;
     
     public void auditRecord(
-            AggregateRoot aggregate,
+            Object entity,
             AuditAction action,
-            String note,
-            DateTime auditedAt
+            String note
     ) {
         
-        final EntityManager em = getEntityManager();
+        System.out.println("Commit mememememememe 1");
+        
+        final EntityManager em = emfh.createEntityManager();
         
         final EntityTransaction tnx = em.getTransaction();
         
@@ -40,17 +41,26 @@ public class AuditManager {
         final AuditTrailModel audit = new AuditTrailModel();
 
         audit.setId(UUID.randomUUID());
-        audit.setTableName(aggregate.getClass().getSimpleName());
+        audit.setTableName(entity.getClass().getSimpleName());
         audit.setAuditedAt(LocalDateTime.now());
         audit.setNote(note);
-
-        audit.setRecord(stringify(aggregate));
+        audit.setRecord(stringify(entity));
+        
+        System.out.println("Commit mememememememe 2");
+        
+        em.persist(audit);
+        
+        System.out.println("Commit mememememememe 3");
         
         tnx.commit();
-            
+        
+        System.out.println("Commit mememememememe 4");
+        
         } catch(Exception e) {
             e.printStackTrace();
             tnx.rollback();
+        } finally {
+            em.close();
         }
         
     }
@@ -60,17 +70,13 @@ public class AuditManager {
         return null;
     }
     
-    private String stringify(AggregateRoot aggregate) {
-        return this.gson.toJson(aggregate);
+    private String stringify(Object entity) {
+        return gson.toJson(entity);
     }
     
-    private AuditManager(EntityManagerFactoryHelper em) {
-        this.em = em;
+    private AuditManager(EntityManagerFactoryHelper emfh) {
+        this.emfh = emfh;
         this.gson = new GsonBuilder().create();
-    }
-    
-    public EntityManager getEntityManager() {
-        return this.em.getEntityManager();
     }
     
     public static AuditManager getInstance() {

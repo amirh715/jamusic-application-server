@@ -33,7 +33,8 @@ public class ActivateBlockUserController extends BaseController {
                 new ActivateBlockUserRequestDTO(
                         fields.get("id"),
                         fields.get("state"),
-                        fields.get("updaterId")
+                        subjectId,
+                        subjectRole
                 );
         
         try {

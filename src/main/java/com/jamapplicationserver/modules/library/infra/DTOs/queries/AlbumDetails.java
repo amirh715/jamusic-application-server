@@ -26,7 +26,7 @@ public class AlbumDetails extends ArtworkDetails {
             double rate,
             String flagNote,
             long totalPlayedCount,
-            String duration,
+            long duration,
             String recordLabel,
             String producer,
             String releaseDate,

@@ -5,13 +5,13 @@
  */
 package com.jamapplicationserver.modules.user.usecases.CreateUser;
 
+import java.util.*;
+import org.hibernate.exception.ConstraintViolationException;
 import com.jamapplicationserver.core.domain.UserRole;
 import com.jamapplicationserver.core.domain.FCMToken;
 import com.jamapplicationserver.core.domain.MobileNo;
 import com.jamapplicationserver.core.domain.Email;
-import com.jamapplicationserver.core.domain.DateTime;
 import com.jamapplicationserver.modules.user.domain.errors.*;
-import java.util.*;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.domain.*;
@@ -19,16 +19,12 @@ import com.jamapplicationserver.modules.user.repository.exceptions.*;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.repository.IUserRepository;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import org.hibernate.exception.ConstraintViolationException;
-
 
 /**
  *
  * @author amirhossein
  */
-public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, CreateUserResponseDTO> {
+public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String> {
     
     private final IUserRepository repository;
     
@@ -61,9 +57,6 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, CreateU
             final Result<FCMToken> FCMTokenOrError =
                     FCMToken.create(request.FCMToken);
             
-            final Result<UniqueEntityId> creatorIdOrError =
-                    UniqueEntityId.createFromString(request.creatorId);
-            
             final List<Result> combinedProps = new ArrayList<>();
             
             combinedProps.add(nameOrError);
@@ -79,9 +72,6 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, CreateU
             if(request.FCMToken != null)
                 combinedProps.add(FCMTokenOrError);
             
-            if(request.creatorId != null)
-                combinedProps.add(creatorIdOrError);
-            
             final Result combinedPropsResult = Result.combine(combinedProps);
             
             if(combinedPropsResult.isFailure)
@@ -92,7 +82,6 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, CreateU
             final Password password = passwordOrError.getValue();
             final Email email = request.email != null ? emailOrError.getValue() : null;
             final FCMToken fcmToken = request.FCMToken != null ? FCMTokenOrError.getValue() : null;
-            final UniqueEntityId creatorId = request.creatorId != null ? creatorIdOrError.getValue() : null;
             final UserRole role = request.role != null ? roleOrError.getValue() : null;
             
             final Result<User> userOrError = User.create(
@@ -100,9 +89,8 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, CreateU
                     mobile,
                     password,
                     email,
-                    null,
                     fcmToken,
-                    creatorId
+                    request.subjectId != null ? request.subjectId : null
             );
             
             if(userOrError.isFailure)
@@ -111,17 +99,18 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, CreateU
             final User user = userOrError.getValue();
             
             // fetch creator user & change user role
-            User creator;
             if(
-                    creatorId != null &&
-                    !creatorId.equals(user.id) &&
+                    request.subjectId != null &&
+                    !request.subjectId.equals(user.id) &&
                     role != null &&
-                    this.repository.exists(creatorId)
+                    repository.exists(request.subjectId)
             ) {
-                creator = this.repository.fetchById(creatorId);
+                final User creator = repository.fetchById(request.subjectId);
                 final Result roleChangeResult = user.changeRole(role, creator);
                 if(roleChangeResult.isFailure) return roleChangeResult;
             }
+            
+            // save user image
 
             // save user to database
             this.repository.save(user);

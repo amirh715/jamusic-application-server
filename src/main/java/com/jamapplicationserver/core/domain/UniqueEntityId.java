@@ -36,7 +36,8 @@ public class UniqueEntityId extends Identifier<UUID> {
     
     public static Result<Set<UniqueEntityId>> createFromStrings(Set<String> uuids) {
         if(uuids == null || uuids.isEmpty()) return Result.fail(new ValidationError(""));
-        final Result<Set<Result<UniqueEntityId>>> result = Result.combine(uuids
+        final Result<Set<Result<UniqueEntityId>>> result =
+                Result.combine(uuids
                 .stream()
                 .map(uuid -> UniqueEntityId.createFromString(uuid))
                 .collect(Collectors.toSet())
@@ -51,18 +52,23 @@ public class UniqueEntityId extends Identifier<UUID> {
     }
     
     public static Result<UniqueEntityId> createFromUUID(UUID uuid) {
-        try {
-            if(uuid == null) return Result.fail(new ValidationError("Entity id is required."));
-            return Result.ok(new UniqueEntityId(uuid));
-        } catch(Exception e) {
-            return Result.fail(new ValidationError("Entity id is invalid."));
-        }
+        if(uuid == null) return Result.fail(new ValidationError("Entity id is required."));
+        return Result.ok(new UniqueEntityId(uuid));
     }
     
-    public static Result<Set<Result<UniqueEntityId>>> createFromUUIDs(Set<UUID> uuids) {
-        return Result.combine(uuids
+    public static Result<Set<UniqueEntityId>> createFromUUIDs(Set<UUID> uuids) {
+        if(uuids == null || uuids.isEmpty()) return Result.fail(new ValidationError(""));
+        final Result<Set<Result<UniqueEntityId>>> result =
+                Result.combine(uuids
                 .stream()
                 .map(uuid -> UniqueEntityId.createFromUUID(uuid))
+                .collect(Collectors.toSet())
+        );
+        if(result.isFailure) return Result.fail(result.getError());
+        return Result.ok(
+                result.getValue()
+                .stream()
+                .map(el -> el.getValue())
                 .collect(Collectors.toSet())
         );
     }

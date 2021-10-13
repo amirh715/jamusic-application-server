@@ -5,13 +5,11 @@
  */
 package com.jamapplicationserver.modules.user.usecases.VerifyEmail;
 
-import com.jamapplicationserver.core.domain.IDTO;
-
 /**
  *
  * @author amirhossein
  */
-public class VerifyEmailRequestDTO implements IDTO {
+public class VerifyEmailRequestDTO {
     
     public final String link;
     

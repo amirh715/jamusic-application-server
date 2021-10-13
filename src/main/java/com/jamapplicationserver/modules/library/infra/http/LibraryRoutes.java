@@ -23,7 +23,9 @@ import com.jamapplicationserver.modules.library.usecases.Genres.GetAllGenres.Get
 import com.jamapplicationserver.modules.library.usecases.Genres.RemoveGenre.RemoveGenreController;
 import com.jamapplicationserver.modules.library.usecases.Genres.GetGenreById.GetGenreByIdController;
 import com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetRecommendedCollections.GetRecommendedCollectionsController;
-
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.EditArtist.EditArtistController;
+import com.jamapplicationserver.modules.library.usecases.LibraryEntity.EditArtwork.EditArtworkController;
+        
 /**
  *
  * @author dada
@@ -78,6 +80,18 @@ public class LibraryRoutes implements RouteGroup {
         put(
                 LibraryPaths.PUBLISH_ARCHIVE_ENTITY,
                 PublishArchiveLibraryEntityController.getInstance()
+        );
+        
+        // edit artist
+        put(
+                LibraryPaths.EDIT_ARTIST,
+                EditArtistController.getInstance()
+        );
+        
+        // edit artwork
+        put(
+                LibraryPaths.EDIT_ARTWORK,
+                EditArtworkController.getInstance()
         );
         
         // played track

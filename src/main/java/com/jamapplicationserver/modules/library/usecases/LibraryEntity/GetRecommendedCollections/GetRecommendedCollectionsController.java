@@ -26,7 +26,7 @@ public class GetRecommendedCollectionsController extends BaseController {
         
         try {
             
-            final Result result = usecase.execute(this.subjectId);
+            final Result result = usecase.execute(subjectId);
             
             if(result.isFailure) {
                 

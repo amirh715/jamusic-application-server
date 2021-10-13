@@ -7,6 +7,7 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.util.*;
 import javax.persistence.*;
+import org.hibernate.envers.*;
 
 /**
  *
@@ -14,6 +15,7 @@ import javax.persistence.*;
  */
 @Entity
 @DiscriminatorValue("S")
+@Audited
 public class SingerModel extends ArtistModel {
     
     public SingerModel() {
@@ -22,6 +24,7 @@ public class SingerModel extends ArtistModel {
     }
     
     @ManyToMany(mappedBy="members")
+    @NotAudited
     private Set<BandModel> bands;
     
     public Set<BandModel> getBands() {

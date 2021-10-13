@@ -7,7 +7,7 @@ package com.jamapplicationserver.modules.user.infra.services;
 
 import com.jamapplicationserver.infra.Persistence.database.Models.LoginAuditModel;
 import com.jamapplicationserver.infra.Persistence.database.Models.UserModel;
-import javax.persistence.EntityManager;
+import javax.persistence.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.BusinessError;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
@@ -19,7 +19,10 @@ import java.util.*;
  */
 public class LoginAuditManager {
     
-    private LoginAuditManager() {
+    final EntityManagerFactoryHelper emfh;
+    
+    private LoginAuditManager(EntityManagerFactoryHelper emfh) {
+        this.emfh = emfh;
     }
     
     public void audit(
@@ -31,11 +34,12 @@ public class LoginAuditManager {
             String os
     ) {
         
-        try {
+        final EntityManager em = emfh.createEntityManager();
+        final EntityTransaction tnx = em.getTransaction();
         
-            final EntityManager em = getEntityManager();
+        try {
 
-            em.getTransaction().begin();
+            tnx.begin();
 
             final UserModel user = em.getReference(UserModel.class, userId.toValue());
 
@@ -52,35 +56,31 @@ public class LoginAuditManager {
 
             em.persist(audit);
 
-            em.getTransaction().commit();
+            tnx.commit();
             
         } catch(Exception e) {
             e.printStackTrace();
+            tnx.rollback();
+        } finally {
+            em.close();
         }
         
     }
     
     public Set<LoginAuditModel> queryAudit(UniqueEntityId userId) {
         
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
-            
-            final EntityManager em = getEntityManager();
-            
-            em.getTransaction().begin();
-            
-            em.getTransaction().commit();
+
             
             return null;
             
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
         }
         
-    }
-    
-    private static EntityManager getEntityManager() {
-       return EntityManagerFactoryHelper.getInstance().getEntityManager();
     }
     
     public static LoginAuditManager getInstance() {
@@ -89,6 +89,7 @@ public class LoginAuditManager {
     
     private static class LoginAuditManagerHolder {
 
-        private static final LoginAuditManager INSTANCE = new LoginAuditManager();
+        private static final LoginAuditManager INSTANCE =
+                new LoginAuditManager(EntityManagerFactoryHelper.getInstance());
     }
 }

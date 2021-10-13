@@ -10,7 +10,7 @@ import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.domain.core.Artist;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.CreateArtistRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateArtistRequestDTO;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
@@ -45,7 +45,8 @@ public class CreateArtistController extends BaseController {
                             fields.get("genreIds"),
                             fields.get("tags"),
                             fields.get("flagNote"),
-                            this.subjectId,
+                            subjectId,
+                            subjectRole,
                             fields.get("instagramId"),
                             image
                     );

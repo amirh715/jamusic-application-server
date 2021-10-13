@@ -12,7 +12,7 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.EditGenreRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.EditGenreRequestDTO;
 import com.jamapplicationserver.infra.Persistence.database.UpdaterOrCreatorDoesNotExistException;
 import org.hibernate.exception.ConstraintViolationException;
 
@@ -40,9 +40,7 @@ public class EditGenreUseCase implements IUsecase<EditGenreRequestDTO, String> {
             
             final Result<GenreTitle> titleOrError = GenreTitle.create(request.title);
             final Result<GenreTitle> titleInPersianOrError = GenreTitle.create(request.titleInPersian);
-            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             
-            combinedProps.add(updaterIdOrError);
             if(request.title != null) combinedProps.add(titleOrError);
             if(request.titleInPersian != null) combinedProps.add(titleInPersianOrError);
             
@@ -52,7 +50,6 @@ public class EditGenreUseCase implements IUsecase<EditGenreRequestDTO, String> {
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final UniqueEntityId id = idOrError.getValue();
-            final UniqueEntityId updaterId = updaterIdOrError.getValue();
             
             final Genre genre = this.repository.fetchById(id);
             
@@ -64,7 +61,7 @@ public class EditGenreUseCase implements IUsecase<EditGenreRequestDTO, String> {
             final GenreTitle titleInPersian =
                     request.titleInPersian != null ?
                     titleInPersianOrError.getValue() : genre.getTitleInPersian();
-            genre.edit(title, titleInPersian, updaterId);
+            genre.edit(title, titleInPersian, request.subjectId);
             
             this.repository.save(genre);
             

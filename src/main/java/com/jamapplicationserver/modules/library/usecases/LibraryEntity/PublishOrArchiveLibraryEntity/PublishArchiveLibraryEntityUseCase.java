@@ -7,17 +7,18 @@ package com.jamapplicationserver.modules.library.usecases.LibraryEntity.PublishO
 
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.PublishArchiveLibraryEntityRequestDTO;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.*;
+import com.jamapplicationserver.modules.library.domain.core.subscribers.*;
 
 /**
  *
  * @author dada
  */
-public class PublishArchiveLibraryEntityUseCase implements IUsecase<PublishArchiveLibraryEntityRequestDTO, String> {
+public class PublishArchiveLibraryEntityUseCase implements IUsecase<PublishOrArchiveLibraryEntityRequestDTO, String> {
     
     private final ILibraryEntityRepository repository;
     
@@ -26,29 +27,35 @@ public class PublishArchiveLibraryEntityUseCase implements IUsecase<PublishArchi
     }
     
     @Override
-    public Result execute(PublishArchiveLibraryEntityRequestDTO request) throws GenericAppException {
+    public Result execute(PublishOrArchiveLibraryEntityRequestDTO request) throws GenericAppException {
         
         try {
             
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
-            
             if(idOrError.isFailure) return idOrError;
             
             final UniqueEntityId id = idOrError.getValue();
             
             final LibraryEntity entity =
-                    this.repository.fetchById(id)
-                            .includeUnpublished()
+                    repository.fetchById(id)
+                            .includeUnpublished(request.subjectRole)
                             .getSingleResult();
             
             if(entity == null) return Result.fail(new LibraryEntityDoesNotExistError());
             
-            if(request.published)
-                entity.publish();
-            else
-                entity.archive();
+            if(entity instanceof Artist) {
+                if(request.publish)
+                    ((Artist) entity).publish(request.subjectId, request.cascadePublishCommandToArtistsArtworks);
+                else
+                    entity.archive(request.subjectId);
+            } else {
+                if(request.publish)
+                    entity.publish(request.subjectId);
+                else
+                    entity.archive(request.subjectId);
+            }
 
-            this.repository.save(entity);
+            repository.save(entity);
             
             return Result.ok();
             

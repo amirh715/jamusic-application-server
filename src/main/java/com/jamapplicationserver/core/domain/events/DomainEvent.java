@@ -5,33 +5,26 @@
  */
 package com.jamapplicationserver.core.domain.events;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import com.jamapplicationserver.core.domain.*;
 
 /**
  *
- * @author amirhossein
+ * @author dada
  */
 public abstract class DomainEvent {
     
     public final LocalDateTime occurredAt;
-    public final AggregateRoot aggregate;
+    public final UniqueEntityId aggregateId;
     
-    public DomainEvent(
-            LocalDateTime occurredAt,
-            AggregateRoot aggregate
-    ) {
-        this.occurredAt = occurredAt;
-        this.aggregate = aggregate;
-    }
-    
-    public DomainEvent(AggregateRoot aggregate) {
+    protected DomainEvent(UniqueEntityId aggregateId) {
+        this.aggregateId = aggregateId;
         this.occurredAt = LocalDateTime.now();
-        this.aggregate = aggregate;
     }
     
-    public UniqueEntityId getAggregateId() {
-        return this.aggregate.id;
+    protected DomainEvent(UniqueEntityId aggregateId, LocalDateTime occurredAt) {
+        this.aggregateId = aggregateId;
+        this.occurredAt = occurredAt;
     }
     
 }

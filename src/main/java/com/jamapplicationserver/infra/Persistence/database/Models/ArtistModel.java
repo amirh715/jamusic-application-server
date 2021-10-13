@@ -7,8 +7,9 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.*;
+import org.hibernate.envers.*;
 
 /**
  *
@@ -18,24 +19,25 @@ import java.util.Set;
 @NamedQueries({
     @NamedQuery(
             name="Artist_FetchSingleTracks",
-            query="SELECT tracks FROM ArtistModel artist, TrackModel tracks WHERE tracks.album = NULL"
+            query="SELECT tracks FROM ArtistModel artist, TrackModel tracks WHERE tracks.album = NULL AND tracks.artist.id = ?1"
     )
 })
-public abstract class ArtistModel extends LibraryEntityModel implements Serializable {
+@Audited
+public abstract class ArtistModel extends LibraryEntityModel {
     
     @Column(name="instagram_id")
     private String instagramId;
     
     @OneToMany(mappedBy="artist", fetch=FetchType.LAZY)
+    @NotAudited
     private Set<AlbumModel> albums = new HashSet<AlbumModel>();
     
     @OneToMany(mappedBy="artist", fetch=FetchType.LAZY)
+    @NotAudited
     private Set<TrackModel> tracks = new HashSet<TrackModel>();
     
     protected ArtistModel() {
-        super();
-        this.albums = new HashSet<>();
-        this.tracks = new HashSet<>();
+
     }
     
     public String getInstagramId() {
@@ -72,6 +74,13 @@ public abstract class ArtistModel extends LibraryEntityModel implements Serializ
     
     public void addTrack(TrackModel track) {
         this.tracks.add(track);
+    }
+
+    public Set<TrackModel> getSingleTracks() {
+        return this.tracks
+                .stream()
+                .filter(track -> track.getAlbum() == null)
+                .collect(Collectors.toSet());
     }
     
     public void removeTrack(TrackModel track) {

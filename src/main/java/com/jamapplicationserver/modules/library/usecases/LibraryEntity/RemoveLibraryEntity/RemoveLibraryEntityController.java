@@ -5,12 +5,12 @@
  */
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.RemoveLibraryEntity;
 
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.RemoveLibraryEntityRequestDTO;
 import java.util.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.*;
 
 /**
  *
@@ -29,29 +29,30 @@ public class RemoveLibraryEntityController extends BaseController {
         
         try {
             
-            final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+            final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
             
             final String id = fields.get("id");
             final RemoveLibraryEntityRequestDTO dto =
                     new RemoveLibraryEntityRequestDTO(
                             id,
-                            this.subjectId
+                            subjectId,
+                            subjectRole
                     );
             
-            final Result result = this.usecase.execute(dto);
+            final Result result = usecase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
@@ -60,7 +61,7 @@ public class RemoveLibraryEntityController extends BaseController {
             
         } catch(Exception e) {
             e.printStackTrace();
-            this.fail(e);
+            fail(e);
         }
         
     }

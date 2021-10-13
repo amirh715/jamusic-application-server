@@ -13,6 +13,7 @@ import com.jamapplicationserver.core.logic.Result;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
+import com.jamapplicationserver.modules.library.domain.core.events.*;
 
 /**
  *
@@ -20,12 +21,12 @@ import com.jamapplicationserver.modules.library.domain.core.errors.*;
  */
 public abstract class Artist extends LibraryEntity {
     
-    public static final int MAX_ALLOWED_TRACKS_PER_ARTIST = 150;
+    public static final int MAX_ALLOWED_SINGLE_TRACKS_PER_ARTIST = 150;
     public static final int MAX_ALLOWED_ALBUMS_PER_ARTIST = 150;
-    public static final Duration MAX_ALLOWED_DURATION_PER_ARTIST = Duration.ofHours(12);
     
-    protected Set<UniqueEntityId> albumsIds;
-    protected Set<UniqueEntityId> tracksIds;
+    protected Set<UniqueEntityId> albumsIds = new HashSet<>();
+    protected Set<UniqueEntityId> allTracksIds = new HashSet<>();
+    protected Set<UniqueEntityId> singleTracksIds = new HashSet<>();
     protected InstagramId instagramId;
     
     // creation constructor
@@ -40,7 +41,8 @@ public abstract class Artist extends LibraryEntity {
     ) {
         super(title, description, flag, tags, genres, creatorId);
         this.albumsIds = new HashSet<>();
-        this.tracksIds = new HashSet<>();
+        this.allTracksIds = new HashSet<>();
+        this.singleTracksIds = new HashSet<>();
         this.instagramId = instagramId;
     }
     
@@ -63,7 +65,8 @@ public abstract class Artist extends LibraryEntity {
             UniqueEntityId creatorId,
             UniqueEntityId updaterId,
             Set<UniqueEntityId> albumsIds,
-            Set<UniqueEntityId> tracksIds
+            Set<UniqueEntityId> allTracksIds,
+            Set<UniqueEntityId> singleTracksIds
     ) {
         super(
                 id,
@@ -82,8 +85,9 @@ public abstract class Artist extends LibraryEntity {
                 creatorId,
                 updaterId
         );
-        this.albumsIds = albumsIds != null ? albumsIds : new HashSet<>();
-        this.tracksIds = tracksIds != null ? tracksIds : new HashSet<>();
+        this.albumsIds = albumsIds;
+        this.allTracksIds = allTracksIds;
+        this.singleTracksIds = singleTracksIds;
         this.instagramId = instagramId;
     }
 
@@ -107,126 +111,115 @@ public abstract class Artist extends LibraryEntity {
         
         modified();
         
+        addDomainEvent(new ArtistEdited(this));
+        
         return Result.ok();
     }
     
-    public void removeInstagramId() {
-        this.instagramId = null;
-    }
-    
     @Override
-    public final void publish() {
-        if(this.tracksIds.isEmpty() && this.albumsIds.isEmpty()) {
-            this.archive();
+    protected final void publish() {
+        if(allTracksIds.isEmpty()) {
+            archive();
             return;
         }
-        if(this.isPublished()) return;
+        if(isPublished()) return;
         this.published = true;
-        this.modified();
-        // domain event ??
+        modified();
+        
     }
     
     @Override
     public final void publish(UniqueEntityId updaterId) {
-        this.publish();
+        publish();
         this.updaterId = updaterId;
+    }
+    
+    public final void publish(UniqueEntityId updaterId, Boolean cascadeToArtworks) {
+        publish(updaterId);
+        addDomainEvent(new ArtistPublished(this, cascadeToArtworks));
     }
     
     @Override
     public final void archive() {
-        if(!this.isPublished()) return;
+        if(!isPublished()) return;
         this.published = false;
-        this.modified();
-        // domain event ??
+        modified();
+        
     }
     
     @Override
     public final void archive(UniqueEntityId updaterId) {
-        this.archive();
+        archive();
         this.updaterId = updaterId;
+        addDomainEvent(new ArtistArchived(this));
     }
     
-    @Override
-    public void rate(Rate rate) {
-        this.rate = rate;
-    }
-    
-    public Result addTrack(Track track, UniqueEntityId updaterId) {
+    public Result addArtwork(Artwork artwork, UniqueEntityId updaterId) {
+
+        // check if artwork genres match those of the artist's
+        // if artist has genres
+        if(genres != null) { 
+            
+            // if the artwork being added has genres
+            if(artwork.getGenres() != null) {
+                
+                final boolean doesArtworksGenresMatchThoseOfTheArtists =
+                        artwork.getGenres().getValue()
+                        .stream()
+                        .allMatch(artworkGenre ->
+                                genres.getValue()
+                                .stream()
+                                .anyMatch(artistGenre ->
+                                        artistGenre.equals(artworkGenre) ||
+                                        artistGenre.isSubGenreOf(artworkGenre)
+                                )
+                        );
+                
+                if(!doesArtworksGenresMatchThoseOfTheArtists)
+                    return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+                
+            }
+            
+        }
         
-        if(this.tracksIds.size() >= MAX_ALLOWED_TRACKS_PER_ARTIST)
-            return Result.fail(new ArtistMaxAllowedTracksExceededError());
+        if(artwork instanceof Album) {
+            
+            if(albumsIds.size() >= MAX_ALLOWED_ALBUMS_PER_ARTIST)
+                return Result.fail(new ArtistMaxAllowedAlbumsExceededError());
+            
+            final boolean alreadyExists = albumsIds.contains(artwork.id);
+            if(alreadyExists) return Result.ok();
+            
+            if(!isPublished() && artwork.isPublished()) return null;
+            
+            duration = duration.plus(artwork.duration);
+            
+            albumsIds.add(artwork.id);
+            ((Album) artwork).getTracks()
+                    .forEach(track -> allTracksIds.add(track.id));
+
+        }
         
-        final boolean willDurationBeOverTheLimit =
-                !this.duration
-                        .plus(track.duration)
-                        .minus(MAX_ALLOWED_DURATION_PER_ARTIST)
-                        .isNegative();
-        if(willDurationBeOverTheLimit)
-            return Result.fail(new ArtistMaxAllowedDurationExceededError());
-        
-        final boolean alreadyExists = this.tracksIds.contains(track.id);
-        
-        if(alreadyExists) return Result.ok();
-        
-        if(this.isPublished())
-            track.publish();
-        else
-            track.archive();
-        
-        this.duration = this.duration.plus(track.duration);
-        
-        this.tracksIds.add(track.id);
-        track.setArtist(this);
-        
-        this.updaterId = updaterId;
-        this.modified();
-        
-        return Result.ok();
-    }
-    
-    public Result removeTrack(Track track, UniqueEntityId updaterId) {
-        
-        this.duration = this.duration.minus(track.duration);
-        
-        this.tracksIds.remove(track.id);
-        
-        this.updaterId = updaterId;
-        this.modified();
-        
-        return Result.ok();
-    }
-    
-    public Result addAlbum(Album album, UniqueEntityId updaterId) {
-        
-        if(this.albumsIds.size() >= MAX_ALLOWED_ALBUMS_PER_ARTIST)
-            return Result.fail(new ArtistMaxAllowedAlbumsExceededError());
-        
-        final boolean alreadyExists = this.albumsIds.contains(album.id);
-        
-        if(alreadyExists) return Result.ok();
-        
-        if(this.isPublished())
-            album.publish();
-        else
-            album.archive();
-        
-        this.duration = this.duration.plus(album.duration);
-        
-        this.albumsIds.add(album.id);
-        
-        this.modified();
-        
-        return Result.ok();
-    }
-    
-    public Result removeAlbum(Album album, UniqueEntityId updaterId) {
-        
-        this.duration = this.duration.minus(album.duration);
-        
-        this.albumsIds.remove(album.id);
+        if(artwork instanceof Track) {
+            
+            if(singleTracksIds.size() >= MAX_ALLOWED_SINGLE_TRACKS_PER_ARTIST)
+                return null;
+            
+            final boolean alreadyExists = singleTracksIds.contains(artwork.id);
+            if(alreadyExists) return null;
+            
+            if(!isPublished() && artwork.isPublished());
+            
+            duration = duration.plus(artwork.duration);
+            
+            singleTracksIds.add(artwork.id);
+            allTracksIds.add(artwork.id);
+
+        }
         
         this.updaterId = updaterId;
-        this.modified();
+        
+        modified();
         
         return Result.ok();
     }
@@ -235,8 +228,12 @@ public abstract class Artist extends LibraryEntity {
         return this.albumsIds;
     }
     
-    public Set<UniqueEntityId> getTracksIds() {
-        return this.tracksIds;
+    public Set<UniqueEntityId> getAllTracksIds() {
+        return this.allTracksIds;
+    }
+    
+    public Set<UniqueEntityId> getSingleTracksIds() {
+        return this.singleTracksIds;
     }
     
     public final InstagramId getInstagramId() {

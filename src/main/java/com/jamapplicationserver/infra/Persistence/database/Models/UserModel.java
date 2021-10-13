@@ -5,16 +5,17 @@
  */
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
-import javax.persistence.*;
 import java.util.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import javax.persistence.*;
+import org.hibernate.envers.*;
 
 /**
  *
  * @author amirhossein
  */
 @Entity
+@Audited
 @Table(name="users", schema="jamschema",
         uniqueConstraints={
             @UniqueConstraint(columnNames={"mobile"}, name="mobile_unique_key"),
@@ -23,11 +24,7 @@ import java.time.LocalDateTime;
             @UniqueConstraint(columnNames={"fcm_token"}, name="fcm_token_unique_key")
         }
 )
-public class UserModel implements Serializable {
-   
-    @Id
-    @Column(name="id", updatable=false)
-    private UUID id;
+public class UserModel extends EntityModel {
     
     @Column(name="name", nullable=false)
     private String name;
@@ -36,6 +33,7 @@ public class UserModel implements Serializable {
     private String mobile;
     
     @Column(name="password", nullable=false)
+    @NotAudited
     private String password;
     
     @Column(name="email", nullable=true)
@@ -65,12 +63,15 @@ public class UserModel implements Serializable {
     private LocalDateTime lastModifiedAt;
     
     @OneToMany(mappedBy="player", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @NotAudited
     private Set<PlayedModel> playedTracks = new HashSet<PlayedModel>();
     
     @OneToMany(mappedBy="recipient", fetch=FetchType.LAZY)
+    @NotAudited
     private Set<NotificationRecipientModel> notifications = new HashSet<>();
     
     @OneToMany(fetch=FetchType.LAZY, mappedBy="player")
+    @NotAudited
     private final Set<PlaylistModel> playlists = new HashSet<>();
 
     @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
@@ -80,9 +81,11 @@ public class UserModel implements Serializable {
             foreignKey=@ForeignKey(name="creator_id_fk_key"),
             updatable=false
     )
+    @Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
     private UserModel creator;
     
     @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
     @JoinColumn(
             name="updater_id",
             referencedColumnName="id",
@@ -91,12 +94,15 @@ public class UserModel implements Serializable {
     private UserModel updater;
     
     @OneToOne(mappedBy="user", cascade={CascadeType.MERGE, CascadeType.REMOVE}, fetch=FetchType.LAZY)
+    @NotAudited
     private UserVerificationModel verification;
     
     @OneToOne(mappedBy="user", cascade={CascadeType.MERGE, CascadeType.REMOVE}, fetch=FetchType.LAZY)
+    @NotAudited
     private UserEmailVerificationModel emailVerification;
     
     @OneToOne(mappedBy="user", cascade={CascadeType.MERGE, CascadeType.REMOVE}, fetch=FetchType.LAZY)
+    @NotAudited
     private UserPasswordResetVerificationModel passwordResetVerification;
     
     public UserModel() {
@@ -133,14 +139,6 @@ public class UserModel implements Serializable {
         this.lastModifiedAt = lastModifiedAt;
         this.verification = verification;
         this.emailVerification = emailVerification;
-    }
-    
-    public UUID getId() {
-        return this.id;
-    }
-    
-    public void setId(UUID id) {
-        this.id = id;
     }
     
     public String getName() {

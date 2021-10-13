@@ -7,56 +7,51 @@ package com.jamapplicationserver.core.infra;
 
 import java.util.*;
 import javax.persistence.criteria.*;
-import javax.persistence.EntityManager;
+import javax.persistence.*;
 
 /**
  *
  * @author dada
+ * @param <T>
  */
-public abstract class QueryScope<T> {
+public abstract class QueryScope<T, U> {
     
-    protected List<Predicate> predicates;
-    protected EntityManager manager;
-    protected CriteriaBuilder cb;
-    protected CriteriaQuery cq;
-    protected Root root;
-    protected Class clazz;
+    protected final EntityManager entityManager;
+    protected final CriteriaBuilder builder;
+    protected final CriteriaQuery<T> query;
+    protected final Root<T> root;
+    protected final List<Predicate> predicates;
+    protected final List<Predicate> defaultScope;
     
     protected QueryScope(
-            EntityManager manager,
-            CriteriaBuilder cb,
-            CriteriaQuery cq,
+            EntityManager entityManager,
+            CriteriaQuery query,
             Root root,
-            Class clazz,
             List<Predicate> predicates
     ) {
-        this.predicates = new ArrayList<>();
-        this.predicates.addAll(predicates);
-        this.manager = manager;
-        this.cb = cb;
-        this.cq = cq;
+        this.entityManager = entityManager;
+        this.builder = entityManager.getCriteriaBuilder();
+        this.query = query;
         this.root = root;
-        this.clazz = clazz;
-        
+        this.predicates = predicates;
+        this.defaultScope = new ArrayList<>();
     }
     
     protected QueryScope(
-            EntityManager manager,
-            CriteriaBuilder cb,
-            CriteriaQuery cq,
-            Root root,
-            Class clazz
+            EntityManager entityManager,
+            CriteriaQuery query,
+            Root root
     ) {
-        this.predicates = new ArrayList<>();
-        this.manager = manager;
-        this.cb = cb;
-        this.cq = cq;
+        this.entityManager = entityManager;
+        this.builder = entityManager.getCriteriaBuilder();
+        this.query = query;
         this.root = root;
-        this.clazz = clazz;
+        this.predicates = new ArrayList<>();
+        this.defaultScope = new ArrayList<>();
     }
     
-    public abstract Set<T> getResults();
+    public abstract Set<U> getResults();
     
-    public abstract T getSingleResult();
+    public abstract U getSingleResult();
     
 }

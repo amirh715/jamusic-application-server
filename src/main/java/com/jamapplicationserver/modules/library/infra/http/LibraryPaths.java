@@ -22,10 +22,10 @@ public class LibraryPaths {
     
     public static final String GET_COLLECTIONS = "/collections/";
     
-    public static final String EDIT_ARTIST = "/artist";
-    public static final String EDIT_ARTWORK = "/artwork";
+    public static final String EDIT_ARTIST = "/artist/";
+    public static final String EDIT_ARTWORK = "/artwork/";
     
-    public static final String PUBLISH_ARCHIVE_ENTITY = "/publish-archive";
+    public static final String PUBLISH_ARCHIVE_ENTITY = "/publish-or-archive";
     
     public static final String REMOVE_ENTITY = "/";
     

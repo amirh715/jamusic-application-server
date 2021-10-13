@@ -30,10 +30,10 @@ public class VerifyAccountController extends BaseController {
             
             final VerifyAccountRequestDTO dto = new VerifyAccountRequestDTO(
                     fields.get("id"),
-                    Integer.valueOf(fields.get("code"))
+                    fields.get("resetCode")
             );
             
-            final Result result = this.useCase.execute(dto);
+            final Result result = useCase.execute(dto);
             
             if(result.isFailure) {
                 

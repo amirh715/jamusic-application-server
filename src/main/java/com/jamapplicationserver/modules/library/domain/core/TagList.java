@@ -8,7 +8,7 @@ package com.jamapplicationserver.modules.library.domain.core;
 import java.util.*;
 import com.jamapplicationserver.core.domain.ValueObject;
 import com.jamapplicationserver.core.logic.*;
-import java.util.stream.Collectors;
+import org.apache.commons.compress.utils.Sets;
 
 /**
  *
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class TagList extends ValueObject<Set<Tag>> {
     
-    public static final int MAX_ALLOWED_TAGS = 5;
+    public static final int MAX_ALLOWED_TAGS = 10;
     
     private final Set<Tag> tags;
     
@@ -29,6 +29,10 @@ public class TagList extends ValueObject<Set<Tag>> {
         this.tags = tags;
     }
     
+    private TagList(Set<Tag>... tags) {
+        this.tags = null;
+    }
+    
     public static final Result<TagList> create(Set<Tag> tags) {
         
         if(tags == null)
@@ -39,6 +43,21 @@ public class TagList extends ValueObject<Set<Tag>> {
         
         return Result.ok(new TagList(tags));
         
+    }
+    
+    public static final Result<TagList> create(Set<Tag>... tags) {
+        
+        if(tags.length == 0)
+            return Result.fail(new ValidationError("Tags are required"));
+        
+        int count = 0;
+        for(Set<Tag> aSetOfTags : tags) {
+            count = count + aSetOfTags.size();
+        }
+        if(count > MAX_ALLOWED_TAGS)
+            return Result.fail(new ValidationError("Tag lists can have " + MAX_ALLOWED_TAGS + " max."));
+        
+        return Result.ok(new TagList(tags));
     }
     
     public static final Result<TagList> createFromString(Set<String> tags) {

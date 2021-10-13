@@ -8,7 +8,7 @@ package com.jamapplicationserver.infra.Services.KeyStoreManager;
 import java.util.*;
 import javax.persistence.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
-import com.jamapplicationserver.infra.Persistence.database.Models.KeyValueStore;
+import com.jamapplicationserver.infra.Persistence.database.Models.KeyValue;
 
 /**
  *
@@ -16,17 +16,32 @@ import com.jamapplicationserver.infra.Persistence.database.Models.KeyValueStore;
  */
 public class KeyStoreManager {
     
-    private final EntityManager em;
+    private final EntityManagerFactoryHelper emfh;
     private Map<String, String> items;
     
     public void set(String key, String value) {
+        
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
-        final KeyValueStore item = new KeyValueStore();
-        item.setKey(key);
-        item.setValue(value);
-        tnx.begin();
-        em.persist(item);
-        tnx.commit();
+        
+        try {
+            
+            tnx.begin();
+            
+            final KeyValue item = new KeyValue();
+            item.setKey(key);
+            item.setValue(value);
+            
+            em.persist(item);
+            
+            tnx.commit();
+            
+        } catch(Exception e) {
+            tnx.rollback();
+        } finally {
+            em.close();
+        }
+
     }
     
     public String get(String key) {
@@ -34,16 +49,28 @@ public class KeyStoreManager {
     }
     
     public void refresh() {
-        final List<KeyValueStore> refreshedItems =
-                em.createQuery("FROM KeyStore store")
-                .getResultList();
-        this.items = new HashMap<>();
-        refreshedItems
-                .forEach(item -> this.items.put(item.getKey(), item.getValue()));
+        
+        final EntityManager em = emfh.createEntityManager();
+        
+        try {
+            
+            final List<KeyValue> refreshedItems =
+                    em.createQuery("FROM KeyValue store")
+                    .getResultList();
+            items = new HashMap<>();
+            refreshedItems
+                    .forEach(item -> items.put(item.getKey(), item.getValue()));
+            
+        } catch(Exception e) {
+            throw e;
+        } finally {
+            em.close();
+        }
+
     }
     
-    private KeyStoreManager(EntityManager em) {
-        this.em = em;
+    private KeyStoreManager(EntityManagerFactoryHelper emfh) {
+        this.emfh = emfh;
     }
     
     public static KeyStoreManager getInstance() {
@@ -53,6 +80,6 @@ public class KeyStoreManager {
     private static class KeyStoreManagerHolder {
 
         private static final KeyStoreManager INSTANCE =
-                new KeyStoreManager(EntityManagerFactoryHelper.getInstance().getEntityManager());
+                new KeyStoreManager(EntityManagerFactoryHelper.getInstance());
     }
 }

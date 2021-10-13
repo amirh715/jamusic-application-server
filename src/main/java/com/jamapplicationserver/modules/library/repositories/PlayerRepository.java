@@ -23,16 +23,16 @@ import com.jamapplicationserver.core.domain.*;
  */
 public class PlayerRepository implements IPlayerRepository {
     
-    private final EntityManager em;
+    private final EntityManagerFactoryHelper emfh;
     private final ILibraryEntityRepository libraryRepository;
     private final IPlaylistRepository playlistRepository;
     
     private PlayerRepository(
-            EntityManager em,
+            EntityManagerFactoryHelper emfh,
             ILibraryEntityRepository libraryRepository,
             IPlaylistRepository playlistRepository
     ) {
-        this.em = em;
+        this.emfh = emfh;
         this.libraryRepository = libraryRepository;
         this.playlistRepository = playlistRepository;
     }
@@ -40,9 +40,11 @@ public class PlayerRepository implements IPlayerRepository {
     @Override
     public Player fetchById(UniqueEntityId id) {
         
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
 
-            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
             final CriteriaQuery<UserModel> cq = cb.createQuery(UserModel.class);
             final Root root = cq.from(UserModel.class);
             
@@ -58,13 +60,15 @@ public class PlayerRepository implements IPlayerRepository {
                     )
             );
             
-            final UserModel result = this.em.createQuery(cq).getSingleResult();
+            final UserModel result = em.createQuery(cq).getSingleResult();
             
-            return toDomain(result);
+            return toDomain(result, em);
             
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -73,15 +77,19 @@ public class PlayerRepository implements IPlayerRepository {
     @Override
     public boolean exists(UniqueEntityId id) {
         
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
             
-            final UserModel model = this.em.find(UserModel.class, id.toValue());
+            final UserModel model = em.find(UserModel.class, id.toValue());
             
             return model != null;
             
         } catch(Exception e) {
             e.printStackTrace();
-            return false;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -105,18 +113,16 @@ public class PlayerRepository implements IPlayerRepository {
     @Override
     public void save(Player player) {
         
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         try {
             
             tnx.begin();
             
-            final UserModel model = toPersistence(player);
+            final UserModel model = toPersistence(player, em);
             
             em.merge(model);
-            
-            em.flush();
-            em.clear();
             
             tnx.commit();
             
@@ -124,26 +130,28 @@ public class PlayerRepository implements IPlayerRepository {
             e.printStackTrace();
             tnx.rollback();
             throw e;
+        } finally {
+            em.close();
         }
         
     }
     
-    public Player toDomain(UserModel model) {
+    public Player toDomain(UserModel model, EntityManager em) {
         
         final Set<PlayedTrack> playedTracks = new HashSet<>();
                 
         if(!model.getPlayedTracks().isEmpty()) {
-//            model.getPlayedTracks()
-//                    .stream()
-//                    .map(p -> {
-//                        final Track playedTrack =
-//                                (Track) libraryRepository.toDomain((TrackModel) p.getPlayedTrack());
-//                        final DateTime playedAt =
-//                                DateTime.createWithoutValidation(p.getPlayedAt());
-//                        return new PlayedTrack(playedTrack, playedAt);
-//                    })
-//                    .collect(Collectors.toSet())
-//                    .forEach(p -> playedTracks.add(p));
+            model.getPlayedTracks()
+                    .stream()
+                    .map(p -> {
+                        final Track playedTrack =
+                                (Track) libraryRepository.toDomain((TrackModel) p.getPlayedTrack(), em);
+                        final DateTime playedAt =
+                                DateTime.createWithoutValidation(p.getPlayedAt());
+                        return new PlayedTrack(playedTrack, playedAt);
+                    })
+                    .collect(Collectors.toSet())
+                    .forEach(p -> playedTracks.add(p));
         }
         
         final Set<Playlist> playlists = new HashSet<>();
@@ -152,9 +160,11 @@ public class PlayerRepository implements IPlayerRepository {
             model.getPlaylists()
                     .stream()
                     .map(p -> {
-                        final UniqueEntityId id =
+                        final UniqueEntityId ownerId =
+                                UniqueEntityId.createFromUUID(model.getId()).getValue();
+                        final UniqueEntityId playlistId =
                                 UniqueEntityId.createFromUUID(p.getId()).getValue();
-                        return playlistRepository.fetchById(id);
+                        return playlistRepository.fetchById(ownerId, playlistId);
                     })
                     .collect(Collectors.toSet())
                     .forEach(p -> playlists.add(p));
@@ -174,17 +184,17 @@ public class PlayerRepository implements IPlayerRepository {
         return entity;
     }
     
-    public UserModel toPersistence(Player entity) {
+    public UserModel toPersistence(Player entity, EntityManager em) {
         
         final UserModel model = em.getReference(UserModel.class, entity.getId().toValue());
         
-//        entity.getPlayedTracks()
-//                .forEach(played ->
-//                        model.addPlayedTrack(
-//                            (TrackModel) libraryRepository.toPersistence(played.track),
-//                            played.playedAt.getValue()
-//                        )
-//                );
+        entity.getPlayedTracks()
+                .forEach(played ->
+                        model.addPlayedTrack(
+                            (TrackModel) libraryRepository.toPersistence(played.track, em),
+                            played.playedAt.getValue()
+                        )
+                );
         
         entity.getPlaylists()
                 .forEach(playlist ->
@@ -202,14 +212,12 @@ public class PlayerRepository implements IPlayerRepository {
     
     private static class PlayerRepositoryHolder {
 
-        final static EntityManager em =
-                EntityManagerFactoryHelper.getInstance()
-                .getFactory()
-                .createEntityManager();
+        final static EntityManagerFactoryHelper emfh =
+                EntityManagerFactoryHelper.getInstance();
         
         private static final PlayerRepository INSTANCE =
                 new PlayerRepository(
-                        em,
+                        emfh,
                         LibraryEntityRepository.getInstance(),
                         PlaylistRepository.getInstance()
                 );

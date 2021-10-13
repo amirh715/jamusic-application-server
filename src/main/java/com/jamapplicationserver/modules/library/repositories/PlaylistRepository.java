@@ -21,29 +21,41 @@ import com.jamapplicationserver.modules.library.domain.Track.Track;
  */
 public class PlaylistRepository implements IPlaylistRepository {
     
-    private final EntityManager em;
+    private final EntityManagerFactoryHelper emfh;
     private final ILibraryEntityRepository libraryRepository;
     
     private PlaylistRepository(
-            EntityManager em,
+            EntityManagerFactoryHelper emfh,
             ILibraryEntityRepository libraryRepository
     ) {
-        this.em = em;
+        this.emfh = emfh;
         this.libraryRepository = libraryRepository;
     }
     
     @Override
-    public Playlist fetchById(UniqueEntityId id) {
+    public Playlist fetchById(UniqueEntityId ownerId, UniqueEntityId playlistId) {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            final PlaylistModel result = this.em.find(PlaylistModel.class, id.toValue());
+            final String query =
+                    "SELECT playlists FROM PlaylistModel playlists JOIN FETCH UserModel players"
+                    + "WHERE players.id = ?1 AND playlists.id = ?2";
+            
+            final PlaylistModel result =
+                    em.createQuery(query, PlaylistModel.class)
+                    .setParameter(1, ownerId.toValue())
+                    .setParameter(2, playlistId.toValue())
+                    .getSingleResult();
             
             return toDomain(result);
             
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -51,9 +63,11 @@ public class PlaylistRepository implements IPlaylistRepository {
     @Override
     public Set<Playlist> fetchByPlayerId(UniqueEntityId id) {
         
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
             
-            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
             final CriteriaQuery<PlaylistModel> cq = cb.createQuery(PlaylistModel.class);
             final Root<PlaylistModel> root = cq.from(PlaylistModel.class);
             
@@ -61,7 +75,7 @@ public class PlaylistRepository implements IPlaylistRepository {
             
             cq.orderBy();
             
-            return this.em.createQuery(cq)
+            return em.createQuery(cq)
                     .getResultList()
                     .stream()
                     .map(model -> toDomain(model))
@@ -69,7 +83,9 @@ public class PlaylistRepository implements IPlaylistRepository {
             
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -77,21 +93,20 @@ public class PlaylistRepository implements IPlaylistRepository {
     @Override
     public void save(Playlist playlist) {
         
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         try {
-            
-            final boolean exists = this.exists(playlist.id);
-            
+                        
             tnx.begin();
             
-            if(exists) { // update existing playlist
+            if(exists(playlist.id)) { // update existing playlist
                 
-                this.em.merge(toPersistence(playlist));
+                em.merge(toPersistence(playlist));
                 
             } else { // insert new playlist
                 
-                this.em.persist(toPersistence(playlist));
+                em.persist(toPersistence(playlist));
                 
             }
             
@@ -99,6 +114,9 @@ public class PlaylistRepository implements IPlaylistRepository {
             
         } catch(Exception e) {
             e.printStackTrace();
+            tnx.rollback();
+        } finally {
+            em.close();
         }
         
     }
@@ -106,6 +124,7 @@ public class PlaylistRepository implements IPlaylistRepository {
     @Override
     public void remove(Playlist playlist) {
         
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         try {
@@ -121,12 +140,17 @@ public class PlaylistRepository implements IPlaylistRepository {
             
         } catch(Exception e) {
             e.printStackTrace();
+            tnx.rollback();
+        } finally {
+            em.close();
         }
         
     }
     
     @Override
     public boolean exists(UniqueEntityId id) {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -187,14 +211,12 @@ public class PlaylistRepository implements IPlaylistRepository {
     
     private static class PlaylistRepositoryHolder {
 
-        final static EntityManager em =
-                EntityManagerFactoryHelper.getInstance()
-                .getFactory()
-                .createEntityManager();
+        final static EntityManagerFactoryHelper emfh =
+                EntityManagerFactoryHelper.getInstance();
         
         private static final PlaylistRepository INSTANCE =
                 new PlaylistRepository(
-                        em,
+                        emfh,
                         LibraryEntityRepository.getInstance()
                 );
     }

@@ -6,6 +6,7 @@
 package com.jamapplicationserver.modules.showcase.usecases.CreateShowcase;
 
 import java.util.*;
+import java.io.InputStream;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.infra.*;
@@ -30,7 +31,10 @@ public class CreateShowcaseController extends BaseController {
         try {
             
             final Map<String, String> fields =
-                    MultipartFormDataUtil.toMap(this.req.raw());
+                    MultipartFormDataUtil.toMap(req.raw());
+            
+            final InputStream image =
+                    MultipartFormDataUtil.toInputStream(req.raw().getPart("image"));
             
             final CreateShowcaseRequestDTO dto =
                     new CreateShowcaseRequestDTO(
@@ -38,8 +42,9 @@ public class CreateShowcaseController extends BaseController {
                             fields.get("title"),
                             fields.get("description"),
                             fields.get("route"),
-                            null,
-                            fields.get("creatorId")
+                            image,
+                            subjectId,
+                            subjectRole
                     );
             
             final Result result = this.usecase.execute(dto);

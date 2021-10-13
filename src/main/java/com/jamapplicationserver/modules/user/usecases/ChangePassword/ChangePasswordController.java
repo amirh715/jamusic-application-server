@@ -34,7 +34,8 @@ public class ChangePasswordController extends BaseController {
                         fields.get("id"),
                         fields.get("currentPassword"),
                         fields.get("newPassword"),
-                        fields.get("updaterId")
+                        subjectId,
+                        subjectRole
                 );
         
         try {

@@ -8,12 +8,14 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 import javax.persistence.*;
 import java.time.*;
 import com.jamapplicationserver.infra.Persistence.database.AttributeConverters.YearMonthDateAttributeConverter;
+import org.hibernate.envers.*;
 
 /**
  *
  * @author dada
  */
 @Entity
+@Audited
 public abstract class ArtworkModel extends LibraryEntityModel {
     
     @Column(name="record_label")
@@ -26,7 +28,12 @@ public abstract class ArtworkModel extends LibraryEntityModel {
     @Convert(converter=YearMonthDateAttributeConverter.class)
     private YearMonth releaseDate;
     
+    public ArtworkModel() {
+        
+    }
+    
     @ManyToOne(fetch=FetchType.LAZY)
+    @NotAudited
     private ArtistModel artist;
     
     public String getRecordLabel() {
@@ -60,15 +67,5 @@ public abstract class ArtworkModel extends LibraryEntityModel {
     public void setArtist(ArtistModel artist) {
         this.artist = artist;
     }
-    
-//    @Override
-//    public int hashCode() {
-//        return super.hashCode();
-//    }
-//    
-//    @Override
-//    public boolean equals(Object obj) {
-//        return super.equals(obj);
-//    }
     
 }

@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.library.usecases.Genres.CreateGenre;
 
 import java.util.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.CreateGenreRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateGenreRequestDTO;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
@@ -36,7 +36,8 @@ public class CreateGenreController extends BaseController {
                             fields.get("title"),
                             fields.get("titleInPersian"),
                             fields.get("parentGenreId"),
-                            this.req.session().attribute("subjectId")
+                            subjectId,
+                            subjectRole
                     );
             
             final Result result = this.usecase.execute(dto);

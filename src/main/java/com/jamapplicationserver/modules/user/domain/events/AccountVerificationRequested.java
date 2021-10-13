@@ -14,8 +14,11 @@ import com.jamapplicationserver.modules.user.domain.User;
  */
 public class AccountVerificationRequested extends DomainEvent {
     
-    public AccountVerificationRequested(User aggregate) {
-        super(aggregate);
+    public final User user;
+    
+    public AccountVerificationRequested(User user) {
+        super(user.id);
+        this.user = user;
     }
     
 }

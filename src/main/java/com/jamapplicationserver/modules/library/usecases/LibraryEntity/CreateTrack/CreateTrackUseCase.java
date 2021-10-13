@@ -11,13 +11,11 @@ import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.CreateTrackRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateTrackRequestDTO;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
-import java.time.Duration;
 
 /**
  *
@@ -56,7 +54,6 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             final Result<ImageStream> imageOrError = ImageStream.createAndValidate(request.image);
             final Result<AudioStream> audioOrError = AudioStream.createAndValidate(request.audio);
             final Result<UniqueEntityId> albumIdOrError = UniqueEntityId.createFromString(request.albumId);
-            final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromString(request.creatorId);
             final Result<RecordLabel> recordLabelOrError = RecordLabel.create(request.recordLabel);
             final Result<RecordProducer> producerOrError = RecordProducer.create(request.producer);
             final Result<ReleaseDate> releaseDateOrError = ReleaseDate.create(request.releaseDate);
@@ -68,7 +65,6 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             
             combinedProps.add(titleOrError);
             combinedProps.add(audioOrError);
-            combinedProps.add(creatorIdOrError);
             
             if(request.description != null)
                 combinedProps.add(descriptionOrError);
@@ -93,7 +89,6 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final Title title = titleOrError.getValue();
-            final UniqueEntityId creatorId = creatorIdOrError.getValue();
             final Description description =
                     request.description != null ? descriptionOrError.getValue()
                     : null;
@@ -141,7 +136,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                 
                 album =
                         repository.fetchAlbumById(albumId)
-                        .includeUnpublished()
+                        .includeUnpublished(request.subjectRole)
                         .getSingleResult();
                 if(album == null) return Result.fail(new AlbumDoesNotExistError());
                 
@@ -151,7 +146,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                 
                 artist =
                         repository.fetchArtistById(artistId)
-                            .includeUnpublished()
+                            .includeUnpublished(request.subjectRole)
                             .getSingleResult();
                 if(artist == null) return Result.fail(new ArtistDoesNotExistError());
                 
@@ -168,7 +163,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                             audio.format,
                             tagList,
                             genreList,
-                            creatorId,
+                            request.subjectId,
                             recordLabel,
                             producer,
                             releaseYear,
@@ -190,11 +185,11 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             final Track track = trackOrError.getValue();
 
             if(album != null) {
-                final Result result = album.addTrack(track, creatorId);
+                final Result result = album.addTrack(track, request.subjectId);
                 if(result.isFailure) return result;
                 repository.save(album);
             } else if(artist != null) {
-                final Result result = artist.addTrack(track, creatorId);
+                final Result result = artist.addArtwork(track, request.subjectId);
                 if(result.isFailure) return result;
                 repository.save(track);
                 repository.save(artist);

@@ -67,21 +67,21 @@ public class JobManager {
         return this;
     }
     
-    public Trigger getEverySecondsTrigger(int sec) {
+    public Trigger getEveryXSecondsTrigger(int sec) {
         return TriggerBuilder
                 .newTrigger()
                 .withSchedule(CronScheduleBuilder.cronSchedule("*/" + sec + " * * ? * *"))
                 .build();
     }
     
-    public Trigger getEveryMinuteTrigger(int min) {
+    public Trigger getEveryXMinutesTrigger(int min) {
         return TriggerBuilder
                 .newTrigger()
                 .withSchedule(CronScheduleBuilder.cronSchedule("0 */" + min + " * ? * *"))
                 .build();
     }
     
-    public Trigger getEveryHourTrigger(int hour) {
+    public Trigger getEveryXHoursTrigger(int hour) {
         return TriggerBuilder
                 .newTrigger()
                 .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0/" + hour + " ? * *"))

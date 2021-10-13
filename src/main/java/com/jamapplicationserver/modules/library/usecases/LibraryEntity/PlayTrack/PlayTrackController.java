@@ -5,7 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.PlayTrack;
 
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.PlayTrackRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.PlayTrackRequestDTO;
 import java.util.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
@@ -33,7 +33,8 @@ public class PlayTrackController extends BaseController {
             
             final PlayTrackRequestDTO dto =
                     new PlayTrackRequestDTO(
-                            this.subjectId,
+                            subjectId,
+                            subjectRole,
                             fields.get("trackId"),
                             fields.get("playedAt")
                     );

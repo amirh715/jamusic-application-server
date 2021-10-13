@@ -33,12 +33,9 @@ public class RemoveUserUseCase implements IUsecase<RemoveUserRequestDTO, Object>
             
             final Result<UniqueEntityId> idOrError =
                     UniqueEntityId.createFromString(request.id);
-            final Result<UniqueEntityId> updaterIdOrError =
-                    UniqueEntityId.createFromString(request.updater);
             
             final Result[] combinedProps = {
-                idOrError,
-                updaterIdOrError
+                idOrError
             };
             
             final Result combinedPropsResult =
@@ -46,13 +43,13 @@ public class RemoveUserUseCase implements IUsecase<RemoveUserRequestDTO, Object>
             
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
-            final User user = this.repository.fetchById(idOrError.getValue());
+            final User user = repository.fetchById(idOrError.getValue());
             
             if(user == null) return Result.fail(new UserDoesNotExistError());
             
             if(!user.isActive()) return Result.fail(new UserIsNotActiveError());
             
-            this.repository.remove(user);
+            repository.remove(user);
             
             return Result.ok();
             

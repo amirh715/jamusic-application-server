@@ -6,8 +6,6 @@
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
-import java.time.Duration;
-import com.jamapplicationserver.core.domain.IDTO;
 import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import java.util.stream.Collectors;
 
@@ -15,7 +13,7 @@ import java.util.stream.Collectors;
  *
  * @author dada
  */
-public abstract class LibraryEntityDetails implements IDTO {
+public abstract class LibraryEntityDetails {
     
     public final String id;
     public final String title;
@@ -52,7 +50,7 @@ public abstract class LibraryEntityDetails implements IDTO {
         this.rate = Double.toString(rate);
         this.flagNote = flagNote;
         this.totalPlayedCount = Long.toString(totalPlayedCount);
-        this.duration = 0;
+        this.duration = Long.toString(duration);
     }
     
     public static LibraryEntityDetails create(LibraryEntityModel entity) {
@@ -82,6 +80,7 @@ public abstract class LibraryEntityDetails implements IDTO {
                             entity.getTotalPlayedCount(),
                             entity.getDuration(),
                             ((BandModel) entity).getInstagramId(),
+                            
                             ((BandModel) entity).getMembers()
                                 .stream()
                                 .map(member -> LibraryEntityIdAndTitle.create(member))
@@ -103,7 +102,11 @@ public abstract class LibraryEntityDetails implements IDTO {
                             entity.getFlagNote(),
                             entity.getTotalPlayedCount(),
                             entity.getDuration(),
-                            ((SingerModel) entity).getInstagramId()
+                            ((SingerModel) entity).getInstagramId(),
+                            ((SingerModel) entity).getBands()
+                                .stream()
+                                .map(band -> LibraryEntityIdAndTitle.create(band))
+                                .collect(Collectors.toSet())
                     );
         }
         
@@ -121,6 +124,11 @@ public abstract class LibraryEntityDetails implements IDTO {
                             entity.getFlagNote(),
                             entity.getTotalPlayedCount(),
                             entity.getDuration(),
+                            ((AlbumModel) entity).getRecordLabel(),
+                            ((AlbumModel) entity).getProducer(),
+                            ((AlbumModel) entity).getReleaseDate() != null ?
+                            ((AlbumModel) entity).getReleaseDate().toString() : null,
+                            LibraryEntityIdAndTitle.create(((AlbumModel) entity).getArtist()),
                             ((AlbumModel) entity).getTracks()
                                 .stream()
                                 .map(track -> LibraryEntitySummary.create(track))

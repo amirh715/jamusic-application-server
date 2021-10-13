@@ -13,6 +13,8 @@ import java.util.*;
  */
 public class SingerDetails extends ArtistDetails {
     
+    public final Set<LibraryEntityIdAndTitle> bands;
+    
     public SingerDetails(
             String id,
             String title,
@@ -24,8 +26,9 @@ public class SingerDetails extends ArtistDetails {
             double rate,
             String flagNote,
             long totalPlayedCount,
-            String duration,
-            String instagramId
+            long duration,
+            String instagramId,
+            Set<LibraryEntityIdAndTitle> bands
     ) {
         super(
                 id,
@@ -41,6 +44,7 @@ public class SingerDetails extends ArtistDetails {
                 duration,
                 instagramId
         );
+        this.bands = bands;
     }
     
     

@@ -6,8 +6,6 @@
 package com.jamapplicationserver.modules.system.Jobs;
 
 import org.quartz.*;
-import javax.persistence.*;
-import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.infra.Services.KeyStoreManager.KeyStoreManager;
 
 /**
@@ -21,13 +19,10 @@ public class KeyStoreRefreshJob implements Job {
         
         try {
             
-            final EntityManager em  =
-                    EntityManagerFactoryHelper.getInstance().getEntityManager();
-            
             KeyStoreManager.getInstance().refresh();
             
         } catch(Exception e) {
-            
+            throw e;
         }
         
     }

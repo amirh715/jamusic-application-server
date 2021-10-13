@@ -18,7 +18,6 @@ public class GenreMapper {
     
     public static final Genre toDomain(GenreModel model) {
         
-        System.out.println("GenreMapper::toDomain - model.hashCode: " + model.hashCode());
         final Genre entity =
                 Genre.reconstitute(
                         model.getId(),
@@ -42,7 +41,6 @@ public class GenreMapper {
     
     private static Genre toDomainWithoutSubGenres(GenreModel model) {
 
-        System.out.println("GenreMapper::toDomainWithoutSubGenres - model.hashCode: " + model.hashCode());
         final Genre entity =
                 Genre.reconstitute(
                         model.getId(),

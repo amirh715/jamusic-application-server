@@ -5,13 +5,11 @@
  */
 package com.jamapplicationserver.modules.user.usecases.RequestPasswordReset;
 
-import com.jamapplicationserver.core.domain.IDTO;
-
 /**
  *
  * @author amirhossein
  */
-public class RequestPasswordResetRequestDTO implements IDTO {
+public class RequestPasswordResetRequestDTO {
     
     public final String mobile;
     

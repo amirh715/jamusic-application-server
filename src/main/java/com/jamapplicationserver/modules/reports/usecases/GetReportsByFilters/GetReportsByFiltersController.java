@@ -48,28 +48,23 @@ public class GetReportsByFiltersController extends BaseController {
                             fields.get("createdAtTill").value(),
                             fields.get("lastModifiedAtFrom").value(),
                             fields.get("lastModifiedAtTill").value(),
-                            fields.get("isContentReport").value()
+                            fields.get("isContentReport").value(),
+                            subjectId,
+                            subjectRole
                     );
             
-            System.out.println(fields.get("reporterId").value());
-            System.out.println(fields.get("processorId").value());
-            System.out.println(fields.get("assignedAtFrom").value());
-            System.out.println(fields.get("processedAtFrom").value());
-            System.out.println(fields.get("archivedAtFrom").value());
-            System.out.println(fields.get("lastModifiedAtFrom").value());
-            
-            final Result result = this.usecase.execute(dto);
+            final Result result = usecase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
@@ -77,7 +72,7 @@ public class GetReportsByFiltersController extends BaseController {
             this.ok(result.getValue());
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

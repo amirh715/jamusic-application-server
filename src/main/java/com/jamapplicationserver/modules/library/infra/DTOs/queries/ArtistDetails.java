@@ -14,7 +14,6 @@ import java.util.*;
 public abstract class ArtistDetails extends LibraryEntityDetails {
     
     public final String instagramId;
-    public final Set<LibraryEntityIdAndTitle> bands;
     
     protected ArtistDetails(
             String id,
@@ -27,9 +26,8 @@ public abstract class ArtistDetails extends LibraryEntityDetails {
             double rate,
             String flagNote,
             long totalPlayedCount,
-            String duration,
-            String instagramId,
-            Set<LibraryEntityIdAndTitle> bands
+            long duration,
+            String instagramId
     ) {
         super(
                 id,
@@ -45,7 +43,6 @@ public abstract class ArtistDetails extends LibraryEntityDetails {
                 duration
         );
         this.instagramId = instagramId;
-        this.bands = bands;
     }
     
     

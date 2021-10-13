@@ -65,7 +65,8 @@ public class Band extends Artist {
         UniqueEntityId creatorId,
         UniqueEntityId updaterId,
         Set<UniqueEntityId> albumsIds,
-        Set<UniqueEntityId> tracksIds,
+        Set<UniqueEntityId> allTracksIds,
+        Set<UniqueEntityId> singleTracksIds,
         Set<Singer> members
     ) {
         super(
@@ -86,9 +87,10 @@ public class Band extends Artist {
                 creatorId,
                 updaterId,
                 albumsIds,
-                tracksIds
+                allTracksIds,
+                singleTracksIds
         );
-        this.members = members;
+        this.members = members != null ? members : new HashSet<>();
     }
     
     public static Result<Band> create(
@@ -135,7 +137,8 @@ public class Band extends Artist {
             UUID updaterId,
             String instagramId,
             Set<UUID> albumsIds,
-            Set<UUID> tracksIds,
+            Set<UUID> allTracksIds,
+            Set<UUID> singleTracksIds,
             Set<Singer> members
     ) {
         
@@ -152,11 +155,14 @@ public class Band extends Artist {
         final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromUUID(creatorId);
         final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromUUID(updaterId);
         
-        final Result<Set<Result<UniqueEntityId>>> albumsIdsOrErrors =
+        final Result<Set<UniqueEntityId>> albumsIdsOrError =
                 UniqueEntityId.createFromUUIDs(albumsIds);
         
-        final Result<Set<Result<UniqueEntityId>>> tracksIdsOrErrors =
-                UniqueEntityId.createFromUUIDs(tracksIds);
+        final Result<Set<UniqueEntityId>> allTracksIdsOrError =
+                UniqueEntityId.createFromUUIDs(allTracksIds);
+        
+        final Result<Set<UniqueEntityId>> singleTracksIdsOrError =
+                UniqueEntityId.createFromUUIDs(singleTracksIds);
         
         final ArrayList<Result> combinedProps = new ArrayList<>();
         
@@ -173,22 +179,34 @@ public class Band extends Artist {
         if(tags != null && !tags.isEmpty()) combinedProps.add(tagListOrError);
         if(genres != null && !genres.isEmpty()) combinedProps.add(genreListOrError);
         if(instagramId != null) combinedProps.add(instagramIdOrError);
-        
+        if(albumsIds != null && !albumsIds.isEmpty()) combinedProps.add(albumsIdsOrError);
+        if(allTracksIds != null && !allTracksIds.isEmpty()) combinedProps.add(allTracksIdsOrError);
+        if(singleTracksIds != null && !singleTracksIds.isEmpty()) combinedProps.add(singleTracksIdsOrError);
+            
         final Result combinedPropsResult = Result.combine(combinedProps);
         
         if(combinedPropsResult.isFailure) return combinedPropsResult;
         
         final Set<UniqueEntityId> albumsIdsValues =
-                albumsIdsOrErrors.getValue()
+                albumsIds != null && !albumsIds.isEmpty() ?
+                albumsIdsOrError.getValue()
                 .stream()
-                .map(result -> result.getValue())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet())
+                : Set.of();
         
-        final Set<UniqueEntityId> tracksIdsValues =
-                tracksIdsOrErrors.getValue()
+        final Set<UniqueEntityId> allTracksIdsValues =
+                allTracksIds != null && !allTracksIds.isEmpty() ?
+                allTracksIdsOrError.getValue()
                 .stream()
-                .map(result -> result.getValue())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet())
+                : Set.of();
+        
+        final Set<UniqueEntityId> singleTracksIdsValues =
+                singleTracksIds != null && !singleTracksIds.isEmpty() ?
+                allTracksIdsOrError.getValue()
+                .stream()
+                .collect(Collectors.toSet())
+                : Set.of();
         
         Band instance = new Band(
                 idOrError.getValue(),
@@ -209,8 +227,10 @@ public class Band extends Artist {
                 updaterIdOrError.getValue(),
                 albumsIds != null && !albumsIds.isEmpty() ?
                         albumsIdsValues : null,
-                tracksIds != null && !tracksIds.isEmpty() ?
-                        tracksIdsValues : null,
+                allTracksIds != null && allTracksIds.isEmpty() ?
+                        allTracksIdsValues : null,
+                singleTracksIds != null && !singleTracksIds.isEmpty() ?
+                        singleTracksIdsValues : null,
                 members != null && !members.isEmpty() ? members : null
         );
         
@@ -220,29 +240,25 @@ public class Band extends Artist {
     
     public final Result addMember(Singer member) {
         
-        if(this.members.size() > MAX_ALLOWED_MEMBERS_PER_BAND)
+        if(members.size() > MAX_ALLOWED_MEMBERS_PER_BAND)
             return Result.fail(new BandMaxAllowedMembersExceededError());
         
-        final boolean alreadyExists = this.members.contains(member);
+        final boolean alreadyExists = members.contains(member);
         
         if(alreadyExists) return Result.ok();
+                
+        members.add(member);
         
-        this.duration.plus(member.getDuration());
-        
-        this.members.add(member);
-        
-        this.modified();
+        modified();
         
         return Result.ok();
     }
     
     public final Result removeMember(Singer member) {
+                
+        members.remove(member);
         
-        this.duration.minus(member.getDuration());
-        
-        this.members.remove(member);
-        
-        this.modified();
+        modified();
         
         return Result.ok();
     }

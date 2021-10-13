@@ -21,15 +21,17 @@ import com.jamapplicationserver.core.domain.*;
  */
 public class NotificationRepository implements INotificationRepository {
     
-    private final EntityManager em;
+    private final EntityManagerFactoryHelper emfh;
     
-    private NotificationRepository(EntityManager em) {
-        this.em = em;
+    private NotificationRepository(EntityManagerFactoryHelper emfh) {
+        this.emfh = emfh;
     }
     
     
     @Override
     public Notification fetchById(UniqueEntityId id) {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -39,12 +41,16 @@ public class NotificationRepository implements INotificationRepository {
             
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
     
     public Set<Notification> fetchByFilters(NotificationFilters filters) {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -75,7 +81,10 @@ public class NotificationRepository implements INotificationRepository {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
-            return null;
+            e.printStackTrace();
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -83,17 +92,16 @@ public class NotificationRepository implements INotificationRepository {
     @Override
     public void save(Notification entity) {
         
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         try {
-            
-            final boolean exists = this.exists(entity.id);
             
             NotificationModel model;
             
             tnx.begin();
             
-            if(exists) { // update existing entity
+            if(exists(entity.id)) { // update existing entity
                                 
                 model = NotificationMapper.toPersistence(entity);
                 
@@ -113,6 +121,8 @@ public class NotificationRepository implements INotificationRepository {
             e.printStackTrace();
             tnx.rollback();
             throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -120,13 +130,17 @@ public class NotificationRepository implements INotificationRepository {
     @Override
     public boolean exists(UniqueEntityId id) {
         
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
             
             return em.find(NotificationModel.class, id.toValue()) != null;
             
         } catch(Exception e) {
             e.printStackTrace();
-            return false;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -134,6 +148,7 @@ public class NotificationRepository implements INotificationRepository {
     @Override
     public void remove(Notification notification) {
         
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         try {
@@ -150,7 +165,10 @@ public class NotificationRepository implements INotificationRepository {
         } catch(Exception e) {
             e.printStackTrace();
             tnx.rollback();
+        } finally {
+            em.close();
         }
+        
     }
     
     private static String toSearchPattern(String term) {
@@ -185,9 +203,6 @@ public class NotificationRepository implements INotificationRepository {
             // notification type
             if(filters.type != null) {
                 switch(filters.type) {
-                    case APP:
-                        cq.from(AppNotificationModel.class);
-                        break;
                     case FCM:
                         cq.from(FCMNotificationModel.class);
                         break;
@@ -291,11 +306,9 @@ public class NotificationRepository implements INotificationRepository {
     
     private static class NotificationRepositoryHolder {
         
-        final static EntityManager em =
-                EntityManagerFactoryHelper
-                        .getInstance()
-                        .getEntityManager();
+        final static EntityManagerFactoryHelper emfh =
+                EntityManagerFactoryHelper.getInstance();
 
-        private static final NotificationRepository INSTANCE = new NotificationRepository(em);
+        private static final NotificationRepository INSTANCE = new NotificationRepository(emfh);
     }
 }

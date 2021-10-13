@@ -5,25 +5,26 @@
  */
 package com.jamapplicationserver.modules.reports.infra.DTOs;
 
-import com.jamapplicationserver.core.domain.IDTO;
+import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.core.infra.*;
 
 /**
  *
  * @author dada
  */
-public class ProcessReportRequestDTO implements IDTO {
+public class ProcessReportRequestDTO extends DTOWithAuthClaims {
     
     public final String id;
     public final String processorNote;
-    public final String processorId;
     
     public ProcessReportRequestDTO(
             String id,
-            String processorId,
-            String processorNote
+            String processorNote,
+            UniqueEntityId updaterId,
+            UserRole updaterRole
     ) {
+        super(updaterId, updaterRole);
         this.id = id;
-        this.processorId = processorId;
         this.processorNote = processorNote;
     }
     

@@ -7,14 +7,14 @@ package com.jamapplicationserver.modules.reports.infra.DTOs;
 
 import java.util.*;
 import com.google.gson.reflect.TypeToken;
-import com.jamapplicationserver.core.domain.IDTO;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.infra.*;
 
 /**
  *
  * @author dada
  */
-public class GetReportsByFiltersRequestDTO implements IDTO {
+public class GetReportsByFiltersRequestDTO extends DTOWithAuthClaims {
     
     public final Set<String> statuses;
     
@@ -54,8 +54,12 @@ public class GetReportsByFiltersRequestDTO implements IDTO {
             String createdAtTill,
             String lastModifiedAtFrom,
             String lastModifiedAtTill,
-            String isContentReport
+            String isContentReport,
+            UniqueEntityId creatorId,
+            UserRole creatorRole
     ) {
+        
+        super(creatorId, creatorRole);
         
         final ISerializer serializer = Serializer.getInstance();
         

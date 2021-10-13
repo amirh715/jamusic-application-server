@@ -16,7 +16,7 @@ import com.jamapplicationserver.infra.Persistence.database.Models.*;
  */
 public interface IPlaylistRepository {
     
-    public Playlist fetchById(UniqueEntityId id);
+    public Playlist fetchById(UniqueEntityId ownerId, UniqueEntityId id);
     
     public Set<Playlist> fetchByPlayerId(UniqueEntityId playerId);
     

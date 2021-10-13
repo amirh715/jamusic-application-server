@@ -6,10 +6,8 @@
 package com.jamapplicationserver.modules.library.domain.core;
 
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.core.logic.*;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.*;
 
 /**
  *
@@ -53,7 +51,6 @@ public abstract class LibraryEntity extends AggregateRoot {
         super();
         this.title = title;
         this.description = description;
-        this.published = false;
         this.flag = flag;
         this.tags = tags;
         this.genres = genres;
@@ -142,15 +139,13 @@ public abstract class LibraryEntity extends AggregateRoot {
         return this.updaterId;
     }
     
-    public abstract void publish();
+    protected abstract void publish();
     
     public abstract void publish(UniqueEntityId updaterId);
     
-    public abstract void archive();
+    protected abstract void archive();
     
     public abstract void archive(UniqueEntityId updaterId);
-    
-    public abstract void rate(Rate rate);
 
     public void changeImage(Path path, UniqueEntityId updaterId) {
         this.imagePath = path;

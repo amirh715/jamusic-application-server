@@ -21,14 +21,16 @@ import com.jamapplicationserver.core.domain.*;
  */
 public class ReportRepository implements IReportRepository {
     
-    private final EntityManager em;
+    private final EntityManagerFactoryHelper emfh;
     
-    private ReportRepository(EntityManager em) {
-        this.em = em;
+    private ReportRepository(EntityManagerFactoryHelper emfh) {
+        this.emfh = emfh;
     }
     
     @Override
     public Report fetchById(UniqueEntityId id) {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -40,13 +42,17 @@ public class ReportRepository implements IReportRepository {
             
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
     
     @Override
     public Set<Report> fetchByFilters(ReportFilters filters) {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -83,7 +89,9 @@ public class ReportRepository implements IReportRepository {
                     .collect(Collectors.toSet());
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -91,6 +99,8 @@ public class ReportRepository implements IReportRepository {
     @Override
     public Reporter fetchReporterById(UniqueEntityId id) {
                 
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
             
             final UserModel model = em.find(UserModel.class, id.toValue());
@@ -101,13 +111,17 @@ public class ReportRepository implements IReportRepository {
             
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
     
     @Override
     public Processor fetchProcessorById(UniqueEntityId id) {
+        
+        final EntityManager em = emfh.createEntityManager();
                 
         try {
             
@@ -121,13 +135,17 @@ public class ReportRepository implements IReportRepository {
             return ReportMapper.toProcessor(model);
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
     
     @Override
     public Processor fetchAdminProcessor() {
+        
+        final EntityManager em = emfh.createEntityManager();
                 
         try {
             
@@ -137,9 +155,12 @@ public class ReportRepository implements IReportRepository {
             final UserModel model = (UserModel) query.getSingleResult();
             
             return ReportMapper.toProcessor(model);
+            
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -147,18 +168,20 @@ public class ReportRepository implements IReportRepository {
     @Override
     public ReportedEntity fetchEntityById(UniqueEntityId id) {
         
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
             
             final LibraryEntityModel model =
                     em.find(LibraryEntityModel.class, id.toValue());
             
-            System.out.println("IS LIBRARY ENTITY NULL" + (model == null));
-            
             return ReportMapper.toReportedEntity(model);
             
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -166,6 +189,7 @@ public class ReportRepository implements IReportRepository {
     @Override
     public void save(Report entity) {
         
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         ReportModel model;
@@ -209,12 +233,16 @@ public class ReportRepository implements IReportRepository {
         } catch(Exception e) {
             e.printStackTrace();
             tnx.rollback();
+        } finally {
+            em.close();
         }
         
     }
     
     @Override
     public boolean exists(UniqueEntityId id) {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -223,7 +251,9 @@ public class ReportRepository implements IReportRepository {
             return model != null;
         } catch(Exception e) {
             e.printStackTrace();
-            return false;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -358,12 +388,10 @@ public class ReportRepository implements IReportRepository {
     
     private static class ReportRepositoryHolder {
 
-        final static EntityManager em =
-                EntityManagerFactoryHelper.getInstance()
-                .getFactory()
-                .createEntityManager();
+        final static EntityManagerFactoryHelper emfh =
+                EntityManagerFactoryHelper.getInstance();
         
         private static final ReportRepository INSTANCE =
-                new ReportRepository(em);
+                new ReportRepository(emfh);
     }
 }

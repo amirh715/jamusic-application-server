@@ -9,7 +9,7 @@ import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.CreateGenreRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateGenreRequestDTO;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.repositories.exceptions.*;
@@ -38,26 +38,23 @@ public class CreateGenreUseCase implements IUsecase<CreateGenreRequestDTO, Genre
             // create genre title objects
             final Result<GenreTitle> titleOrError = GenreTitle.create(request.title);
             final Result<GenreTitle> titleInPersianOrError = GenreTitle.create(request.titleInPersian);
-            final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromString(request.creatorId);
             
             final Result[] combinedProps = {
                 titleOrError,
-                titleInPersianOrError,
-                creatorIdOrError
+                titleInPersianOrError
             };
             final Result combinedPropsResult = Result.combine(combinedProps);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final GenreTitle title = titleOrError.getValue();
             final GenreTitle titleInPersian = titleInPersianOrError.getValue();
-            final UniqueEntityId creatorId = creatorIdOrError.getValue();
             
             Result<Genre> genreOrError;
             Genre genre;
             
             if(parentGenreId == null) { // create root genre
 
-                genreOrError = Genre.create(title, titleInPersian, null, creatorId);
+                genreOrError = Genre.create(title, titleInPersian, null, request.subjectId);
                 
             } else { // create sub-genre
                 
@@ -72,7 +69,7 @@ public class CreateGenreUseCase implements IUsecase<CreateGenreRequestDTO, Genre
                 if(parent == null) // parent does not exist
                     return Result.fail(new ParentGenreDoesNotExistError());
                 else // parent exists
-                    genreOrError = Genre.create(title, titleInPersian, parent, creatorId);
+                    genreOrError = Genre.create(title, titleInPersian, parent, request.subjectId);
 
             }
             

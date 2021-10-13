@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.GetLibraryEntitiesByFiltersRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.GetLibraryEntitiesByFiltersRequestDTO;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.core.domain.*;
@@ -48,7 +48,6 @@ public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEn
             final Result<Rate> rateFromOrError = Rate.create(request.rateFrom);
             final Result<Rate> rateToOrError = Rate.create(request.rateTo);
             
-            final Result<UniqueEntityId> albumIdOrError = UniqueEntityId.createFromString(request.albumId);
             final Result<UniqueEntityId> artistIdOrError = UniqueEntityId.createFromString(request.artistId);
             final Result<ReleaseDate> releaseDateFromOrError = ReleaseDate.create(request.releaseDateFrom);
             final Result<ReleaseDate> releaseDateTillOrError = ReleaseDate.create(request.releaseDateTill);
@@ -66,7 +65,6 @@ public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEn
             if(request.rateFrom != null) combinedProps.add(rateFromOrError);
             if(request.genreIds != null) combinedProps.add(genreIdsOrError);
             
-            if(request.albumId != null) combinedProps.add(albumIdOrError);
             if(request.artistId != null) combinedProps.add(artistIdOrError);
             if(request.releaseDateFrom != null) combinedProps.add(releaseDateFromOrError);
             if(request.releaseDateTill != null) combinedProps.add(releaseDateTillOrError);
@@ -98,10 +96,9 @@ public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEn
                     request.totalPlayedCountFrom;
             final Long totalPlayedCountTo =
                     request.totalPlayedCountTo;
-            
-            final UniqueEntityId albumId =
-                    request.albumId != null ?
-                    albumIdOrError.getValue() : null;
+            final Long durationFrom = request.durationFrom;
+            final Long durationTo = request.durationTo;
+
             final UniqueEntityId artistId =
                     request.artistId != null ?
                     artistIdOrError.getValue() : null;
@@ -142,7 +139,8 @@ public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEn
                     rateTo,
                     totalPlayedCountFrom,
                     totalPlayedCountTo,
-                    albumId,
+                    durationFrom,
+                    durationTo,
                     artistId,
                     releaseDateFrom,
                     releaseDateTill,

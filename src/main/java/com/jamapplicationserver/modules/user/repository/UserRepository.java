@@ -35,20 +35,20 @@ import com.jamapplicationserver.modules.user.repository.exceptions.*;
  */
 public class UserRepository implements IUserRepository {
     
-    private final EntityManagerFactory emf;
+    private final EntityManagerFactoryHelper emfh;
     
     private static final int MAX_ALLOWED_USERS = 30;
     
-    private UserRepository(EntityManagerFactory emf) {
-        this.emf = emf;
+    private UserRepository(EntityManagerFactoryHelper emfh) {
+        this.emfh = emfh;
     }
     
     @Override
     public User fetchById(UniqueEntityId id) {
         
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
-            
-            final EntityManager em = getEntityManager();
             
             final UserModel model =
                     em.find(UserModel.class, id.toValue());
@@ -57,15 +57,21 @@ public class UserRepository implements IUserRepository {
             
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
     
     @Override
     public User fetchByMobile(MobileNo mobile) {
+        
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
-            CriteriaBuilder builder = getEntityManager().getCriteriaBuilder();
+            
+            CriteriaBuilder builder = em.getCriteriaBuilder();
             CriteriaQuery<UserModel> cq =
                     builder
                     .createQuery(UserModel.class);
@@ -73,8 +79,7 @@ public class UserRepository implements IUserRepository {
 
             cq.where(builder.equal(root.get("mobile"), mobile.getValue()));
 
-            TypedQuery<UserModel> query =
-                    getEntityManager().createQuery(cq);
+            TypedQuery<UserModel> query = em.createQuery(cq);
 
             return toDomain(query.getSingleResult());
         } catch(NoResultException e) {
@@ -84,36 +89,49 @@ public class UserRepository implements IUserRepository {
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
+        } finally {
+            em.close();
         }
+        
     }
     
     @Override
     public User fetchByEmail(Email email) {
         
-        final EntityManager em = getEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-        CriteriaQuery<UserModel> cq =
-                builder
-                .createQuery(UserModel.class);
-        Root<UserModel> root = cq.from(UserModel.class);
+        try {
         
-        cq.where(builder.equal(root.get("email"), email.getValue()));
+            CriteriaBuilder builder = em.getCriteriaBuilder();
+            CriteriaQuery<UserModel> cq =
+                    builder
+                    .createQuery(UserModel.class);
+            Root<UserModel> root = cq.from(UserModel.class);
+
+            cq.where(builder.equal(root.get("email"), email.getValue()));
+
+            TypedQuery<UserModel> query = em.createQuery(cq);
+
+            return toDomain(query.getSingleResult());
+            
+        } catch(Exception e) {
+            throw e;
+        } finally {
+            em.close();
+        }
         
-        TypedQuery<UserModel> query =
-                getEntityManager().createQuery(cq);
-        
-        return toDomain(query.getSingleResult());
     }
 
     @Override
     public Set<User> fetchByFilters(UsersFilters filters) {
         
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
             
             CriteriaQuery<UserModel> cq = buildCriteriaQuery(filters);
             
-            TypedQuery<UserModel> query = getEntityManager().createQuery(cq);
+            TypedQuery<UserModel> query = em.createQuery(cq);
             
             return query
                     .getResultStream()
@@ -122,7 +140,9 @@ public class UserRepository implements IUserRepository {
             
         } catch(Exception e) {
             e.printStackTrace();
-            return Collections.EMPTY_SET;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -130,9 +150,9 @@ public class UserRepository implements IUserRepository {
     @Override
     public User fetchByEmailVerificationLink(URL link) {
         
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
-            
-            final EntityManager em = getEntityManager();
             
             TypedQuery<UserModel> query =
                     em.createQuery("SELECT ev.user FROM UserEmailVerificationModel ev", UserModel.class);
@@ -141,8 +161,11 @@ public class UserRepository implements IUserRepository {
             
         } catch(Exception e) {
             e.printStackTrace();
+            throw e;
+        } finally {
+            em.close();
         }
-        return null;
+        
     }
     
     @Override
@@ -154,13 +177,14 @@ public class UserRepository implements IUserRepository {
             Exception
     {
         
+        final EntityManager em = emfh.createEntityManager();
+        final EntityTransaction tnx = em.getTransaction();
+        
         try {
-            
-            final EntityManager em = getEntityManager();
 
             UserModel model;
             
-            em.getTransaction().begin();
+            tnx.begin();
             
             if(this.exists(user.id)) { // update existing user
                 
@@ -259,6 +283,9 @@ public class UserRepository implements IUserRepository {
                 
             }
             
+            tnx.rollback();
+        } finally {
+            em.close();
         }
 
     }
@@ -266,34 +293,46 @@ public class UserRepository implements IUserRepository {
     @Override
     public void remove(User user) throws Exception {
         
+        final EntityManager em = emfh.createEntityManager();
+        final EntityTransaction tnx = em.getTransaction();
+        
         try {
             
-            final EntityManager em = getEntityManager();
-            
-            em.getTransaction().begin();
+            tnx.begin();
             
             final UserModel model = em.find(UserModel.class, user.id.toValue());
             
             em.remove(model);
             
-            em.getTransaction().commit();
+            tnx.commit();
             
         } catch(Exception e) {
             e.printStackTrace();
+            tnx.rollback();
             throw e;
+        } finally {
+            em.close();
         }
         
     }
     
     @Override
     public boolean exists(UniqueEntityId id) {
+        
+        final EntityManager em = emfh.createEntityManager();
+        
         try {
+            
             final UserModel model =
-                    getEntityManager().find(UserModel.class, id.toValue());
+                    em.find(UserModel.class, id.toValue());
+            
             return model != null;
         } catch(Exception e) {
             throw e;
+        } finally {
+            em.close();
         }
+        
     }
 
     private static User toDomain(UserModel model) {
@@ -488,104 +527,110 @@ public class UserRepository implements IUserRepository {
     
     private CriteriaQuery<UserModel> buildCriteriaQuery(UsersFilters filters) {
         
-        CriteriaBuilder builder = this.emf.getCriteriaBuilder();
+        final EntityManager em = emfh.createEntityManager();
+        CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery cq = builder.createQuery();
         
-        Root<UserModel> root = cq.from(UserModel.class);
+        try {
+            
+            Root<UserModel> root = cq.from(UserModel.class);
         
-        cq.select(root);
+            cq.select(root);
+
+            cq.orderBy();
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if(filters != null) {
+
+                // searchTerm
+                if(filters.searchTerm != null) {
+                    predicates.add(
+                            builder.or(
+                                    builder.like(root.get("name"), toSearchPattern(filters.searchTerm)),
+                                    builder.like(root.get("mobile"), toSearchPattern(filters.searchTerm)),
+                                    builder.like(root.get("email"), toSearchPattern(filters.searchTerm))
+                            )
+                    );
+                }
+
+                // state
+                if(filters.state != null) {
+                    predicates.add(
+                            builder.equal(root.get("state"), filters.state)
+                    );
+                }
+
+                // role
+                if(filters.role != null) {
+                    predicates.add(
+                            builder.equal(root.get("role"), filters.role)
+                    );
+                }
+
+                // hasImage
+                if(filters.hasImage != null && filters.hasImage)
+                    predicates.add(builder.isNotNull(root.get("imagePath")));
+                else if(filters.hasImage != null && !filters.hasImage)
+                    predicates.add(builder.isNull(root.get("imagePath")));
+
+                // hasEmail
+                if(filters.hasEmail != null && filters.hasEmail)
+                    predicates.add(builder.isNotNull(root.get("email")));
+                else if(filters.hasEmail != null && !filters.hasEmail)
+                    predicates.add(builder.isNull(root.get("email")));
+
+                // createdAt from till
+                if(
+                        filters.createdAtFrom != null ||
+                        filters.createdAtTill != null
+                ) {
+                    final LocalDateTime from = filters.createdAtFrom != null ?
+                            filters.createdAtFrom : LocalDateTime.of(2020, 1, 1, 0, 0);
+                    final LocalDateTime till = filters.createdAtTill != null ?
+                            filters.createdAtTill : LocalDateTime.now();
+                    predicates.add(
+                            builder.between(
+                                    root.get("createdAt"),
+                                    from,
+                                    till
+                            )
+                    );
+                }
+
+                // lastModifiedAt from till
+                if(
+                        filters.lastModifiedAtFrom != null ||
+                        filters.lastModifiedAtTill != null
+                ) {
+                    final LocalDateTime from = filters.lastModifiedAtFrom != null ?
+                            filters.lastModifiedAtFrom : LocalDateTime.of(2020, 1, 1, 0, 0);
+                    final LocalDateTime till = filters.lastModifiedAtTill != null ?
+                            filters.lastModifiedAtTill : LocalDateTime.now();
+                    predicates.add(
+                            builder.between(
+                                    root.get("lastModifiedAt"),
+                                    from,
+                                    till
+                            )
+                    );
+                }
+
+                // creatorId
+
+                // updaterId
+
+                cq.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
+            } // if filters != null ENDS
+
+            return cq;
+            
+        } catch(Exception e) {
+            throw e;
+        } finally {
+            em.close();
+        }
         
-        cq.orderBy();
-        
-        List<Predicate> predicates = new ArrayList<>();
-        
-        if(filters != null) {
-            
-            // searchTerm
-            if(filters.searchTerm != null) {
-                predicates.add(
-                        builder.or(
-                                builder.like(root.get("name"), toSearchPattern(filters.searchTerm)),
-                                builder.like(root.get("mobile"), toSearchPattern(filters.searchTerm)),
-                                builder.like(root.get("email"), toSearchPattern(filters.searchTerm))
-                        )
-                );
-            }
-            
-            // state
-            if(filters.state != null) {
-                predicates.add(
-                        builder.equal(root.get("state"), filters.state)
-                );
-            }
-            
-            // role
-            if(filters.role != null) {
-                predicates.add(
-                        builder.equal(root.get("role"), filters.role)
-                );
-            }
-            
-            // hasImage
-            if(filters.hasImage != null && filters.hasImage)
-                predicates.add(builder.isNotNull(root.get("imagePath")));
-            else if(filters.hasImage != null && !filters.hasImage)
-                predicates.add(builder.isNull(root.get("imagePath")));
-            
-            // hasEmail
-            if(filters.hasEmail != null && filters.hasEmail)
-                predicates.add(builder.isNotNull(root.get("email")));
-            else if(filters.hasEmail != null && !filters.hasEmail)
-                predicates.add(builder.isNull(root.get("email")));
-            
-            // createdAt from till
-            if(
-                    filters.createdAtFrom != null ||
-                    filters.createdAtTill != null
-            ) {
-                final LocalDateTime from = filters.createdAtFrom != null ?
-                        filters.createdAtFrom : LocalDateTime.of(2020, 1, 1, 0, 0);
-                final LocalDateTime till = filters.createdAtTill != null ?
-                        filters.createdAtTill : LocalDateTime.now();
-                predicates.add(
-                        builder.between(
-                                root.get("createdAt"),
-                                from,
-                                till
-                        )
-                );
-            }
-            
-            // lastModifiedAt from till
-            if(
-                    filters.lastModifiedAtFrom != null ||
-                    filters.lastModifiedAtTill != null
-            ) {
-                final LocalDateTime from = filters.lastModifiedAtFrom != null ?
-                        filters.lastModifiedAtFrom : LocalDateTime.of(2020, 1, 1, 0, 0);
-                final LocalDateTime till = filters.lastModifiedAtTill != null ?
-                        filters.lastModifiedAtTill : LocalDateTime.now();
-                predicates.add(
-                        builder.between(
-                                root.get("lastModifiedAt"),
-                                from,
-                                till
-                        )
-                );
-            }
-                        
-            // creatorId
-            
-            // updaterId
-            
-            cq.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
-        } // if filters != null ENDS
-        
-        return cq;
-    }
-    
-    private EntityManager getEntityManager() {
-        return this.emf.createEntityManager();
     }
     
     public static UserRepository getInstance() {
@@ -594,11 +639,10 @@ public class UserRepository implements IUserRepository {
     
     private static class UserRepositoryHolder {
         
-        final static EntityManagerFactory emf =
-                EntityManagerFactoryHelper.getInstance()
-                        .getFactory();
+        final static EntityManagerFactoryHelper emfh =
+                EntityManagerFactoryHelper.getInstance();
         
         private static final UserRepository INSTANCE =
-                new UserRepository(emf);
+                new UserRepository(emfh);
     }
 }

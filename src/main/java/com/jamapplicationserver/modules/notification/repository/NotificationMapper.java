@@ -7,7 +7,6 @@ package com.jamapplicationserver.modules.notification.repository;
 
 import java.util.*;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.notification.domain.*;
 import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
@@ -22,8 +21,6 @@ public class NotificationMapper {
         Notification entity;
         
         NotifType type = null;
-        if(model instanceof AppNotificationModel)
-            type = NotifType.APP;
         if(model instanceof SMSNotificationModel)
             type = NotifType.SMS;
         if(model instanceof FCMNotificationModel)
@@ -56,12 +53,8 @@ public class NotificationMapper {
     
     public static final NotificationModel toPersistence(Notification entity) {
         
-        System.out.println("toPersistence: " + (entity instanceof AppNotification));
-        
         NotificationModel model;
-        
-        if(entity instanceof AppNotification)
-            model = new AppNotificationModel();
+
         if(entity instanceof SMSNotification)
             model = new SMSNotificationModel();
         if(entity instanceof FCMNotification)

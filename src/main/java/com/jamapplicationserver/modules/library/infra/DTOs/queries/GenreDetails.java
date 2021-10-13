@@ -7,16 +7,15 @@ package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
 import java.time.*;
-import com.jamapplicationserver.core.domain.DateTime;
-import com.jamapplicationserver.core.domain.IDTO;
-import java.util.stream.Collectors;
+import java.util.stream.*;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
 /**
  *
  * @author dada
  */
-public class GenreDetails implements IDTO {
+public class GenreDetails {
     
     public final String id;
     public final String title;

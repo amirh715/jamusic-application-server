@@ -36,8 +36,9 @@ public class CreateReportController extends BaseController {
             final CreateReportRequestDTO dto =
                     new CreateReportRequestDTO(
                             fields.get("message"),
-                            fields.get("reporterId"),
-                            fields.get("reportedEntityId")
+                            fields.get("reportedEntityId"),
+                            subjectId,
+                            subjectRole
                     );
             
             final Result result = this.usecase.execute(dto);

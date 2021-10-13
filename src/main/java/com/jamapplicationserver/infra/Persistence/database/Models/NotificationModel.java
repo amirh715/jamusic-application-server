@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.net.URL;
+import org.hibernate.envers.*;
 
 /**
  *
@@ -19,15 +20,12 @@ import java.net.URL;
 @Table(name="notifications", schema="jamschema")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="type", discriminatorType = DiscriminatorType.STRING)
-public abstract class NotificationModel implements Serializable {
+@Audited
+public abstract class NotificationModel extends EntityModel {
     
     public NotificationModel() {
         
     }
-    
-    @Id
-    @Column(name="id")
-    private UUID id;
     
     @Column(name="title", nullable=true)
     private String title;
@@ -60,15 +58,8 @@ public abstract class NotificationModel implements Serializable {
     private UserModel sender;
     
     @OneToMany(mappedBy="notification")
+    @Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
     private Set<NotificationRecipientModel> recipients = new HashSet<>();
-    
-    public UUID getId() {
-        return this.id;
-    }
-    
-    public void setId(UUID id) {
-        this.id = id;
-    }
     
     public String getTitle() {
         return this.title;

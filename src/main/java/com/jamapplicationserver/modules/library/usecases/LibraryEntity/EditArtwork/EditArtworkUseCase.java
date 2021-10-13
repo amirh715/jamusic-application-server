@@ -12,9 +12,10 @@ import com.jamapplicationserver.modules.library.domain.Track.Track;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.EditArtworkRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.EditArtworkRequestDTO;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
 import com.jamapplicationserver.modules.library.repositories.*;
+import com.jamapplicationserver.modules.library.domain.Player.*;
 
 /**
  *
@@ -44,12 +45,11 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
             final ArrayList<Result> combinedProps = new ArrayList();
             
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
-            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             final Result<Title> titleOrError = Title.create(request.title);
             final Result<Description> descriptionOrError = Description.create(request.description);
             final Result<TagList> tagsOrError = TagList.createFromString(request.tags);
             final Result<Flag> flagOrError = Flag.create(request.flagNote);
-            final Result<Set<UniqueEntityId>> genreIdsOrError = UniqueEntityId.createFromStrings(request.genreIds);
+            final Result<GenreList> genresOrError = fetchAndCreateGenreList(request.genreIds);
             
             final Result<RecordLabel> recordLabelOrError = RecordLabel.create(request.recordLabel);
             final Result<RecordProducer> producerOrError = RecordProducer.create(request.producer);
@@ -58,7 +58,6 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
             final Result<Lyrics> lyricsOrError = Lyrics.create(request.lyrics);
             
             combinedProps.add(idOrError);
-            combinedProps.add(updaterIdOrError);
             
             if(request.title != null)
                 combinedProps.add(titleOrError);
@@ -68,7 +67,7 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
                 combinedProps.add(tagsOrError);
             if(request.flagNote != null)
                 combinedProps.add(flagOrError);
-            if(request.genreIds != null && !request.genreIds.isEmpty()) // ??
+            if(request.genreIds != null && !request.genreIds.isEmpty())
                 combinedProps.add(idOrError);
             
             if(request.recordLabel != null)
@@ -85,7 +84,6 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final UniqueEntityId id = idOrError.getValue();
-            final UniqueEntityId updaterId = updaterIdOrError.getValue();
             
             final Title title =
                     request.title != null ?
@@ -103,11 +101,9 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
                     request.flagNote != null ?
                     flagOrError.getValue() :
                     null;
-            final Set<UniqueEntityId> genreIds =
-                    request.genreIds != null && !request.genreIds.isEmpty() ?
-                    genreIdsOrError.getValue() :
-                    null;
-            
+            final GenreList genres =
+                    request.genreIds != null ? genresOrError.getValue()
+                    : null;
             final RecordLabel recordLabel =
                     request.recordLabel != null ?
                     recordLabelOrError.getValue() :
@@ -126,17 +122,10 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
                     lyricsOrError.getValue() :
                     null;
             
-            GenreList genres = null;
-            if(request.genreIds != null && !request.genreIds.isEmpty()) {
-                Result<GenreList> genresOrError = createGenreList(genreIds);
-                if(genresOrError.isFailure) return genresOrError;
-                genres = genresOrError.getValue();
-            }
-            
             final Artwork artwork =
-                    repository
+                    (Artwork) repository
                             .fetchArtworkById(id)
-                            .includeUnpublished()
+                            .includeUnpublished(request.subjectRole)
                             .getSingleResult();
             if(artwork == null) return Result.fail(new ArtworkDoesNotExistError());
             
@@ -149,7 +138,7 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
                     recordLabel,
                     producer,
                     releaseYear,
-                    updaterId
+                    request.subjectId
             );
             if(result.isFailure) return result;
             
@@ -167,13 +156,13 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
                 final Path imagePath = persistence.buildPath(artwork.getClass(), image.format.getValue());
                 
                 persistence.write(image, imagePath);
-                artwork.changeImage(imagePath, updaterId);
+                artwork.changeImage(imagePath, request.subjectId);
                 
             }
             
             // remove image
             if(request.removeImage) {
-                artwork.removeImage(updaterId);
+                artwork.removeImage(request.subjectId);
             }
             
             this.repository.save(artwork);
@@ -185,9 +174,32 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
         
     }
     
-    private Result<GenreList> createGenreList(Set<UniqueEntityId> ids) {
-        final Set<Genre> genres = genreRepository.fetchByIds(ids);
-        return GenreList.create(genres);
+    private Result<GenreList> fetchAndCreateGenreList(Set<String> genreIds) throws GenericAppException {
+        
+        try {
+            
+            if(genreIds == null || genreIds.isEmpty())
+                return Result.fail(new ValidationError("fetch genre error"));
+            
+            final Result<Set<UniqueEntityId>> idsOrErrors = UniqueEntityId.createFromStrings(genreIds);
+            if(idsOrErrors.isFailure) return Result.fail(idsOrErrors.getError());
+            
+            final Set<UniqueEntityId> ids = idsOrErrors.getValue();
+            
+            final Map<UniqueEntityId, Genre> allGenres = genreRepository.fetchAll();
+            
+            final boolean doGenresExist = allGenres.keySet().containsAll(ids);
+            if(!doGenresExist) return Result.fail(new GenreDoesNotExistError());
+            
+            final Set<Genre> genres = new HashSet<>();
+            ids.forEach(id -> genres.add(allGenres.get(id)));
+            
+            return GenreList.create(genres);
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new GenericAppException(e);
+        }
+        
     }
     
     public static EditArtworkUseCase getInstance() {

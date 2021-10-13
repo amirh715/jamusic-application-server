@@ -14,10 +14,13 @@ import com.jamapplicationserver.modules.user.domain.User;
  */
 public class UserDeleted extends DomainEvent {
     
+    public final User user;
+    
     public UserDeleted(
-            User aggregate
+            User user
     ) {
-        super(aggregate);
+        super(user.id);
+        this.user = user;
     }
     
 }

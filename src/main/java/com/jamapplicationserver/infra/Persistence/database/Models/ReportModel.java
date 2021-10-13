@@ -5,10 +5,10 @@
  */
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
-import java.io.Serializable;
 import java.util.*;
 import java.time.*;
 import javax.persistence.*;
+import org.hibernate.envers.*;
 
 /**
  *
@@ -16,11 +16,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="reports", schema="jamschema")
-public class ReportModel implements Serializable {
-
-    @Id
-    @Column(name="id")
-    private UUID id;
+@Audited
+public class ReportModel extends EntityModel {
     
     @Column(name="message", nullable=false, updatable=false)
     private String message;
@@ -61,14 +58,6 @@ public class ReportModel implements Serializable {
 
     public ReportModel() {
         
-    }
-    
-    public UUID getId() {
-        return this.id;
-    }
-    
-    public void setId(UUID id) {
-        this.id = id;
     }
     
     public String getMessage() {

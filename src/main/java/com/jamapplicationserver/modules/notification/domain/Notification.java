@@ -236,18 +236,6 @@ public abstract class Notification extends AggregateRoot {
         Notification entity;
         
         switch(type) {
-            case APP:
-                
-                entity = new AppNotification(
-                        title,
-                        message,
-                        route,
-                        senderType,
-                        scheduledOn,
-                        senderId
-                );
-                
-                break;
             case SMS:
                 
                 entity = new SMSNotification(
@@ -345,25 +333,6 @@ public abstract class Notification extends AggregateRoot {
         }
         
         switch(typeOrError.getValue()) {
-            case APP:
-                
-                entity =
-                        new AppNotification(
-                                idOrError.getValue(),
-                                titleOrError.getValue(),
-                                messageOrError.getValue(),
-                                routeURL,
-                                senderTypeOrError.getValue(),
-                                scheduledOnOrError.getValue(),
-                                senderIdOrError.getValue(),
-                                sentAtOrError.getValue(),
-                                isSent,
-                                createdAtOrError.getValue(),
-                                lastModifiedAtOrError.getValue(),
-                                deliveries
-                        );
-                
-            break;
             case SMS:
                 
                 entity =

@@ -11,7 +11,7 @@ import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.EditArtworkRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.EditArtworkRequestDTO;
 
 /**
  *
@@ -48,8 +48,8 @@ public class EditArtworkController extends BaseController {
                             fields.get("lyrics"),
                             image,
                             fields.get("removeImage"),
-                            this.subjectId,
-                            this.subjectRole
+                            subjectId,
+                            subjectRole
                     );
             
             final Result result = usecase.execute(dto);

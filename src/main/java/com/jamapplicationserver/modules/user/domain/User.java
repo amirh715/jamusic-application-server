@@ -60,7 +60,6 @@ public class User extends AggregateRoot {
             Password password,
             UserRole role,
             Email email,
-            Path imagePath,
             FCMToken FCMToken,
             UniqueEntityId creatorId
     ) {
@@ -72,7 +71,6 @@ public class User extends AggregateRoot {
         this.role = role;
         this.email = email;
         this.isEmailVerified = false;
-        this.imagePath = imagePath;
         this.fcmToken = FCMToken;
         this.creatorId = creatorId != null ? creatorId : this.id;
         this.updaterId = creatorId;
@@ -120,7 +118,6 @@ public class User extends AggregateRoot {
             MobileNo mobile,
             Password password,
             Email email,
-            Path imagePath,
             FCMToken FCMToken,
             UniqueEntityId creatorId
     ) {
@@ -135,7 +132,6 @@ public class User extends AggregateRoot {
                 password,
                 UserRole.SUBSCRIBER,
                 email,
-                imagePath,
                 FCMToken,
                 creatorId
         );

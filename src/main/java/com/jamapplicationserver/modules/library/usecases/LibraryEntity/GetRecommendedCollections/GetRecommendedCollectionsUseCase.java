@@ -15,7 +15,7 @@ import com.jamapplicationserver.modules.library.infra.services.*;
  *
  * @author dada
  */
-public class GetRecommendedCollectionsUseCase implements IUsecase<String, Set<RecommendedCollection>> {
+public class GetRecommendedCollectionsUseCase implements IUsecase<UniqueEntityId, Set<RecommendedCollection>> {
     
     private final IRecommendationService service;
     
@@ -24,14 +24,11 @@ public class GetRecommendedCollectionsUseCase implements IUsecase<String, Set<Re
     }
     
     @Override
-    public Result execute(String playerId) throws GenericAppException {
+    public Result execute(UniqueEntityId playerId) throws GenericAppException {
         
         try {
             
-            final Result<UniqueEntityId> playerIdOrError = UniqueEntityId.createFromString(playerId);
-            if(playerIdOrError.isFailure) return playerIdOrError;
-            
-            return Result.ok(service.getCollections(playerIdOrError.getValue()));
+            return Result.ok(service.getCollections(playerId));
             
         } catch(Exception e) {
             e.printStackTrace();

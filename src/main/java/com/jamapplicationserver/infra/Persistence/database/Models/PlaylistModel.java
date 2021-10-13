@@ -8,7 +8,7 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 import java.util.*;
 import java.time.LocalDateTime;
 import javax.persistence.*;
-import java.io.Serializable;
+import org.hibernate.envers.*;
 
 
 /**
@@ -17,11 +17,8 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name="playlists", schema="jamschema")
-public class PlaylistModel implements Serializable {
-    
-    @Id
-    @Column(name="id")
-    private UUID id;
+@Audited
+public class PlaylistModel extends EntityModel {
     
     @Column(name="title", nullable=false)
     private String title;
@@ -32,7 +29,7 @@ public class PlaylistModel implements Serializable {
     @Column(name="last_modified_at", nullable=false)
     private LocalDateTime lastModifiedAt;
     
-    @ManyToMany()
+    @ManyToMany
     @JoinTable(
             name="playlist_tracks",
             joinColumns = {
@@ -42,21 +39,12 @@ public class PlaylistModel implements Serializable {
                 @JoinColumn(name="track_id")
             }
     )
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<TrackModel> tracks;
     
     @ManyToOne()
     @JoinColumn(name="player_id")
     private UserModel player;
-    
-    // updatedBy
-    
-    public UUID getId() {
-        return this.id;
-    }
-    
-    public void setId(UUID id) {
-        this.id = id;
-    }
     
     public String getTitle() {
         return this.title;

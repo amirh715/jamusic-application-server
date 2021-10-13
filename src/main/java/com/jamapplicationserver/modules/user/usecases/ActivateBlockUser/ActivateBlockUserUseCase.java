@@ -34,12 +34,10 @@ public class ActivateBlockUserUseCase implements IUsecase<ActivateBlockUserReque
             
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
             final Result<UserState> stateOrError = UserState.create(request.state);
-            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             
             final Result[] combinedProps = {
                 idOrError,
-                stateOrError,
-                updaterIdOrError
+                stateOrError
             };
             
             final Result combinedPropsResult = Result.combine(combinedProps);
@@ -48,11 +46,10 @@ public class ActivateBlockUserUseCase implements IUsecase<ActivateBlockUserReque
             
             final UniqueEntityId id = idOrError.getValue();
             final UserState state = stateOrError.getValue();
-            final UniqueEntityId updaterId = updaterIdOrError.getValue();
             
             final User user = this.repository.fetchById(id);
             
-            final User updater = this.repository.fetchById(updaterId);
+            final User updater = this.repository.fetchById(request.subjectId);
             
             if(user == null) return Result.fail(new UserDoesNotExistError("Admin is not active"));
             

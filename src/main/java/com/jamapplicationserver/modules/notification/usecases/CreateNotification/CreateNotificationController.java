@@ -39,9 +39,10 @@ public class CreateNotificationController extends BaseController {
                             fields.get("route"),
                             fields.get("senderType"),
                             fields.get("scheduledOn"),
-                            fields.get("senderId"),
                             fields.get("recipients"),
-                            MultipartFormDataUtil.toInputStream(this.req.raw().getPart("image"))
+                            MultipartFormDataUtil.toInputStream(req.raw().getPart("image")),
+                            subjectId,
+                            subjectRole
                     );
             
             final Result result = this.usecase.execute(dto);

@@ -8,6 +8,7 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 import java.util.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import org.hibernate.envers.*;
 
 /**
  *
@@ -15,15 +16,14 @@ import java.io.Serializable;
  */
 @Entity
 @DiscriminatorValue("A")
-//@AssociationOverride(name="artist", joinColumns=@JoinColumn(name="album_artist_id"))
+@Audited
 public class AlbumModel extends ArtworkModel implements Serializable {
     
     @OneToMany(mappedBy="album", cascade=CascadeType.ALL)
-    private Set<TrackModel> tracks;
+    private Set<TrackModel> tracks = new HashSet<>();
     
     public AlbumModel() {
         super();
-        this.tracks = new HashSet<>();
     }
     
     public Set<TrackModel> getTracks() {

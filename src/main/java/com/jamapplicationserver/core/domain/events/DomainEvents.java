@@ -7,74 +7,83 @@ package com.jamapplicationserver.core.domain.events;
 
 import java.util.*;
 import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
- * @author amirhossein
+ * @author dada
  */
 public class DomainEvents {
     
-    private static final Set<AggregateRoot> markedAggregates = new HashSet<>();
-    private static final Map<Class, Set<IHandle>> handlersMap = new HashMap<>();
+    private static List<IDomainEventHandler> handlers =
+            new ArrayList<>();
+    private static ThreadLocal<List<AggregateRoot>> markedAggregates =
+            new ThreadLocal<List<AggregateRoot>>();
     
-    public static void markAggregateForDispatch(AggregateRoot aggregate) {
-        DomainEvents.markedAggregates.add(aggregate);
+    public static final void markAggregateForDispatch(AggregateRoot aggregate) {
+        if(markedAggregates.get() == null) {
+            markedAggregates.set(new ArrayList<>());
+        }
+        markedAggregates.get().add(aggregate);
     }
     
-    public static void dispatchAggregateEvents(AggregateRoot aggregate) {
-        aggregate
-                .getDomainEvents()
-                .forEach(event -> DomainEvents.dispatch(event));
-    }
-    
-    public static void removeAggregateFromMarkedDispatchList(AggregateRoot aggregate) {
-        markedAggregates.remove(aggregate);
-    }
-    
-    public static AggregateRoot findMarkedAggregateById(UniqueEntityId id) {
+    private static AggregateRoot findMarkedAggregateById(UniqueEntityId id) {
         AggregateRoot found = null;
-        for(AggregateRoot aggregate : markedAggregates)
-            if(aggregate.id.equals(id)) found = aggregate;
+        System.out.println(id.toString());
+        if(markedAggregates.get() != null && !markedAggregates.get().isEmpty()) {
+            for(AggregateRoot aggregate : markedAggregates.get()) {
+                if(aggregate.getId().equals(id)) found = aggregate;
+            }
+        }
+        
         return found;
     }
     
-    public static void dispatchEventsForAggregate(UniqueEntityId id) {
-        final AggregateRoot aggregate = findMarkedAggregateById(id);
+    public static final void dispatchEventsForAggregate(UniqueEntityId aggregateId) {
+        final AggregateRoot aggregate = findMarkedAggregateById(aggregateId);
         if(aggregate != null) {
             dispatchAggregateEvents(aggregate);
             aggregate.clearEvents();
-            removeAggregateFromMarkedDispatchList(aggregate);
+            markedAggregates.get().remove(aggregate);
         }
+
     }
     
-    public static void register(
-            IHandle handler,
-            Class eventClass
-    ) {
-        
-        if(!handlersMap.containsKey(eventClass))
-          handlersMap.get(eventClass).clear();
-        handlersMap.get(eventClass).add(handler);
+    private static void dispatchAggregateEvents(AggregateRoot aggregate) {
+        aggregate.getDomainEvents()
+                .forEach(event -> dispatch(event));
+    }
+    
+    private static void dispatch(DomainEvent domainEvent) {
+        try {
+            
+            if(handlers != null) {
+                System.out.println("handlers is not null");
+                for(IDomainEventHandler handler : handlers) {
+                    final Class subscribedTo = handler.subscribedToEventType();
+                    if (subscribedTo == domainEvent.getClass()) {
+                        handler.handleEvent(domainEvent);
+                    }
+                }
+            }
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            // LOG
+        }
         
     }
     
-    public static void clearHandlers() {
-        handlersMap.clear();
+    public static final <T extends DomainEvent> void register(IDomainEventHandler handler) {
+        if(handlers == null) {
+            handlers = new ArrayList<>();
+        }
+        handlers.add(handler);
+        LogService.getInstance().log("Domain event handler (" + handler.getClass() + ") registered ");
     }
     
     public static void clearMarkedAggregates() {
-        markedAggregates.clear();
-    }
-    
-    private static void dispatch(DomainEvent event) {
-        
-        final Class eventClass = event.getClass();
-        
-        if(handlersMap.containsKey(eventClass)) {
-            final Set<IHandle> handlers = handlersMap.get(eventClass);
-            handlers.forEach(handler -> handler.handle(event));
-        }
-        
+        markedAggregates.set(new ArrayList<>());
     }
     
 }

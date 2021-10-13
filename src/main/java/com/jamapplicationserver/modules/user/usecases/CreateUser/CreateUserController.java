@@ -26,36 +26,47 @@ public class CreateUserController extends BaseController {
         System.out.println("CreateUserController");
         
         final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
-        final CreateUserRequestDTO requestDTO = CreateUserRequestDTO.buildFromMap(fields);
+        final CreateUserRequestDTO dto =
+                new CreateUserRequestDTO(
+                        fields.get("name"),
+                        fields.get("mobile"),
+                        fields.get("password"),
+                        fields.get("email"),
+                        fields.get("role"),
+                        fields.get("FCM"),
+                        fields.get("sendVerificationCode"),
+                        subjectId,
+                        subjectRole
+                );
         
         try {
             
-            final Result<User> result = this.useCase.execute(requestDTO);
+            final Result<User> result = this.useCase.execute(dto);
 
             if(result.isFailure) {
 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 if(error instanceof AuthError)
-                    this.unauthorized(error);
+                    unauthorized(error);
                 
                 return;
             }
 
-            this.created(result.getValue());
+            created(result.getValue());
             
         } catch(Exception e) {
             e.printStackTrace();
-            this.fail(e);
+            fail(e);
         }
 
     }

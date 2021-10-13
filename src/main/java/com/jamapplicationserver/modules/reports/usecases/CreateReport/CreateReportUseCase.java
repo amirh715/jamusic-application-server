@@ -31,30 +31,26 @@ public class CreateReportUseCase implements IUsecase<CreateReportRequestDTO, Rep
             
             final Result<Message> messageOrError =
                     Message.create(request.message);
-            final Result<UniqueEntityId> reporterIdOrError =
-                    UniqueEntityId.createFromString(request.reporterId);
             final Result<UniqueEntityId> reportedEntityIdOrError =
                     UniqueEntityId.createFromString(request.reportedEntityId);
             
             if(messageOrError.isFailure) return messageOrError;
-            if(reporterIdOrError.isFailure) return reporterIdOrError;
             if(request.reportedEntityId != null && reportedEntityIdOrError.isFailure)
                 return reportedEntityIdOrError;
             
             final Message message = messageOrError.getValue();
-            final UniqueEntityId reporterId = reporterIdOrError.getValue();
             final UniqueEntityId reportedEntityId =
                     request.reportedEntityId != null ?
                     reportedEntityIdOrError.getValue()
                     : null;
             
-            final Reporter reporter = this.repository.fetchReporterById(reporterId);
+            final Reporter reporter = repository.fetchReporterById(request.subjectId);
             if(reporter == null) return Result.fail(new ReporterDoesNotExistError());
             
             ReportedEntity reportedEntity = null;
             if(request.reportedEntityId != null) {
                 System.out.println("reported entity id ==> " + reportedEntityId);
-                reportedEntity = this.repository.fetchEntityById(reportedEntityId);
+                reportedEntity = repository.fetchEntityById(reportedEntityId);
                 if(reportedEntity == null) return Result.fail(new ReportedEntityDoesNotExistError());
             }
             
@@ -64,7 +60,7 @@ public class CreateReportUseCase implements IUsecase<CreateReportRequestDTO, Rep
             
             final Report report = reportOrError.getValue();
             
-            this.repository.save(report);
+            repository.save(report);
             
             return Result.ok(report);
         } catch(Exception e) {

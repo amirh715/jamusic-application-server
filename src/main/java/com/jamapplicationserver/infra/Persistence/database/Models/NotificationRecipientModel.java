@@ -5,17 +5,19 @@
  */
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
-import java.util.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.*;
+import org.hibernate.envers.*;
 
 /**
  *
  * @author dada
  */
 @Entity
+@Audited
 @Table(name="notification_recipients", schema="jamschema")
-public class NotificationRecipientModel {
+public class NotificationRecipientModel implements Serializable {
     
     @EmbeddedId
     private NotificationDeliveryId id = new NotificationDeliveryId();

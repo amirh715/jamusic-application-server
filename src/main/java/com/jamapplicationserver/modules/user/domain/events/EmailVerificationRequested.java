@@ -14,8 +14,11 @@ import com.jamapplicationserver.modules.user.domain.User;
  */
 public class EmailVerificationRequested extends DomainEvent {
     
-    public EmailVerificationRequested(User aggregate) {
-        super(aggregate);
+    public final User user;
+    
+    public EmailVerificationRequested(User user) {
+        super(user.id);
+        this.user = user;
     }
     
 }

@@ -7,18 +7,14 @@ package com.jamapplicationserver.modules.library.usecases.LibraryEntity.CreateAl
 
 import java.util.*;
 import java.nio.file.Path;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateAlbumRequestDTO;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
-import com.jamapplicationserver.modules.library.domain.Track.Track;
-import com.jamapplicationserver.core.domain.IUsecase;
-import com.jamapplicationserver.core.domain.ImageStream;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -52,7 +48,6 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
             final Result<GenreList> genreListOrError = fetchAndCreateGenreList(request.genreIds);
             final Result<TagList> tagListOrError = TagList.createFromString(request.tags);
             final Result<Flag> flagOrError = Flag.create(request.flagNote);
-            final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromString(request.creatorId);
             final Result<UniqueEntityId> artistIdOrError = UniqueEntityId.createFromString(request.artistId);
             final Result<RecordLabel> recordLabelOrError = RecordLabel.create(request.recordLabel);
             final Result<RecordProducer> producerOrError = RecordProducer.create(request.producer);
@@ -61,7 +56,6 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
             
             combinedProps.add(titleOrError);
             combinedProps.add(artistIdOrError);
-            combinedProps.add(creatorIdOrError);
             
             if(request.description != null)
                 combinedProps.add(descriptionOrError);
@@ -86,7 +80,6 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
             
             // populate properties
             final Title title = titleOrError.getValue();
-            final UniqueEntityId creatorId = creatorIdOrError.getValue();
             final Description description =
                     request.description != null ? descriptionOrError.getValue()
                     : null;
@@ -117,7 +110,7 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
             final Artist artist =
                     repository
                             .fetchArtistById(artistId)
-                            .includeUnpublished()
+                            .includeUnpublished(request.subjectRole)
                             .getSingleResult();
             if(artist == null) return Result.fail(new ArtistDoesNotExistError());
             
@@ -129,23 +122,22 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
                             flag,
                             tagList,
                             genreList,
-                            creatorId,
+                            request.subjectId,
                             recordLabel,
                             producer,
-                            releaseYear,
-                            artist
+                            releaseYear
                     );
             if(albumOrError.isFailure) return albumOrError;
             
             final Album album = albumOrError.getValue();
                         
-            final Result result = artist.addAlbum(album, creatorId);
+            final Result result = artist.addArtwork(album, request.subjectId);
             if(result.isFailure) return result;
                         
             // save album image
             if(request.image != null) {
                 final Path path = persistence.buildPath(Album.class);
-                album.changeImage(path, creatorId);
+                album.changeImage(path, request.subjectId);
                 persistence.write(image, path);
             }
             

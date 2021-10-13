@@ -5,7 +5,7 @@
  */
 package com.jamapplicationserver.modules.user.domain.events;
 
-import com.jamapplicationserver.core.domain.events.DomainEvent;
+import com.jamapplicationserver.core.domain.events.*;
 import com.jamapplicationserver.modules.user.domain.User;
 
 /**
@@ -14,10 +14,13 @@ import com.jamapplicationserver.modules.user.domain.User;
  */
 public class UserVerifiedAndActivated extends DomainEvent {
     
+    public final User user;
+    
     public UserVerifiedAndActivated(
-            User aggregate
+            User user
     ) {
-        super(aggregate);
+        super(user.id);
+        this.user = user;
     }
     
 }

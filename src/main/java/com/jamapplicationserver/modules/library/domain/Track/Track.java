@@ -9,10 +9,10 @@ import java.time.*;
 import java.util.*;
 import java.util.stream.*;
 import java.nio.file.*;
-import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.library.domain.core.*;
+import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 
 /**
@@ -46,9 +46,7 @@ public class Track extends Artwork {
             RecordLabel recordLabel,
             RecordProducer producer,
             ReleaseDate releaseYear,
-            Lyrics lyrics,
-            Artist artist,
-            Album album
+            Lyrics lyrics
     ) {
         super(
                 title,
@@ -59,15 +57,13 @@ public class Track extends Artwork {
                 creatorId,
                 recordLabel,
                 producer,
-                releaseYear,
-                artist
+                releaseYear
         );
         this.size = size;
         this.duration = duration;
         this.audioPath = audioPath;
         this.type = type;
         this.lyrics = lyrics;
-        this.album = album;
     }
     
     // reconstitution constructor
@@ -163,44 +159,8 @@ public class Track extends Artwork {
                 recordLabel,
                 producer,
                 releaseYear,
-                lyrics,
-                artist,
-                album
+                lyrics
         );
-        
-        // track's genres must be a subset of its artist/album.
-        if(instance.genres != null) {
-            
-            if(instance.album != null && instance.album.getGenres() != null) {
-                instance.genres = instance.album.getGenres();
-            }
-            
-            System.out.println("instance.album == null -> " + (instance.album == null));
-            System.out.println("instance.artist == null -> " + (instance.artist == null));
-            
-            if(instance.album == null && instance.artist != null) {
-                
-                if(instance.artist.getGenres() != null) {
-                    
-                    final boolean areTracksGenresThoseOfArtistsGenres =
-                            instance.genres.getValue()
-                            .stream()
-                            .allMatch(trackGenre ->
-                                    instance.artist.getGenres().getValue()
-                                    .stream()
-                                    .anyMatch(artistGenre ->
-                                            artistGenre.equals(trackGenre) ||
-                                            artistGenre.isSubGenreOf(trackGenre)
-                                    )
-                            );
-                    if(!areTracksGenresThoseOfArtistsGenres)
-                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
-                    
-                }
-                
-            }
-            
-        }
 
         return Result.ok(instance);
     }
@@ -335,40 +295,33 @@ public class Track extends Artwork {
     
     @Override
     public final void publish() {
-        if(this.isPublished()) return;
+        if(isPublished()) return;
         if(
-                (this.album != null && !this.album.isPublished()) ||
-                (this.artist != null && !this.artist.isPublished())
-        ) {
-            this.archive();
-            return;
-        }
-        this.published = true;
-        this.modified();
+                album != null && !album.isPublished() ||
+                artist != null && !artist.isPublished()
+        ) return;
+        published = true;
+        modified();
+        
     }
     
     @Override
     public final void publish(UniqueEntityId updaterId) {
-        this.publish();
+        publish();
         this.updaterId = updaterId;
     }
     
     @Override
     public final void archive() {
-        if(!this.isPublished()) return;
-        this.published = false;
-        this.modified();
+        if(!isPublished()) return;
+        published = false;
+        modified();
     }
     
     @Override
     public final void archive(UniqueEntityId updaterId) {
-        this.archive();
+        archive();
         this.updaterId = updaterId;
-    }
-    
-    @Override
-    public void rate(Rate rate) {
-        this.rate = rate;
     }
     
     @Override
@@ -416,7 +369,7 @@ public class Track extends Artwork {
         }
 
         this.updaterId = updaterId;
-        this.modified();
+        modified();
         
         return Result.ok();
     }
@@ -446,20 +399,22 @@ public class Track extends Artwork {
         return this.album;
     }
     
+    public boolean isSingleTrack() {
+        return album == null;
+    }
+    
+    public boolean isAlbumTrack() {
+        return album != null;
+    }
+    
     public final void played() {
         totalPlayedCount++;
     }
     
-    // not related to domain!
+    // not related to the domain!
     // for passing album reference only!
     public void setAlbum(Album album) {
         this.album = album;
-    }
-    
-    // not related to domain
-    // for passing artist reference only!
-    public void setArtist(Artist artist) {
-        this.artist = artist;
     }
 
 }

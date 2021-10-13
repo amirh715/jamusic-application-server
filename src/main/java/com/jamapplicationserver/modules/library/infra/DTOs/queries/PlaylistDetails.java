@@ -14,7 +14,7 @@ import com.jamapplicationserver.infra.Persistence.database.Models.*;
  *
  * @author dada
  */
-public class PlaylistDetails implements IDTO {
+public class PlaylistDetails {
     
     public final UniqueEntityId id;
     public final Title title;

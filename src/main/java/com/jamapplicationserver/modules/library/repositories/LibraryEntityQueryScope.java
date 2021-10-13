@@ -5,126 +5,106 @@
  */
 package com.jamapplicationserver.modules.library.repositories;
 
-import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
-import com.jamapplicationserver.core.infra.QueryScope;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
+import javax.persistence.*;
 import javax.persistence.criteria.*;
-import javax.persistence.NoResultException;
-import com.jamapplicationserver.modules.library.domain.Player.*;
-import com.jamapplicationserver.modules.library.repositories.mappers.*;
-import com.jamapplicationserver.modules.library.repositories.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
+import com.jamapplicationserver.core.infra.QueryScope;
+import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.modules.library.domain.core.*;
 
 /**
  *
  * @author dada
  * @param <T>
  */
-public class LibraryEntityQueryScope<T>
-        extends QueryScope<T> 
+public class LibraryEntityQueryScope<T extends LibraryEntity>
+        extends QueryScope<LibraryEntityModel, T> 
 {
+
+    private final Predicate publishedScope = builder.isTrue(root.get("published"));
     
-    private final ILibraryEntityRepository repository;
-    private final Predicate unpublishedScope =
-        this.cb.isTrue(
-                this.root.get("published")
-        );
-    private final List<Predicate> defaultScope;
-    
-     public LibraryEntityQueryScope(
-            EntityManager manager,
-            CriteriaBuilder cb,
-            CriteriaQuery cq,
+    public LibraryEntityQueryScope(
+            EntityManager entityManager,
+            CriteriaQuery query,
             Root root,
-            Class clazz,
             List<Predicate> predicates
     ) {
-        super(manager, cb, cq, root, clazz, predicates);
-        this.defaultScope = new ArrayList<>();
-        this.defaultScope.add(this.unpublishedScope);
-        this.predicates.addAll(this.defaultScope);
-        this.repository = LibraryEntityRepository.getInstance();
+        super(entityManager, query, root, predicates);
+        defaultScope.add(publishedScope);
+    }
+    
+    private LibraryEntityQueryScope<T> includeUnpublished() {
+        defaultScope.remove(publishedScope);
+        return this;
+    }
+    
+    public LibraryEntityQueryScope<T> includeUnpublished(UserRole role) {
+        if(role.isAdmin() || role.isLibraryManager())
+            includeUnpublished();
+        return this;
     }
 
-    public LibraryEntityQueryScope(
-            EntityManager manager,
-            CriteriaBuilder cb,
-            CriteriaQuery cq,
-            Root root,
-            Class clazz
-    ) {
-        super(manager, cb, cq, root, clazz);
-        this.defaultScope = new ArrayList<>();
-        this.defaultScope.add(this.unpublishedScope);
-        this.predicates.addAll(this.defaultScope);
-        this.repository = LibraryEntityRepository.getInstance();
-    }
-    
-    public LibraryEntityQueryScope<T> includeUnpublished() {
-        this.predicates.remove(this.unpublishedScope);
-        return this;
-    }
-    
-    public LibraryEntityQueryScope<T> includeUnpublished(PlayerRole role) {
-        if(role.isAdmin() || role.isLibraryManager())
-            this.predicates.remove(this.unpublishedScope);
-        return this;
-    }
-    
     @Override
     public Set<T> getResults() {
         
-        this.cq.select(root);
-        this.cq.from(this.clazz);
-        
-        if(!this.predicates.isEmpty()) {
-            this.cq.where(
-                    this.cb.and(
-                            this.predicates.toArray(
-                                    new Predicate[this.predicates.size()]
-                            )
+        final ILibraryEntityRepository libraryRepository =
+                LibraryEntityRepository.getInstance();
+
+        try {
+            
+            query.where(
+                    builder.and(
+                            predicates.toArray(new Predicate[predicates.size()])
                     )
             );
+            
+            return entityManager
+                    .createQuery(query)
+                    .getResultList()
+                    .stream()
+                    .map(entity ->
+                            (T) libraryRepository.toDomain(
+                                    (LibraryEntityModel) entity,
+                                    entityManager
+                            )
+                    )
+                    .collect(Collectors.toSet());
+            
+        } catch(Exception e) {
+            throw e;
+        } finally {
+            entityManager.close();
         }
         
-        final List<LibraryEntityModel> results =
-                this.manager.createQuery(this.cq).getResultList();
-        return (Set<T>) results
-                .stream()
-                .map(model -> LibraryEntityRepository.toDomain(model, manager))
-                .collect(Collectors.toSet());
     }
     
     @Override
     public T getSingleResult() {
         
+        final ILibraryEntityRepository libraryRepository =
+                LibraryEntityRepository.getInstance();
+        
         try {
             
-            this.cq.select(root);
-            this.cq.from(this.clazz);
-
-            if(!this.predicates.isEmpty()) {
-                this.cq.where(
-                        this.cb.and(
-                                this.predicates.toArray(
-                                        new Predicate[this.predicates.size()]
-                                )
-                        )
-                );
-            }
-
-            final LibraryEntityModel result =
-                    (LibraryEntityModel) manager.createQuery(this.cq).getSingleResult();
+            query.where(
+                    builder.and(
+                            predicates.toArray(new Predicate[predicates.size()])
+                    )
+            );
             
-            return (T) LibraryEntityRepository.toDomain(result, manager);
+            final LibraryEntityModel result = entityManager.createQuery(query).getSingleResult();
             
-        } catch(NoResultException e) {
-            e.printStackTrace();
-            return null;
+            return (T) libraryRepository.toDomain(
+                    result,
+                    entityManager
+            );
+            
         } catch(Exception e) {
-            e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            entityManager.close();
         }
 
     }

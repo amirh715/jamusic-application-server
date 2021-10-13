@@ -5,35 +5,37 @@
  */
 package com.jamapplicationserver.modules.showcase.infra.DTOs;
 
-import com.jamapplicationserver.core.domain.IDTO;
+import java.io.InputStream;
+import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.core.infra.*;
 
 /**
  *
  * @author dada
  */
-public class CreateShowcaseRequestDTO implements IDTO {
+public class CreateShowcaseRequestDTO extends DTOWithAuthClaims {
     
     public final String index;
     public final String title;
     public final String description;
     public final String route;
-    public final String image;
-    public final String creatorId;
+    public final InputStream image;
     
     public CreateShowcaseRequestDTO(
             String index,
             String title,
             String description,
             String route,
-            String image,
-            String creatorId
+            InputStream image,
+            UniqueEntityId creatorId,
+            UserRole creatorRole
     ) {
+        super(creatorId, creatorRole);
         this.index = index;
         this.title = title;
         this.description = description;
         this.route = route;
         this.image = image;
-        this.creatorId = creatorId;
     }
     
     

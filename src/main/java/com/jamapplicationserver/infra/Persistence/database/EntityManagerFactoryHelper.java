@@ -5,7 +5,9 @@
  */
 package com.jamapplicationserver.infra.Persistence.database;
 
+import java.util.*;
 import javax.persistence.*;
+import org.hibernate.*;
 
 /**
  *
@@ -17,7 +19,11 @@ public class EntityManagerFactoryHelper {
     
     private EntityManagerFactoryHelper() {
         try {
+            
+            final Map<String, Object> configuration = new HashMap<>();
+            
             factory = Persistence.createEntityManagerFactory("manager1");
+            
         } catch(Exception e) {
             throw e;
         }
@@ -27,16 +33,13 @@ public class EntityManagerFactoryHelper {
         return EntityManagerFactoryHelperHolder.INSTANCE;
     }
     
-    public final EntityManagerFactory getFactory() {
-        return this.factory;
-    }
-    
-    public EntityManager getEntityManager() {
+    public EntityManager createEntityManager() {
         return factory.createEntityManager();
     }
     
     private static class EntityManagerFactoryHelperHolder {
 
-        private static final EntityManagerFactoryHelper INSTANCE = new EntityManagerFactoryHelper();
+        private static final EntityManagerFactoryHelper INSTANCE =
+                new EntityManagerFactoryHelper();
     }
 }

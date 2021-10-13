@@ -29,35 +29,36 @@ public class ProcessReportController extends BaseController {
         
         try {
             
-            final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+            final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
             
             final ProcessReportRequestDTO dto =
                     new ProcessReportRequestDTO(
                             fields.get("id"),
-                            fields.get("processorId"),
-                            fields.get("processorNote")
+                            fields.get("processorNote"),
+                            subjectId,
+                            subjectRole
                     );
             
-            final Result result = this.usecase.execute(dto);
+            final Result result = usecase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
             
-            this.ok(result.getValue());
+            ok(result.getValue());
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

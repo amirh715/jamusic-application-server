@@ -18,15 +18,17 @@ import com.jamapplicationserver.infra.Persistence.database.Models.*;
  */
 public class ShowcaseRepository implements IShowcaseRepository {
     
-    private final EntityManager em;
+    private final EntityManagerFactoryHelper emfh;
     private final long MAX_ALLOWED_SHOWCASES = 3;
     
-    private ShowcaseRepository(EntityManager em) {
-        this.em = em;
+    private ShowcaseRepository(EntityManagerFactoryHelper emfh) {
+        this.emfh = emfh;
     }
     
     @Override
     public final Set<Showcase> fetchAll() {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -37,13 +39,17 @@ public class ShowcaseRepository implements IShowcaseRepository {
             return null;
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
     
     @Override
     public final Showcase fetchByIndex(int index) {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -55,13 +61,17 @@ public class ShowcaseRepository implements IShowcaseRepository {
             return ShowcaseMapper.toDomain(result);
         }  catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
     
     @Override
     public final Showcase fetchById(UniqueEntityId id) {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -73,7 +83,9 @@ public class ShowcaseRepository implements IShowcaseRepository {
             return ShowcaseMapper.toDomain(result);
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -81,14 +93,13 @@ public class ShowcaseRepository implements IShowcaseRepository {
     @Override
     public final void save(Showcase entity) {
         
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         ShowcaseModel model;
         
         try {
-            
-            final boolean exists = this.exists(entity.id);
-            
+
             tnx.begin();
             
             model = ShowcaseMapper.toPersistence(entity);
@@ -97,7 +108,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
             
             model.setCreator(creator);
             
-            if(exists) { // update existing entity
+            if(exists(entity.id)) { // update existing entity
                 
                 em.merge(model);
                 
@@ -117,6 +128,8 @@ public class ShowcaseRepository implements IShowcaseRepository {
         } catch(Exception e) {
             e.printStackTrace();
             tnx.rollback();
+        } finally {
+            em.close();
         }
         
     }
@@ -124,6 +137,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
     @Override
     public final void remove(Showcase entity) {
         
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         try {
@@ -139,12 +153,16 @@ public class ShowcaseRepository implements IShowcaseRepository {
         } catch(Exception e) {
             e.printStackTrace();
             tnx.rollback();
+        } finally {
+            em.close();
         }
         
     }
     
     @Override
     public final boolean exists(UniqueEntityId id) {
+        
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -154,7 +172,9 @@ public class ShowcaseRepository implements IShowcaseRepository {
             return model != null;
         } catch(Exception e) {
             e.printStackTrace();
-            return false;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -167,9 +187,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
 
         private static final ShowcaseRepository INSTANCE =
                 new ShowcaseRepository(
-                        EntityManagerFactoryHelper
-                                .getInstance()
-                                .getEntityManager()
+                        EntityManagerFactoryHelper.getInstance()
                 );
     }
 }

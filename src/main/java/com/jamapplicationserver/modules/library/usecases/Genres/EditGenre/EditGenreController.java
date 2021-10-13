@@ -10,7 +10,7 @@ import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.EditGenreRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.EditGenreRequestDTO;
 
 /**
  *
@@ -35,7 +35,8 @@ public class EditGenreController extends BaseController {
                     fields.get("id"),
                     fields.get("title"),
                     fields.get("titleInPersian"),
-                    this.req.session().attribute("subjectId")
+                    subjectId,
+                    subjectRole
             );
             
             final Result result = this.usecase.execute(dto);

@@ -29,7 +29,7 @@ public abstract class ArtworkDetails extends LibraryEntityDetails {
             double rate,
             String flagNote,
             long totalPlayedCount,
-            String duration,
+            long duration,
             String recordLabel,
             String producer,
             String releaseDate,

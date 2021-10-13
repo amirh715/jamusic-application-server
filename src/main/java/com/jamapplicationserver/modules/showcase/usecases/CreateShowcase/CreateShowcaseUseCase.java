@@ -34,26 +34,20 @@ public class CreateShowcaseUseCase implements IUsecase<CreateShowcaseRequestDTO,
     public Result execute(CreateShowcaseRequestDTO request) throws GenericAppException {
         
         try {
-            
-            final Result<UniqueEntityId> creatorIdOrError =
-                    UniqueEntityId.createFromString(request.creatorId);
-            if(creatorIdOrError.isFailure) return creatorIdOrError;
-            final UniqueEntityId creatorId = creatorIdOrError.getValue();
-            
+
             final Result<Showcase> showcaseOrError =
                     Showcase.create(
                             request.index != null ? Integer.decode(request.index) : null,
                             request.title,
                             request.description,
                             request.route,
-                            null,
-                            creatorId
+                            request.subjectId
                     );
             if(showcaseOrError.isFailure) return showcaseOrError;
             
             final Showcase showcase = showcaseOrError.getValue();
             
-            this.repository.save(showcase);
+            repository.save(showcase);
             
             return Result.ok();
         } catch(Exception e) {

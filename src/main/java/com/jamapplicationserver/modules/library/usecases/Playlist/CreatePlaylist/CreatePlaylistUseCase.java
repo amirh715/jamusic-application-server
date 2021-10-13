@@ -9,7 +9,7 @@ import java.util.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.repositories.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.CreatePlaylistRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreatePlaylistRequestDTO;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.Playlist.Playlist;
 import com.jamapplicationserver.modules.library.domain.Player.Player;

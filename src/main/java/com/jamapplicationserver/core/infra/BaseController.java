@@ -5,12 +5,12 @@
  */
 package com.jamapplicationserver.core.infra;
 
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import spark.*;
 import java.io.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.TikaUtils;
+import com.jamapplicationserver.core.domain.*;
+//import javax.ws.rs.core.Response;
 
 /**
  *
@@ -21,8 +21,8 @@ public abstract class BaseController implements Route {
     protected Request req;
     private Response res;
     
-    protected String subjectId;
-    protected String subjectRole;
+    protected UniqueEntityId subjectId;
+    protected UserRole subjectRole;
     
     protected abstract void executeImpl();
     
@@ -33,12 +33,29 @@ public abstract class BaseController implements Route {
         
         this.req = req;
         this.res = res;
-        this.subjectId = this.req.session().attribute("subjectId");
-        this.subjectRole = this.req.session().attribute("role");
         
-        this.executeImpl();
+        final Result<UniqueEntityId> subjectIdOrError =
+            UniqueEntityId
+                .createFromString(
+                        req.session().attribute("subjectId")
+                );
+        if(subjectIdOrError.isFailure) {
+            fail("Subject id is invalid");
+            return res.body();
+        }
+        this.subjectId = subjectIdOrError.getValue();
         
-        return this.res.body();
+        final Result<UserRole> subjectRoleOrError =
+                UserRole.create(req.session().attribute("role"));
+        if(subjectRoleOrError.isFailure) {
+            fail("Subject role is invalid");
+            return res.body();
+        }
+        this.subjectRole = subjectRoleOrError.getValue();
+        
+        executeImpl();
+        
+        return res.body();
         
     }
     
@@ -153,6 +170,11 @@ public abstract class BaseController implements Route {
     protected final void fail(String error) {
         res.status(500);
         res.body(error != null ? error : "Internal Server Error (500)");
+    }
+    
+    protected final void fail() {
+        res.status(500);
+        res.body("Internal Server Error (500)");
     }
     
 }

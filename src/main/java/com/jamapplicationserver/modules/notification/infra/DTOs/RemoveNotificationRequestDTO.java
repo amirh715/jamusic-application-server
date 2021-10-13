@@ -5,17 +5,23 @@
  */
 package com.jamapplicationserver.modules.notification.infra.DTOs;
 
-import com.jamapplicationserver.core.domain.IDTO;
+import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.core.infra.*;
 
 /**
  *
  * @author dada
  */
-public class RemoveNotificationRequestDTO implements IDTO {
+public class RemoveNotificationRequestDTO extends DTOWithAuthClaims {
     
     public final String id;
     
-    public RemoveNotificationRequestDTO(String id) {
+    public RemoveNotificationRequestDTO(
+            String id,
+            UniqueEntityId updaterId,
+            UserRole updaterRole
+    ) {
+        super(updaterId, updaterRole);
         this.id = id;
     }
     

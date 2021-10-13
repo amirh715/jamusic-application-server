@@ -5,14 +5,13 @@
  */
 package com.jamapplicationserver.modules.user.usecases.Login;
 
-import com.jamapplicationserver.core.domain.IDTO;
 import ua_parser.*;
 
 /**
  *
  * @author amirhossein
  */
-public class LoginRequestDTO implements IDTO {
+public class LoginRequestDTO {
     
     public final String mobile;
     public final String password;

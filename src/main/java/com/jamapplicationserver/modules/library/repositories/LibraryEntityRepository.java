@@ -12,8 +12,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
+import org.hibernate.FlushMode;
 import com.jamapplicationserver.core.infra.QueryScope;
 import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.core.domain.events.DomainEvents;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.repositories.mappers.*;
@@ -29,32 +31,31 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class LibraryEntityRepository implements ILibraryEntityRepository {
     
-    private final EntityManagerFactory emf;
+    private final EntityManagerFactoryHelper emfh;
     
-    private LibraryEntityRepository(EntityManagerFactory emf) {
-        this.emf = emf;
+    private LibraryEntityRepository(EntityManagerFactoryHelper emfh) {
+        this.emfh = emfh;
     }
     
     @Override
     public LibraryEntityQueryScope<LibraryEntity> fetchById(UniqueEntityId id) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            final CriteriaBuilder cb = em.getCriteriaBuilder();
-            final CriteriaQuery<LibraryEntityModel> cq = cb.createQuery(LibraryEntityModel.class);
-            final Root root = cq.from(LibraryEntityModel.class);
+            final CriteriaBuilder builder = em.getCriteriaBuilder();
+            final CriteriaQuery<LibraryEntityModel> query =
+                    builder.createQuery(LibraryEntityModel.class);
+            final Root root = query.from(LibraryEntityModel.class);
             
             final List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("id"), id.toValue()));
+            predicates.add(builder.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
                     em,
-                    cb,
-                    cq,
+                    query,
                     root,
-                    LibraryEntityModel.class,
                     predicates
             );
 
@@ -67,26 +68,24 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Artist> fetchArtistById(UniqueEntityId id) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            final CriteriaBuilder cb = em.getCriteriaBuilder();
-            final CriteriaQuery<ArtistModel> cq = cb.createQuery(ArtistModel.class);
-            final Root<ArtistModel> root = cq.from(ArtistModel.class);
+            final CriteriaBuilder builder = em.getCriteriaBuilder();
+            final CriteriaQuery<ArtistModel> query = builder.createQuery(ArtistModel.class);
+            final Root<ArtistModel> root = query.from(ArtistModel.class);
             
             final List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("id"), id.toValue()));
-            
-            return new LibraryEntityQueryScope(
+            predicates.add(builder.equal(root.get("id"), id.toValue()));
+
+            return new LibraryEntityQueryScope<>(
                     em,
-                    cb,
-                    cq,
+                    query,
                     root,
-                    ArtistModel.class,
                     predicates
             );
-            
+
         } catch(Exception e) {
             throw e;
         }
@@ -96,26 +95,26 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Artwork> fetchArtworkById(UniqueEntityId id) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            final CriteriaBuilder cb = em.getCriteriaBuilder();
-            final CriteriaQuery<ArtworkModel> cq = cb.createQuery(ArtworkModel.class);
-            final Root<ArtworkModel> root = cq.from(ArtworkModel.class);
+            final CriteriaBuilder builder = em.getCriteriaBuilder();
+            final CriteriaQuery<ArtworkModel> query = builder.createQuery(ArtworkModel.class);
+            final Root<ArtworkModel> root = query.from(ArtworkModel.class);
             
             final List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("id"), id.toValue()));
+            predicates.add(builder.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
                     em,
-                    cb,
-                    cq,
+                    query,
                     root,
-                    ArtworkModel.class,
                     predicates
             );
             
+        } catch(NoResultException e) {
+            return null;
         } catch(Exception e) {
             throw e;
         }
@@ -125,23 +124,21 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Band> fetchBandById(UniqueEntityId id) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            final CriteriaBuilder cb = em.getCriteriaBuilder();
-            final CriteriaQuery<BandModel> cq = cb.createQuery(BandModel.class);
-            final Root<BandModel> root = cb.createQuery().from(BandModel.class);
+            final CriteriaBuilder builder = em.getCriteriaBuilder();
+            final CriteriaQuery<BandModel> query = builder.createQuery(BandModel.class);
+            final Root<BandModel> root = builder.createQuery().from(BandModel.class);
             
             final List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("id"), id.toValue()));
+            predicates.add(builder.equal(root.get("id"), id.toValue()));
 
             return new LibraryEntityQueryScope(
                     em,
-                    cb,
-                    cq,
+                    query,
                     root,
-                    BandModel.class,
                     predicates
             );
             
@@ -154,23 +151,21 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Singer> fetchSingerById(UniqueEntityId id) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            final CriteriaBuilder cb = em.getCriteriaBuilder();
-            final CriteriaQuery<SingerModel> cq = cb.createQuery(SingerModel.class);
-            final Root<SingerModel> root = cq.from(SingerModel.class);
+            final CriteriaBuilder builder = em.getCriteriaBuilder();
+            final CriteriaQuery<SingerModel> query = builder.createQuery(SingerModel.class);
+            final Root<SingerModel> root = query.from(SingerModel.class);
             
             final List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("id"), id.toValue()));
+            predicates.add(builder.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
                     em,
-                    cb,
-                    cq,
+                    query,
                     root,
-                    SingerModel.class,
                     predicates
             );
             
@@ -183,23 +178,21 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Album> fetchAlbumById(UniqueEntityId id) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            final CriteriaBuilder cb = em.getCriteriaBuilder();
-            final CriteriaQuery<AlbumModel> cq = cb.createQuery(AlbumModel.class);
-            final Root<AlbumModel> root = cq.from(AlbumModel.class);
+            final CriteriaBuilder builder = em.getCriteriaBuilder();
+            final CriteriaQuery<AlbumModel> query = builder.createQuery(AlbumModel.class);
+            final Root<AlbumModel> root = query.from(AlbumModel.class);
             
             final List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("id"), id.toValue()));
+            predicates.add(builder.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
                     em,
-                    cb,
-                    cq,
+                    query,
                     root,
-                    AlbumModel.class,
                     predicates
             );
             
@@ -212,23 +205,21 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<Track> fetchTrackById(UniqueEntityId id) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            final CriteriaBuilder cb = em.getCriteriaBuilder();
-            final CriteriaQuery<TrackModel> cq = cb.createQuery(TrackModel.class);
-            final Root<TrackModel> root = cq.from(TrackModel.class);
+            final CriteriaBuilder builder = em.getCriteriaBuilder();
+            final CriteriaQuery<TrackModel> query = builder.createQuery(TrackModel.class);
+            final Root<TrackModel> root = query.from(TrackModel.class);
             
             final List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("id"), id.toValue()));
+            predicates.add(builder.equal(root.get("id"), id.toValue()));
             
             return new LibraryEntityQueryScope(
                     em,
-                    cb,
-                    cq,
+                    query,
                     root,
-                    TrackModel.class,
                     predicates
             );
             
@@ -241,30 +232,11 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public LibraryEntityQueryScope<LibraryEntity> fetchByFilters(LibraryEntityFilters filters) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            final CriteriaBuilder cb = em.getCriteriaBuilder();
-            final CriteriaQuery<LibraryEntityModel> cq = cb.createQuery(LibraryEntityModel.class);
-            final Root<LibraryEntityModel> root = cq.from(LibraryEntityModel.class);
-            
-            ArrayList<Predicate> predicates =
-                    buildCriteriaPredicates(
-                            cb,
-                            cq,
-                            root,
-                            filters
-                    );
-            
-            return new LibraryEntityQueryScope(
-                    em,
-                    cb,
-                    cq,
-                    root,
-                    LibraryEntityModel.class,
-                    predicates
-            );
+            return buildQueryScope(filters, em);
             
         } catch(Exception e) {
             throw e;
@@ -275,7 +247,10 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public void save(LibraryEntity entity) throws EntityNotFoundException, Exception {
         
-        final EntityManager em = emf.createEntityManager();
+        System.out.println("save called on " + entity.getClass().getSimpleName());
+        System.out.println("entity.isPublished(): " + entity.isPublished());
+        
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         try {
@@ -315,7 +290,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public void remove(LibraryEntity entity) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         try {
@@ -358,6 +333,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             
         } catch(Exception e) {
             e.printStackTrace();
+            tnx.rollback();
         }
         
     }
@@ -365,7 +341,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     @Override
     public boolean exists(UniqueEntityId id) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -383,148 +359,214 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
         return "%" + term + "%";
     }
     
-    private Set<TrackModel> getSingleTracks() {
-        final EntityManager em = emf.createEntityManager();
-        return
-                em.createNamedQuery("Artist_FetchSingleTracks", TrackModel.class)
-                .getResultList()
-                .stream()
-                .collect(Collectors.toSet());
-    }
-    
-    private ArrayList<Predicate> buildCriteriaPredicates(
-            CriteriaBuilder cb,
-            CriteriaQuery<LibraryEntityModel> cq,
-            Root<LibraryEntityModel> root,
-            LibraryEntityFilters filters
+    private LibraryEntityQueryScope buildQueryScope(
+            LibraryEntityFilters filters,
+            EntityManager em
     ) {
         
-        cq.select(root);
+        final CriteriaBuilder builder = em.getCriteriaBuilder();
+        final CriteriaQuery query = builder.createQuery(LibraryEntityModel.class);
         
-        cq.orderBy();
+        final ArrayList<Predicate> predicates = new ArrayList<>();
         
-        List<Predicate> predicates = new ArrayList<>();
+        Root root;
         
         if(filters != null) {
-
-            // searchTerm
-            if(filters.searchTerm != null) {
-                predicates.add(
-                        cb.or(
-                                cb.like(root.get("title"), toSearchPattern(filters.searchTerm)),
-                                cb.like(root.get("description"), toSearchPattern(filters.searchTerm)),
-                                cb.like(root.get("tags"), toSearchPattern(filters.searchTerm))
-//                                cb.like(root.get("lyrics"), toSearchPattern(filters.searchTerm))
-                        )
-                );
-            }
             
             // entity type
-            if(filters.type != null) {
-                predicates.add(
-                        cb.equal(root.get("entityType"), filters.type)
-                );
+            if(filters.type != null && filters.artistId == null) {
+                final LibraryEntityType type = filters.type;
+                if(type.isArtwork()) {
+                    root = type.isAlbum() ? query.from(AlbumModel.class) : query.from(TrackModel.class);
+                    // artwork-specific filters
+                    if(filters.releaseDateFrom != null || filters.releaseDateTill != null) {
+                        final YearMonth releaseDateFrom =
+                                filters.releaseDateFrom != null ?
+                                filters.releaseDateFrom.getValue() :
+                                YearMonth.now().minusYears(500);
+                        final YearMonth releaseDateTill =
+                                filters.releaseDateTill != null ?
+                                filters.releaseDateTill.getValue() :
+                                YearMonth.now();
+                        final Predicate predicate =
+                                builder.between(
+                                        root.get("releaseDate"),
+                                        releaseDateFrom,
+                                        releaseDateTill
+                                );
+                        predicates.add(predicate);
+                    }
+                }
+                else // Artist
+                    root = type.isBand() ? query.from(BandModel.class) : query.from(SingerModel.class);
+            } else if(filters.type == null && filters.artistId != null) {
+                root = query.from(ArtworkModel.class);
+                final Predicate predicate =
+                        builder.equal(
+                                root.get("artist").get("id"),
+                                filters.artistId.toValue()
+                        );
+                predicates.add(predicate);
+            } else {
+                root = query.from(LibraryEntityModel.class);
+            }
+            
+            // search term
+            if(filters.searchTerm != null) {
+                final String searchTerm = filters.searchTerm;
+                final Predicate predicate =
+                        builder.or(
+                                builder.like(root.get("title"), toSearchPattern(searchTerm)),
+                                builder.like(root.get("description"), toSearchPattern(searchTerm)),
+                                builder.like(root.get("tags"), toSearchPattern(searchTerm))
+                        );
+                predicates.add(predicate);
             }
             
             // published
             if(filters.published != null) {
-                predicates.add(
-                        cb.equal(root.get("published"), filters.published)
-                );
-            }
-            
-            // is flagged
-            if(filters.isFlagged != null) {
-                
-                if(filters.isFlagged)
-                    predicates.add(cb.isNotNull(root.get("flagNote")));
-                else
-                    predicates.add(cb.isNull(root.get("flagNote")));
-                
+                final boolean published = filters.published;
+                final Predicate predicate =
+                        published ?
+                        builder.isTrue(root.get("published")) :
+                        builder.isFalse(root.get("published"));
+                predicates.add(predicate);
             }
             
             // has image
             if(filters.hasImage != null) {
-                
-                if(filters.hasImage)
-                    predicates.add(cb.isNotNull(root.get("imagePath")));
-                else
-                    predicates.add(cb.isNull(root.get("imagePath")));
-                
+                final boolean hasImage = filters.hasImage;
+                final Predicate predicate =
+                        hasImage ?
+                        builder.isNotNull(root.get("imagePath")) :
+                        builder.isNull(root.get("imagePath"));
+                predicates.add(predicate);
             }
             
-            // createdAt from till
-            if(
-                    filters.createdAtFrom != null ||
-                    filters.createdAtTill != null
-            ) {
-                final LocalDateTime from =
+            // is flagged
+            if(filters.isFlagged != null) {
+                final boolean isFlagged = filters.isFlagged;
+                final Predicate predicate =
+                        isFlagged ?
+                        builder.isNotNull(root.get("flagNote")) :
+                        builder.isNull(root.get("flagNote"));
+                predicates.add(predicate);
+            }
+            
+            // rate from to
+            if(filters.rateFrom != null || filters.rateTo != null) {
+                final double rateFrom =
+                        filters.rateFrom != null ?
+                        filters.rateFrom.getValue() :
+                        0.0;
+                final double rateTo =
+                        filters.rateTo != null ?
+                        filters.rateTo.getValue() :
+                        5.0;
+                final Predicate predicate =
+                        builder.between(root.get("rate"), rateFrom, rateTo);
+                predicates.add(predicate);
+            }
+            
+            // total played count from to
+            if(filters.totalPlayedCountFrom != null || filters.totalPlayedCountTo != null) {
+                final long totalPlayedCountFrom =
+                        filters.totalPlayedCountFrom != null ?
+                        filters.totalPlayedCountFrom : 0;
+                final long totalPlayedCountTo =
+                        filters.totalPlayedCountTo != null ?
+                        filters.totalPlayedCountTo : Long.MAX_VALUE;
+                final Predicate predicate =
+                        builder.between(
+                                root.get("totalPlayedCount"),
+                                totalPlayedCountFrom,
+                                totalPlayedCountTo
+                        );
+                predicates.add(predicate);
+            }
+            
+            // duration from to
+            if(filters.durationFrom != null || filters.durationTo != null) {
+                final long durationFrom =
+                        filters.durationFrom != null ?
+                        filters.durationFrom : 0;
+                final long durationTo =
+                        filters.durationTo != null ?
+                        filters.durationTo : Long.MAX_VALUE;
+                final Predicate predicate =
+                        builder.between(root.get("duration"), durationFrom, durationTo);
+                predicates.add(predicate);
+            }
+            
+            // creator id
+            if(filters.creatorId != null) {
+                final UUID creatorId = filters.creatorId.toValue();
+                final Predicate predicate =
+                        builder.equal(root.get("creator").get("id"), creatorId);
+                predicates.add(predicate);
+            }
+            
+            // updater id
+            if(filters.updaterId != null) {
+                final UUID updaterId = filters.updaterId.toValue();
+                final Predicate predicate =
+                        builder.equal(root.get("updater").get("id"), updaterId);
+                predicates.add(predicate);
+            }
+            
+            // created at from till
+            if(filters.createdAtFrom != null || filters.createdAtTill != null) {
+                final LocalDateTime createdAtFrom =
                         filters.createdAtFrom != null ?
                         filters.createdAtFrom.getValue() :
-                        LocalDateTime.of(2020, 1, 1, 0, 0);
-                final LocalDateTime till =
-                        filters.lastModifiedAtFrom != null ?
-                        filters.lastModifiedAtFrom.getValue() :
-                        DateTime.createNow().getValue();
-                predicates.add(
-                        cb.between(
-                                root.get("createdAt"),
-                                from,
-                                till
-                        )
-                );
+                        LocalDateTime.of(2021, Month.JANUARY, 1, 1, 1);
+                final LocalDateTime createdAtTill =
+                        filters.createdAtTill != null ?
+                        filters.createdAtTill.getValue() :
+                        LocalDateTime.now();
+                final Predicate predicate =
+                        builder.between(root.get("createdAt"), createdAtFrom, createdAtTill);
+                predicates.add(predicate);
             }
             
-            // lastModifiedAt from till
-            if(
-                    filters.lastModifiedAtFrom != null ||
-                    filters.lastModifiedAtTill != null
-            ) {
-                final LocalDateTime from =
+            // last modified at from till
+            if(filters.lastModifiedAtFrom != null || filters.lastModifiedAtTill != null) {
+                final LocalDateTime lastModifiedAtFrom =
                         filters.lastModifiedAtFrom != null ?
                         filters.lastModifiedAtFrom.getValue() :
-                        LocalDateTime.of(2020, 1, 1, 0, 0);
-                final LocalDateTime till =
-                        filters.lastModifiedAtFrom != null ?
-                        filters.lastModifiedAtFrom.getValue() :
-                        DateTime.createNow().getValue();
-                predicates.add(
-                        cb.between(
+                        LocalDateTime.of(2021, Month.JANUARY, 1, 1, 1);
+                final LocalDateTime lastModifiedAtTill =
+                        filters.lastModifiedAtTill != null ?
+                        filters.lastModifiedAtTill.getValue() :
+                        LocalDateTime.now();
+                final Predicate predicate =
+                        builder.between(
                                 root.get("lastModifiedAt"),
-                                from,
-                                till
-                        )
-                );
+                                lastModifiedAtFrom,
+                                lastModifiedAtTill
+                        );
+                predicates.add(predicate);
             }
             
-            // genres
-            if(filters.genreIds != null) {
-                Set<UUID> genreIds =
-                        filters
-                                .genreIds
-                                .stream()
-                                .map(genreId -> genreId.toValue())
-                                .collect(Collectors.toSet());
-                predicates.add(
-                        root.get("genres").in(genreIds)
-                );
-            }
+//            query.where(
+//                    builder.and(
+//                            predicates.toArray(new Predicate[predicates.size()])
+//                    )
+//            );
             
-            // creator Id
-            if(filters.creatorId != null)
-                predicates.add(cb.equal(root.get("creator").get("id"), filters.creatorId));
-            
-            // updater Id
-            if(filters.updaterId != null)
-                predicates.add(cb.equal(root.get("updater").get("id"), filters.updaterId));
-            
-        } // if filters != null ENDS
+        } else {
+            root = query.from(LibraryEntityModel.class);
+        }
         
-        return new ArrayList(predicates);
+        root.fetch("genres", JoinType.LEFT);
+        
+        query.select(root);
+        
+        return new LibraryEntityQueryScope(em, query, root, predicates);
     }
     
-//    @Override
-    public static LibraryEntity toDomain(LibraryEntityModel model, EntityManager em) {
+    @Override
+    public LibraryEntity toDomain(LibraryEntityModel model, EntityManager em) {
         
         LibraryEntity entity;
         
@@ -553,8 +595,13 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                             .stream()
                             .map(album -> album.getId())
                             .collect(Collectors.toSet());
-            final Set<UUID> tracksIds =
+            final Set<UUID> allTracksIds =
                     ((ArtistModel) model).getTracks()
+                            .stream()
+                            .map(track -> track.getId())
+                            .collect(Collectors.toSet());
+            final Set<UUID> singleTracksIds =
+                    ((ArtistModel) model).getSingleTracks()
                             .stream()
                             .map(track -> track.getId())
                             .collect(Collectors.toSet());
@@ -585,7 +632,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                         model.getUpdater().getId(),
                         ((BandModel) model).getInstagramId(),
                         albumsIds,
-                        tracksIds,
+                        allTracksIds,
+                        singleTracksIds,
                         members
                         ).getValue();
             } else { // Singer
@@ -608,18 +656,18 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                         model.getUpdater().getId(),
                         ((ArtistModel) model).getInstagramId(),
                         albumsIds,
-                        tracksIds
+                        allTracksIds,
+                        singleTracksIds
                 ).getValue();
                 
             }
             
         } else {
             
-            Artist artist;
-            if(model instanceof AlbumModel)
-                artist = (Artist) toDomain(((AlbumModel) model).getArtist(), em);
-            else
-                artist = (Artist) toDomain(((TrackModel) model).getArtist(), em);
+            Artist artist = null;
+            if(((ArtworkModel) model).getArtist() != null) {
+                artist = (Artist) toDomain(((ArtworkModel) model).getArtist(), em);
+            }
             
             if(model instanceof AlbumModel) { // Album
                 
@@ -723,10 +771,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
         return entity;
     }
     
-//    @Override
-    public static LibraryEntityModel toPersistence(LibraryEntity entity, EntityManager em) {
-        
-//        final EntityManager em = emf.createEntityManager();
+    @Override
+    public LibraryEntityModel toPersistence(LibraryEntity entity, EntityManager em) {
      
         LibraryEntityModel model;
         if(entity instanceof Band)
@@ -776,7 +822,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
         if(tags != null && !tags.isEmpty())
             model.setTags(tags);
         if(genres != null && !genres.isEmpty())
-            genres.forEach(genre -> model.addGenre(genre));
+            model.replaceGenres(genres);
 
         if(entity instanceof Artist) {
             ((ArtistModel) model).setInstagramId(
@@ -784,6 +830,18 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                     ((Artist) entity).getInstagramId().getValue()
                             : null
             );
+            ((Artist) entity).getAlbumsIds()
+                    .forEach(albumId -> {
+                        final AlbumModel album = em.getReference(AlbumModel.class, albumId.toValue());
+                        ((ArtistModel) model).addAlbum(album);
+                        album.setArtist((ArtistModel) model);
+                    });
+            ((Artist) entity).getAllTracksIds()
+                    .forEach(trackId -> {
+                        final TrackModel track = em.getReference(TrackModel.class, trackId.toValue());
+                        ((ArtistModel) model).addTrack(track);
+                        track.setArtist((ArtistModel) model);
+                    });
         }
         
         if(entity instanceof Artwork) {
@@ -804,6 +862,14 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                             ((Artwork) entity).getReleaseYear().getValue()
                             : null
             );
+            if(((Artwork) entity).getArtist() != null) {
+                ((ArtworkModel) model).setArtist(
+                        em.find(
+                                ArtistModel.class,
+                                ((Artwork) entity).getArtist().getId().toValue()
+                        )
+                );
+            }
         }
         
         if(entity instanceof Band) {
@@ -813,49 +879,13 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                                 (SingerModel) toPersistence(member, em)
                         )
                 );
-            ((Band) entity).getAlbumsIds()
-                    .forEach(albumId -> {
-                        final AlbumModel album = em.getReference(AlbumModel.class, albumId.toValue());
-                        ((BandModel) model).addAlbum(album);
-                        album.setArtist((BandModel) model);
-                    });
-            ((Band) entity).getTracksIds()
-                    .forEach(trackId -> {
-                        final TrackModel track = em.getReference(TrackModel.class, trackId.toValue());
-                        ((BandModel) model).addTrack(track);
-                        track.setArtist((BandModel) model);
-                    });
-        }
-        
-        if(entity instanceof Singer) {
-            if(((Singer) entity).getInstagramId() != null)
-                ((SingerModel) model).setInstagramId(((Singer) entity).getInstagramId().getValue());
-            ((Singer) entity).getAlbumsIds()
-                    .forEach(albumId -> {
-                        final AlbumModel album = em.getReference(AlbumModel.class, albumId.toValue());
-                        ((SingerModel) model).addAlbum(album);
-                        album.setArtist((SingerModel) model);
-                    });
-            ((Singer) entity).getTracksIds()
-                    .forEach(trackId -> {
-                        final TrackModel track = em.getReference(TrackModel.class, trackId.toValue());
-                        ((SingerModel) model).addTrack(track);
-                        track.setArtist((SingerModel) model);
-                    });
         }
         
         if(entity instanceof Album) {
-            
             ((Album) entity).getTracks()
                     .forEach(track -> {
                         ((AlbumModel) model).addTrack((TrackModel) toPersistence(track, em));
                     });
-            ((AlbumModel) model).setArtist(
-                    em.getReference(
-                            ArtistModel.class,
-                            ((Album) entity).getArtist().getId().toValue()
-                    )
-            );
         }
         
         if(entity instanceof Track) {
@@ -884,12 +914,6 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                 }
                 ((TrackModel) model).setAlbum(albumModel);
             }
-            ((TrackModel) model).setArtist(
-                    em.getReference(
-                            ArtistModel.class,
-                            ((Track) entity).getArtist().getId().toValue()
-                    )
-            );
         }
         
         return model;
@@ -901,12 +925,11 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     
     public static class LibraryEntityRepositoryHolder {
         
-        final static EntityManagerFactory emf =
-                EntityManagerFactoryHelper.getInstance()
-                .getFactory();
+        final static EntityManagerFactoryHelper emfh =
+                EntityManagerFactoryHelper.getInstance();
         
         private static final LibraryEntityRepository INSTANCE =
-                new LibraryEntityRepository(emf);
+                new LibraryEntityRepository(emfh);
         
     }
     

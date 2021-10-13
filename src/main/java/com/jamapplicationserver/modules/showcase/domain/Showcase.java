@@ -37,7 +37,6 @@ public class Showcase extends Entity {
             String title,
             String description,
             String route,
-            String imagePath,
             UniqueEntityId creatorId
     ) {
         super();
@@ -46,7 +45,6 @@ public class Showcase extends Entity {
         this.description = description;
         this.route = route;
         this.interactionCount = 0;
-        this.imagePath = imagePath;
         this.creatorId = creatorId;
     }
     
@@ -110,7 +108,6 @@ public class Showcase extends Entity {
             String title,
             String description,
             String route,
-            String imagePath,
             UniqueEntityId creatorId
     ) {
         
@@ -132,7 +129,7 @@ public class Showcase extends Entity {
         
         if(creatorId == null) return Result.fail(new ValidationError("Creator is reqiured"));
         
-        return Result.ok(new Showcase(index, title, description, route, imagePath, creatorId));
+        return Result.ok(new Showcase(index, title, description, route, creatorId));
     }
     
     public static final Result<Showcase> reconstitute(

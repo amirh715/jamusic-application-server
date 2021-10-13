@@ -5,13 +5,12 @@
  */
 package com.jamapplicationserver.modules.user.usecases.EditUser;
 
-import com.jamapplicationserver.core.domain.Email;
-import com.jamapplicationserver.infra.Persistence.filesystem.FilePersistenceManager;
 import java.util.*;
-import java.io.*;
 import java.nio.file.Path;
 import org.hibernate.exception.*;
 import javax.persistence.EntityNotFoundException;
+import com.jamapplicationserver.core.domain.Email;
+import com.jamapplicationserver.infra.Persistence.filesystem.FilePersistenceManager;
 import com.jamapplicationserver.modules.user.domain.errors.*;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.Result;
@@ -44,14 +43,12 @@ public class EditUserUseCase implements IUsecase<EditUserRequestDTO, String> {
         try {
             
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
-            final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromString(request.updaterId);
             final Result<UserName> nameOrError = UserName.create(request.name);
             final Result<Email> emailOrError = Email.create(request.email);
             
             final List<Result> combinedProps = new ArrayList<>();
             
             combinedProps.add(idOrError);
-            combinedProps.add(updaterIdOrError);
             
             if(request.name != null)
                 combinedProps.add(nameOrError);
@@ -60,13 +57,10 @@ public class EditUserUseCase implements IUsecase<EditUserRequestDTO, String> {
                 combinedProps.add(emailOrError);
 
             final Result combinedPropsResult = Result.combine(combinedProps);
-            
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final UniqueEntityId id =
                     request.id != null ? idOrError.getValue() : null;
-            final UniqueEntityId updaterId =
-                    request.updaterId != null ? updaterIdOrError.getValue() : null;
             final UserName name =
                     request.name != null ? nameOrError.getValue() : null;
             final Email email =
@@ -78,8 +72,8 @@ public class EditUserUseCase implements IUsecase<EditUserRequestDTO, String> {
             
             User updater;
             
-            if(!user.id.equals(updaterId))
-                updater = this.repository.fetchById(updaterId);
+            if(!user.id.equals(request.subjectId))
+                updater = repository.fetchById(request.subjectId);
             else
                 updater = user;
 

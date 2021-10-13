@@ -31,35 +31,30 @@ public class ProcessReportUseCase implements IUsecase<ProcessReportRequestDTO, S
             
             final Result<UniqueEntityId> reportIdOrError =
                     UniqueEntityId.createFromString(request.id);
-            final Result<UniqueEntityId> processorIdOrError =
-                    UniqueEntityId.createFromString(request.processorId);
             final Result<Message> processorNoteOrError =
                     Message.create(request.processorNote);
             
             final Result[] combinedProps = {
                 reportIdOrError,
-                processorIdOrError,
                 processorNoteOrError
             };
             
             final Result combinedPropsResult = Result.combine(combinedProps);
-            System.out.println(combinedPropsResult.isFailure);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final UniqueEntityId reportId = reportIdOrError.getValue();
-            final UniqueEntityId processorId = processorIdOrError.getValue();
             final Message processorNote = processorNoteOrError.getValue();
             
-            final Processor processor = this.repository.fetchProcessorById(processorId);
+            final Processor processor = repository.fetchProcessorById(request.subjectId);
             if(processor == null) return Result.fail(new ProcessorDoesNotExistError());
             
-            final Report report = this.repository.fetchById(reportId);
+            final Report report = repository.fetchById(reportId);
             if(report == null) return Result.fail(new ReportDoesNotExistError());
             
             final Result result = report.markAsProcessed(processorNote, processor);
             if(result.isFailure) return result;
             
-            this.repository.save(report);
+            repository.save(report);
             
             return Result.ok(result.getValue());
         } catch(Exception e) {

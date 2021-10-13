@@ -15,7 +15,7 @@ import com.jamapplicationserver.infra.Persistence.database.Models.*;
  *
  * @author dada
  */
-public class LibraryEntitySummary implements IDTO {
+public class LibraryEntitySummary {
     
     public final String id;
     public final String title;

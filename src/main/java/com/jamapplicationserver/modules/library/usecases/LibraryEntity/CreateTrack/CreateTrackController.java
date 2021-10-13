@@ -12,7 +12,7 @@ import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.CreateTrackRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateTrackRequestDTO;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
 
 /**
@@ -38,8 +38,6 @@ public class CreateTrackController extends BaseController {
             final InputStream image = MultipartFormDataUtil.toInputStream(raw.getPart("image"));
             final InputStream audio = MultipartFormDataUtil.toInputStream(raw.getPart("audio"));
             
-            System.out.println(audio);
-            
             final CreateTrackRequestDTO dto =
                     new CreateTrackRequestDTO(
                             fields.get("title"),
@@ -47,12 +45,13 @@ public class CreateTrackController extends BaseController {
                             fields.get("genreIds"),
                             fields.get("tags"),
                             fields.get("flagNote"),
-                            subjectId,
                             fields.get("lyrcis"),
                             fields.get("artistId"),
                             fields.get("recordLabel"),
                             fields.get("producer"),
                             fields.get("releaseYear"),
+                            subjectId,
+                            subjectRole,
                             image,
                             audio,
                             fields.get("albumId")

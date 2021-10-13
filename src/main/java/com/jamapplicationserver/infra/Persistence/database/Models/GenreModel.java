@@ -8,7 +8,7 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 import java.util.*;
 import java.time.LocalDateTime;
 import javax.persistence.*;
-import java.io.Serializable;
+import org.hibernate.envers.*;
 
 
 /**
@@ -22,20 +22,18 @@ import java.io.Serializable;
             @UniqueConstraint(columnNames={"title_in_persian"}, name="title_in_persian_unique_key")
         }
 )
-public class GenreModel implements Serializable {
+public class GenreModel extends EntityModel {
     
     public GenreModel() {
         
     }
     
-    @Id
-    @Column(name="id")
-    private UUID id;
-    
     @Column(name="title", nullable=false)
+    @Audited
     private String title;
     
     @Column(name="title_in_persian", nullable=false)
+    @Audited
     private String titleInPersian;
 
     @ManyToOne
@@ -49,17 +47,15 @@ public class GenreModel implements Serializable {
     private UserModel creator;
     
     @ManyToOne(optional=false) // false for production
+    @Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
     private UserModel updater;
     
     @Column(name="created_at", nullable=false, updatable=false)
     private LocalDateTime createdAt;
     
     @Column(name="last_modified_at", nullable=false)
+    @Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
     private LocalDateTime lastModifiedAt;
-    
-    public UUID getId() {
-        return this.id;
-    }
     
     public String getTitle() {
         return this.title;
@@ -78,7 +74,6 @@ public class GenreModel implements Serializable {
     }
     
     public UserModel getCreator() {
-        System.out.println("GenreModel::getCreator() (is null? => " + (this.creator == null) + ")");
         return this.creator;
     }
     
@@ -92,10 +87,6 @@ public class GenreModel implements Serializable {
     
     public LocalDateTime getLastModifiedAt() {
         return this.lastModifiedAt;
-    }
-    
-    public void setId(UUID id) {
-        this.id = id;
     }
     
     public void setTitle(String title) {
@@ -119,11 +110,11 @@ public class GenreModel implements Serializable {
     }
     
     public boolean isSubGenreOf(GenreModel genre) {
-        if(this.isRoot())
+        if(isRoot())
             return false;
-        if(this.parentGenre.equals(genre))
+        if(parentGenre.equals(genre))
             return true;
-        return this.parentGenre.isSubGenreOf(genre);
+        return parentGenre.isSubGenreOf(genre);
     }
     
     public boolean isRoot() {

@@ -5,7 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.PlayTrack;
 
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.PlayTrackRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.PlayTrackRequestDTO;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
 import com.jamapplicationserver.core.domain.IUsecase;
@@ -36,12 +36,10 @@ public class PlayTrackUseCase implements IUsecase<PlayTrackRequestDTO, String> {
         
         try {
             
-            final Result<UniqueEntityId> playerIdOrError = UniqueEntityId.createFromString(request.playerId);
             final Result<UniqueEntityId> trackIdOrError = UniqueEntityId.createFromString(request.trackId);
             final Result<DateTime> playedAtOrError = DateTime.create(request.playedAt);
             
             final Result[] combinedProps = {
-                playerIdOrError,
                 trackIdOrError,
                 playedAtOrError
             };
@@ -49,18 +47,17 @@ public class PlayTrackUseCase implements IUsecase<PlayTrackRequestDTO, String> {
             final Result combinedPropsResult = Result.combine(combinedProps);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
-            final UniqueEntityId playerId = playerIdOrError.getValue();
             final UniqueEntityId trackId = trackIdOrError.getValue();
             final DateTime playedAt= playedAtOrError.getValue();
             
             final Track track =
-                    this.libraryRepository.fetchTrackById(trackId)
-                            .includeUnpublished()
+                    libraryRepository.fetchTrackById(trackId)
+                            .includeUnpublished(request.subjectRole)
                             .getSingleResult();
             
             if(track == null) return Result.fail(new TrackDoesNotExistError());
             
-            final Player player = playerRepository.fetchById(playerId);
+            final Player player = playerRepository.fetchById(request.subjectId);
             
             if(player == null) return Result.fail(new PlayerDoesNotExistError());
             

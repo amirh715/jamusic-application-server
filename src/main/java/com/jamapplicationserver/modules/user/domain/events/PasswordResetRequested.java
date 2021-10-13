@@ -14,8 +14,11 @@ import com.jamapplicationserver.modules.user.domain.User;
  */
 public class PasswordResetRequested extends DomainEvent {
     
-    public PasswordResetRequested(User aggregate) {
-        super(aggregate);
+    public final User user;
+    
+    public PasswordResetRequested(User user) {
+        super(user.id);
+        this.user = user;
     }
     
 }

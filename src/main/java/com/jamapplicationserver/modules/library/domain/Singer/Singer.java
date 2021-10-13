@@ -59,7 +59,8 @@ public class Singer extends Artist {
             UniqueEntityId creatorId,
             UniqueEntityId updaterId,
             Set<UniqueEntityId> albumsIds,
-            Set<UniqueEntityId> tracksIds
+            Set<UniqueEntityId> allTracksIds,
+            Set<UniqueEntityId> singleTracksIds
     ) {
         super(
                 id,
@@ -79,7 +80,8 @@ public class Singer extends Artist {
                 creatorId,
                 updaterId,
                 albumsIds,
-                tracksIds
+                allTracksIds,
+                singleTracksIds
         );
 
     }
@@ -128,7 +130,8 @@ public class Singer extends Artist {
             UUID updaterId,
             String instagramId,
             Set<UUID> albumsIds,
-            Set<UUID> tracksIds
+            Set<UUID> allTracksIds,
+            Set<UUID> singleTracksIds
     ) {
         
         final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromUUID(id);
@@ -144,11 +147,14 @@ public class Singer extends Artist {
         final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromUUID(creatorId);
         final Result<UniqueEntityId> updaterIdOrError = UniqueEntityId.createFromUUID(updaterId);
         
-        final Result<Set<Result<UniqueEntityId>>> albumsIdsOrErrors =
-                UniqueEntityId.createFromUUIDs(albumsIds != null ? albumsIds : Set.of());
+        final Result<Set<UniqueEntityId>> albumsIdsOrErrors =
+                UniqueEntityId.createFromUUIDs(albumsIds != null ? albumsIds : new HashSet<>());
         
-        final Result<Set<Result<UniqueEntityId>>> tracksIdsOrErrors =
-                UniqueEntityId.createFromUUIDs(tracksIds);
+        final Result<Set<UniqueEntityId>> tracksIdsOrErrors =
+                UniqueEntityId.createFromUUIDs(allTracksIds != null ? allTracksIds : new HashSet<>());
+        
+        final Result<Set<UniqueEntityId>> singleTracksIdsOrError =
+                UniqueEntityId.createFromUUIDs(singleTracksIds != null ? singleTracksIds : new HashSet<>());
         
         final ArrayList<Result> combinedProps = new ArrayList<>();
         
@@ -166,24 +172,34 @@ public class Singer extends Artist {
         if(genres != null) combinedProps.add(genreListOrError);
         if(instagramId != null) combinedProps.add(instagramIdOrError);
         if(albumsIds != null && !albumsIds.isEmpty()) combinedProps.add(albumsIdsOrErrors);
-        if(tracksIds != null && !tracksIds.isEmpty()) combinedProps.add(tracksIdsOrErrors);
+        if(allTracksIds != null && !allTracksIds.isEmpty()) combinedProps.add(tracksIdsOrErrors);
+        if(singleTracksIds != null && !singleTracksIds.isEmpty()) combinedProps.add(singleTracksIdsOrError);
         
         final Result combinedPropsResult = Result.combine(combinedProps);
         
         if(combinedPropsResult.isFailure) return combinedPropsResult;
         
         final Set<UniqueEntityId> albumsIdsValues =
+                albumsIds != null && !albumsIds.isEmpty() ?
                 albumsIdsOrErrors.getValue()
                 .stream()
-                .map(result -> result.getValue())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet())
+                : new HashSet<>();
         
-        final Set<UniqueEntityId> tracksIdsValues =
+        final Set<UniqueEntityId> allTracksIdsValues =
+                allTracksIds != null && !allTracksIds.isEmpty() ?
                 tracksIdsOrErrors.getValue()
                 .stream()
-                .map(result -> result.getValue())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet())
+                : new HashSet<>();
 
+        final Set<UniqueEntityId> singleTracksIdsValues =
+                singleTracksIds != null && !singleTracksIds.isEmpty() ?
+                singleTracksIdsOrError.getValue()
+                .stream()
+                .collect(Collectors.toSet())
+                : new HashSet<>();
+        
         Singer instance = new Singer(
                 idOrError.getValue(),
                 titleOrError.getValue(),
@@ -201,10 +217,9 @@ public class Singer extends Artist {
                 lastModifiedAtOrError.getValue(),
                 creatorIdOrError.getValue(),
                 updaterIdOrError.getValue(),
-                albumsIds != null && !albumsIds.isEmpty() ?
-                        albumsIdsValues : null,
-                tracksIds != null && !tracksIds.isEmpty() ?
-                        tracksIdsValues : null
+                albumsIdsValues,
+                allTracksIdsValues,
+                singleTracksIdsValues
         );
         
         return Result.ok(instance);

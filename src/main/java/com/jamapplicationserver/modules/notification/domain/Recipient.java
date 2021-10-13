@@ -33,8 +33,6 @@ public abstract class Recipient extends ValueObject {
         
         if(isFCMRecipient(value))
             recipient = new FCMRecipient(value);
-        else if(isAppRecipient(value))
-            recipient = new AppRecipient(value);
         else if(isSMSRecipient(value))
             recipient = new SMSRecipient(value);
         else if(isEmailRecipient(value))
@@ -48,13 +46,6 @@ public abstract class Recipient extends ValueObject {
     private static boolean isFCMRecipient(String recipient) {
         if(recipient == null) return false;
         final Pattern pattern = Pattern.compile("");
-        final Matcher matcher = pattern.matcher(recipient);
-        return matcher.matches();
-    }
-    
-    private static boolean isAppRecipient(String recipient) {
-        if(recipient == null) return false;
-        final Pattern pattern = Pattern.compile("([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})");
         final Matcher matcher = pattern.matcher(recipient);
         return matcher.matches();
     }

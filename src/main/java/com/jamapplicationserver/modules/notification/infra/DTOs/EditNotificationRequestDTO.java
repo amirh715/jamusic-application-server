@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.notification.infra.DTOs;
 
 import java.util.*;
-import com.jamapplicationserver.core.domain.IDTO;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.infra.*;
 import com.google.gson.reflect.TypeToken;
 
@@ -14,7 +14,7 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author dada
  */
-public class EditNotificationRequestDTO implements IDTO {
+public class EditNotificationRequestDTO extends DTOWithAuthClaims {
     
     public final String id;
     public final String type;
@@ -33,8 +33,12 @@ public class EditNotificationRequestDTO implements IDTO {
             String route,
             String scheduledOn,
             boolean sendNow,
-            String recipients
+            String recipients,
+            UniqueEntityId updaterId,
+            UserRole updaterRole
     ) {
+        
+        super(updaterId, updaterRole);
         
         final ISerializer serializer = Serializer.getInstance();
         

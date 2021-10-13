@@ -31,8 +31,7 @@ public abstract class Artwork extends LibraryEntity {
             UniqueEntityId creatorId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseDate releaseYear,
-            Artist artist
+            ReleaseDate releaseYear
     ) {
         super(
                 title,
@@ -45,7 +44,6 @@ public abstract class Artwork extends LibraryEntity {
         this.recordLabel = recordLabel;
         this.producer = producer;
         this.releaseYear = releaseYear;
-        this.artist = artist;
     }
     
     // reconstitution constructor
@@ -119,6 +117,10 @@ public abstract class Artwork extends LibraryEntity {
     
     public Artist getArtist() {
         return this.artist;
+    }
+    
+    public void setArtist(Artist artist) {
+        this.artist = artist;
     }
     
 }

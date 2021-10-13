@@ -6,14 +6,13 @@
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
-import com.jamapplicationserver.core.domain.*;
 
 /**
  *
  * @author dada
  * @param <T>
  */
-public class RecommendedCollection<T> implements IDTO {
+public class RecommendedCollection<T> {
     
     public final String title;
     public final Set<T> items;

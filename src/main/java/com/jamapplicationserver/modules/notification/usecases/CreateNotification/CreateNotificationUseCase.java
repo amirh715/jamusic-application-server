@@ -44,11 +44,9 @@ public class CreateNotificationUseCase implements IUsecase<CreateNotificationReq
             final Result<Message> messageOrError = Message.create(request.message);
             final URL route = new URL(request.route);
             final Result<DateTime> scheduledOnOrError = DateTime.create(request.scheduledOn);
-            final Result<UniqueEntityId> senderIdOrError = UniqueEntityId.createFromString(request.senderId);
             final Result<ImageStream> imageOrError = ImageStream.createAndValidate(request.image);
             
             combinedProps.add(typeOrError);
-            combinedProps.add(senderIdOrError);
             
             if(request.title != null) combinedProps.add(titleOrError);
             if(request.message != null) combinedProps.add(messageOrError);
@@ -62,11 +60,10 @@ public class CreateNotificationUseCase implements IUsecase<CreateNotificationReq
             final NotifTitle title = request.title != null ? titleOrError.getValue() : null;
             final Message message = request.message != null ? messageOrError.getValue() : null;
             final DateTime scheduledOn = request.scheduledOn != null ? scheduledOnOrError.getValue() : DateTime.createNow();
-            final UniqueEntityId senderId = senderIdOrError.getValue();
             final ImageStream image = request.image != null ? imageOrError.getValue() : null;
             
             final Result<Notification> notificationOrError =
-                    Notification.create(type, title, message, route, SenderType.USER, scheduledOn, senderId);
+                    Notification.create(type, title, message, route, SenderType.USER, scheduledOn, request.subjectId);
             if(notificationOrError.isFailure) return notificationOrError;
             
             final Notification notification = notificationOrError.getValue();
@@ -79,11 +76,11 @@ public class CreateNotificationUseCase implements IUsecase<CreateNotificationReq
             }
             
             if(image != null) {
-                final Path path = this.persistence.buildPath(Notification.class);
-                this.persistence.write(image, path);
+                final Path path = persistence.buildPath(Notification.class);
+                persistence.write(image, path);
             }
             
-            this.repository.save(notification);
+            repository.save(notification);
             
             return Result.ok(notification);
             

@@ -7,6 +7,7 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import org.hibernate.envers.*;
 
 /**
  *
@@ -14,7 +15,8 @@ import java.io.Serializable;
  */
 @Entity
 @DiscriminatorValue("T")
-public class TrackModel extends ArtworkModel implements Serializable {
+@Audited
+public class TrackModel extends ArtworkModel {
     
     public TrackModel() {
         super();

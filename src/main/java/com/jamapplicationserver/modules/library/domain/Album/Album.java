@@ -35,8 +35,7 @@ public class Album extends Artwork {
             UniqueEntityId creatorId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseDate releaseYear,
-            Artist artist
+            ReleaseDate releaseYear
     ) {
         super(
             title,
@@ -47,8 +46,7 @@ public class Album extends Artwork {
             creatorId,
             recordLabel,
             producer,
-            releaseYear,
-            artist
+            releaseYear
         );
         this.tracks = new HashSet<>();
     }
@@ -64,7 +62,6 @@ public class Album extends Artwork {
             RecordLabel recordLabel,
             RecordProducer producer,
             ReleaseDate releaseYear,
-            Artist artist,
             Set<Track> tracks
     ) {
         super(
@@ -76,8 +73,7 @@ public class Album extends Artwork {
                 creatorId,
                 recordLabel,
                 producer,
-                releaseYear,
-                artist
+                releaseYear
         );
         this.tracks = tracks != null ? tracks : new HashSet<>();
     }
@@ -138,8 +134,7 @@ public class Album extends Artwork {
             UniqueEntityId creatorId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseDate releaseYear,
-            Artist artist
+            ReleaseDate releaseYear
     ) {
         
         if(title == null) return Result.fail(new ValidationError("Title is required for albums."));
@@ -153,8 +148,7 @@ public class Album extends Artwork {
                 creatorId,
                 recordLabel,
                 producer,
-                releaseYear,
-                artist
+                releaseYear
         );
         
         if(instance.genres != null) {
@@ -269,25 +263,28 @@ public class Album extends Artwork {
         if(instance.genres != null) {
             
             if(instance.artist != null && instance.artist.getGenres() != null) {
-
-                final Set<Genre> albumGenres =
-                        instance.genres.getValue()
-                        .stream()
-                        .dropWhile(albumGenre ->
+                
+                instance.genres.getValue()
+                        .removeIf(albumGenre ->
                                 instance.artist.getGenres().getValue()
                                 .stream()
                                 .allMatch(artistGenre ->
                                         !artistGenre.equals(albumGenre) ||
                                         !artistGenre.isSubGenreOf(albumGenre)
                                 )
-                        )
-                        .collect(Collectors.toSet());
-                
-                if(!albumGenres.isEmpty())
-                    instance.genres = GenreList.create(albumGenres).getValue();
+                        );
                 
             }
             
+        }
+        
+        if(instance.artist != null && instance.artist.getTags() != null) {
+            if(instance.tags != null) {
+                final Set<Tag> artistsTags = instance.artist.getTags().getValue();
+                final Set<Tag> albumsTags = instance.tags.getValue();
+                final Result<TagList> allTagsForTheAlbum = TagList.create(artistsTags, albumsTags);
+                instance.tags = allTagsForTheAlbum.getValue();
+            }
         }
         
         return Result.ok(instance);
@@ -297,12 +294,14 @@ public class Album extends Artwork {
     public void publish() {
         if(isPublished()) return;
         if(tracks.isEmpty() || !artist.isPublished())
-            archive();
-        else {
-            published = true;
-            tracks.forEach(track -> track.publish());
-            modified();
-        }
+            return;
+        published = true;
+        tracks.forEach(track -> {
+            track.setAlbum(this);
+            track.publish();
+        });
+        modified();
+        
     }
     
     @Override
@@ -324,12 +323,7 @@ public class Album extends Artwork {
         archive();
         this.updaterId = updaterId;
     }
-    
-    @Override
-    public void rate(Rate rate) {
-        this.rate = rate;
-    }
-    
+
     @Override
     public Result edit(
             Title title,
@@ -344,12 +338,12 @@ public class Album extends Artwork {
     ) {
         
         this.title = title != null ? title : this.title;
-        this.description = description != null ? description : this.description;
-        this.tags = tags != null ? tags : this.tags;
-        this.flag = flag != null ? flag : this.flag;
-        this.recordLabel = recordLabel != null ? recordLabel : this.recordLabel;
-        this.producer = producer != null ? producer : this.producer;
-        this.releaseYear = releaseYear != null ? releaseYear : this.releaseYear;
+        this.description = description != null ? description : null;
+        this.tags = tags != null ? tags : null;
+        this.flag = flag != null ? flag : null;
+        this.recordLabel = recordLabel != null ? recordLabel : null;
+        this.producer = producer != null ? producer : null;
+        this.releaseYear = releaseYear != null ? releaseYear : null;
 
         if(genres != null) {
             
@@ -374,6 +368,16 @@ public class Album extends Artwork {
             this.genres = genres;
             
         }
+
+        if(artist != null && artist.getTags() != null) {
+            if(tags != null) {
+                final Set<Tag> artistsTags = artist.getTags().getValue();
+                final Set<Tag> albumsTags = this.tags.getValue();
+                final Result<TagList> allTagsForTheAlbum = TagList.create(artistsTags, albumsTags);
+                this.tags = allTagsForTheAlbum.getValue();
+            }
+        }
+
 
         for(Track track : tracks) {
             track.setAlbum(this);
@@ -431,19 +435,6 @@ public class Album extends Artwork {
         tracks.add(track);
         
         this.updaterId = updaterId;
-        modified();
-        
-        return Result.ok();
-    }
-    
-    public final Result removeTrack(Track track, UniqueEntityId updaterId) {
-        
-        if(!tracks.contains(track)) return Result.ok();
-        
-        duration = duration.minus(track.getDuration());
-        
-        tracks.remove(track);
-        
         modified();
         
         return Result.ok();

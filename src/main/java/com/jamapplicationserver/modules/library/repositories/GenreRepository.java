@@ -23,18 +23,18 @@ import com.jamapplicationserver.infra.Persistence.database.*;
  */
 public class GenreRepository implements IGenreRepository {
     
-    private final EntityManagerFactory emf;
+    private final EntityManagerFactoryHelper emfh;
     
     private static final int MAX_ALLOWED_GENRES = 30;
     
-    private GenreRepository(EntityManagerFactory emf) {
-        this.emf = emf;
+    private GenreRepository(EntityManagerFactoryHelper emfh) {
+        this.emfh = emfh;
     }
     
     @Override
     public Map<UniqueEntityId, Genre> fetchAll() {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -48,6 +48,8 @@ public class GenreRepository implements IGenreRepository {
         } catch(Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            em.close();
         }
 
     }
@@ -55,7 +57,7 @@ public class GenreRepository implements IGenreRepository {
     @Override
     public Genre fetchById(UniqueEntityId id) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -66,7 +68,9 @@ public class GenreRepository implements IGenreRepository {
             
         } catch(NoResultException e) {
             e.printStackTrace();
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
         
     }
@@ -87,7 +91,7 @@ public class GenreRepository implements IGenreRepository {
     @Override
     public Genre fetchByTitle(GenreTitle title) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -102,6 +106,8 @@ public class GenreRepository implements IGenreRepository {
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
+        } finally {
+            em.close();
         }
 
     }
@@ -117,7 +123,7 @@ public class GenreRepository implements IGenreRepository {
         
         GenreModel model;
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
         try {
@@ -196,7 +202,7 @@ public class GenreRepository implements IGenreRepository {
     @Override
     public boolean exists(UniqueEntityId id) {
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         
         try {
             
@@ -206,6 +212,8 @@ public class GenreRepository implements IGenreRepository {
         } catch(Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            em.close();
         }
 
     }
@@ -222,7 +230,7 @@ public class GenreRepository implements IGenreRepository {
         if(getAuthorizedUser(genre.getCreatorId().toValue()) == null)
             throw new UpdaterOrCreatorDoesNotExistException();
         
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
 
         try {
@@ -258,7 +266,7 @@ public class GenreRepository implements IGenreRepository {
     }
     
     private UserModel getAuthorizedUser(UUID id) {
-        final EntityManager em = emf.createEntityManager();
+        final EntityManager em = emfh.createEntityManager();
         try {
             final String query = "FROM UserModel u WHERE u.role IN (?1) AND u.id = ?2";
             return (UserModel) em.createQuery(query)
@@ -266,7 +274,9 @@ public class GenreRepository implements IGenreRepository {
                 .setParameter(2, id)
                 .getSingleResult();
         } catch(Exception e) {
-            return null;
+            throw e;
+        } finally {
+            em.close();
         }
     }
     
@@ -317,10 +327,10 @@ public class GenreRepository implements IGenreRepository {
     
     private static class GenreRepositoryHolder {
         
-        final static EntityManagerFactory emf =
-                EntityManagerFactoryHelper.getInstance().getFactory();
+        final static EntityManagerFactoryHelper emfh =
+                EntityManagerFactoryHelper.getInstance();
 
         private static final GenreRepository INSTANCE =
-                new GenreRepository(emf);
+                new GenreRepository(emfh);
     }
 }

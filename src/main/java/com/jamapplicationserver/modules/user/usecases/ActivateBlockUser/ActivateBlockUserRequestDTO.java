@@ -5,22 +5,27 @@
  */
 package com.jamapplicationserver.modules.user.usecases.ActivateBlockUser;
 
-import com.jamapplicationserver.core.domain.IDTO;
+import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.core.infra.*;
 
 /**
  *
  * @author amirhossein
  */
-public class ActivateBlockUserRequestDTO implements IDTO {
+public class ActivateBlockUserRequestDTO extends DTOWithAuthClaims {
     
     public final String id;
     public final String state;
-    public final String updaterId;
     
-    public ActivateBlockUserRequestDTO(String id, String state, String updaterId) {
+    public ActivateBlockUserRequestDTO(
+            String id,
+            String state,
+            UniqueEntityId updaterId,
+            UserRole updaterRole
+    ) {
+        super(updaterId, updaterRole);
         this.id = id;
         this.state = state;
-        this.updaterId = updaterId;
     }
     
 }

@@ -23,6 +23,7 @@ public class AuditTrailModel implements Serializable {
     private UUID id;
     
     @Enumerated
+    @Column(name="action_type")
     private AuditActionEnum action;
     
     @Column(name="audited_at")

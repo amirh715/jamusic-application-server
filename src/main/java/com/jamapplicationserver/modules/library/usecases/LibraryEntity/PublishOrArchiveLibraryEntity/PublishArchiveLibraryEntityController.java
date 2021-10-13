@@ -5,7 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.PublishOrArchiveLibraryEntity;
 
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.PublishArchiveLibraryEntityRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.*;
 import java.util.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.infra.BaseController;
@@ -31,27 +31,29 @@ public class PublishArchiveLibraryEntityController extends BaseController {
             
             final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
             
-            final PublishArchiveLibraryEntityRequestDTO dto =
-                    new PublishArchiveLibraryEntityRequestDTO(
+            final PublishOrArchiveLibraryEntityRequestDTO dto =
+                    new PublishOrArchiveLibraryEntityRequestDTO(
                             fields.get("id"),
-                            fields.get("published"),
-                            fields.get("cascadeToAll")
+                            fields.get("publish"),
+                            fields.get("cascadePublishCommandToArtistsArtworks"),
+                            subjectId,
+                            subjectRole
                     );
             
-            final Result result = this.usecase.execute(dto);
+            final Result result = usecase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
@@ -60,7 +62,7 @@ public class PublishArchiveLibraryEntityController extends BaseController {
             
         } catch(Exception e) {
             e.printStackTrace();
-            this.fail(e);
+            fail(e);
         }
         
     }

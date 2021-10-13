@@ -5,20 +5,24 @@
  */
 package com.jamapplicationserver.modules.user.usecases.RemoveUser;
 
-import com.jamapplicationserver.core.domain.IDTO;
+import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.core.infra.*;
 
 /**
  *
  * @author dada
  */
-public class RemoveUserRequestDTO implements IDTO {
+public class RemoveUserRequestDTO extends DTOWithAuthClaims {
     
     public final String id;
-    public final String updater;
     
-    public RemoveUserRequestDTO(String id, String updater) {
+    public RemoveUserRequestDTO(
+            String id,
+            UniqueEntityId updaterId,
+            UserRole updaterRole
+    ) {
+        super(updaterId, updaterRole);
         this.id = id;
-        this.updater = updater;
     }
     
 }

@@ -11,7 +11,7 @@ import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.EditArtistRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.EditArtistRequestDTO;
 
 /**
  *
@@ -50,7 +50,8 @@ public class EditArtistController extends BaseController {
                             image,
                             fields.get("removeImage"),
                             fields.get("bandMemberIds"),
-                            fields.get("updaterId")
+                            subjectId,
+                            subjectRole
                     );
             
             final Result result = usecase.execute(dto);

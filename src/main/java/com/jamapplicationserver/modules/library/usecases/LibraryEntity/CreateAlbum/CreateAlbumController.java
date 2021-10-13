@@ -15,7 +15,7 @@ import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
-import com.jamapplicationserver.modules.library.infra.DTOs.usecases.CreateAlbumRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateAlbumRequestDTO;
 
 /**
  *
@@ -51,6 +51,7 @@ public class CreateAlbumController extends BaseController {
                             fields.get("flagNote"),
                             fields.get("artistId"),
                             subjectId,
+                            subjectRole,
                             fields.get("recordLabel"),
                             fields.get("producer"),
                             fields.get("releaseYear"),

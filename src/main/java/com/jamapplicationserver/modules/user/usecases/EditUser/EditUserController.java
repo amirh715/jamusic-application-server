@@ -43,9 +43,10 @@ public class EditUserController extends BaseController {
                     fields.get("name"),
                     fields.get("email"),
                     Boolean.valueOf(fields.get("removeEmail")),
-                    fields.get("updaterId"),
                     profileImage,
-                    Boolean.valueOf(fields.get("removeProfileImage"))
+                    Boolean.valueOf(fields.get("removeProfileImage")),
+                    subjectId,
+                    subjectRole
             );
             
             final Result result = this.useCase.execute(dto);

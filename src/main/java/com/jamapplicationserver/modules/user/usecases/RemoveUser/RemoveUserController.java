@@ -5,7 +5,6 @@
  */
 package com.jamapplicationserver.modules.user.usecases.RemoveUser;
 
-import com.jamapplicationserver.modules.user.domain.errors.UserDoesNotExistError;
 import java.util.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.*;
@@ -36,7 +35,8 @@ public class RemoveUserController extends BaseController {
             final RemoveUserRequestDTO dto =
                     new RemoveUserRequestDTO(
                             fields.get("id"),
-                            fields.get("updaterId")
+                            subjectId,
+                            subjectRole
                     );
             
             final Result result = this.useCase.execute(dto);

@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.repositories;
 
+import javax.persistence.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
@@ -39,6 +40,9 @@ public interface ILibraryEntityRepository {
     
     void remove(LibraryEntity entity);
     
-    LibraryEntityQueryScope<LibraryEntity> fetchByFilters(LibraryEntityFilters filters);
+    LibraryEntityQueryScope fetchByFilters(LibraryEntityFilters filters);
+    
+    LibraryEntity toDomain(LibraryEntityModel model, EntityManager em);
+    LibraryEntityModel toPersistence(LibraryEntity entity, EntityManager em);
     
 }

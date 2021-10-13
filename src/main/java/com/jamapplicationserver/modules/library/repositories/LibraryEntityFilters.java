@@ -16,27 +16,28 @@ import com.jamapplicationserver.modules.library.domain.core.*;
 public class LibraryEntityFilters {
     
     public LibraryEntityType type;
-    public final String searchTerm;
-    public final Boolean published;
-    public final Boolean isFlagged;
-    public final Boolean hasImage;
-    public final Set<UniqueEntityId> genreIds;
-    public final Rate rateFrom;
-    public final Rate rateTo;
-    public final Long totalPlayedCountFrom;
-    public final Long totalPlayedCountTo;
+    public String searchTerm;
+    public Boolean published;
+    public Boolean isFlagged;
+    public Boolean hasImage;
+    public Set<UniqueEntityId> genreIds;
+    public Rate rateFrom;
+    public Rate rateTo;
+    public Long totalPlayedCountFrom;
+    public Long totalPlayedCountTo;
+    public Long durationFrom;
+    public Long durationTo;
     
-    public UniqueEntityId albumId;
     public UniqueEntityId artistId;
     public ReleaseDate releaseDateFrom;
     public ReleaseDate releaseDateTill;
     
-    public final UniqueEntityId creatorId;
-    public final UniqueEntityId updaterId;
-    public final DateTime createdAtFrom;
-    public final DateTime createdAtTill;
-    public final DateTime lastModifiedAtFrom;
-    public final DateTime lastModifiedAtTill;
+    public UniqueEntityId creatorId;
+    public UniqueEntityId updaterId;
+    public DateTime createdAtFrom;
+    public DateTime createdAtTill;
+    public DateTime lastModifiedAtFrom;
+    public DateTime lastModifiedAtTill;
     
     public LibraryEntityFilters(
             LibraryEntityType type,
@@ -49,7 +50,8 @@ public class LibraryEntityFilters {
             Rate rateTo,
             Long totalPlayedCountFrom,
             Long totalPlayedCountTo,
-            UniqueEntityId albumId,
+            Long durationFrom,
+            Long durationTo,
             UniqueEntityId artistId,
             ReleaseDate releaseDateFrom,
             ReleaseDate releaseDateTill,
@@ -70,7 +72,8 @@ public class LibraryEntityFilters {
         this.rateTo = rateTo;
         this.totalPlayedCountFrom = totalPlayedCountFrom;
         this.totalPlayedCountTo = totalPlayedCountTo;
-        this.albumId = albumId;
+        this.durationFrom = durationFrom;
+        this.durationTo = durationTo;
         this.artistId = artistId;
         this.releaseDateFrom = releaseDateFrom;
         this.releaseDateTill = releaseDateTill;
@@ -80,6 +83,10 @@ public class LibraryEntityFilters {
         this.createdAtTill = createdAtTill;
         this.lastModifiedAtFrom = lastModifiedAtFrom;
         this.lastModifiedAtTill = lastModifiedAtTill;
+    }
+    
+    public LibraryEntityFilters() {
+        
     }
     
 }
