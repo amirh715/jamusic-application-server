@@ -31,11 +31,11 @@ public class UpdateTotalPlayedCountJob implements Job {
             {
             
                 final String query =
-                        "UPDATE library_entities tracks "
-                        + "SET tracks.total_played_count = subQuery.total_played_count "
+                        "UPDATE jamschema.library_entities tracks "
+                        + "SET total_played_count = subQuery.total_played_count "
                         + "FROM "
                         + "(SELECT tracks.id track_id, tracks.title, COUNT(pt.played_track_id) total_played_count "
-                        + "FROM library_entities tracks, PlayedModel pt "
+                        + "FROM jamschema.library_entities tracks, jamschema.played_tracks pt "
                         + "WHERE tracks.id = pt.played_track_id "
                         + "GROUP BY (tracks.id)) subQuery "
                         + "WHERE tracks.id = subQuery.track_id";
@@ -48,11 +48,11 @@ public class UpdateTotalPlayedCountJob implements Job {
             {
             
                 final String query =
-                        "UPDATE library_entities albums "
-                        + "SET albums.total_played_count = subQuery.total_played_count "
+                        "UPDATE jamschema.library_entities albums "
+                        + "SET total_played_count = subQuery.total_played_count "
                         + "FROM "
-                        + "(SELECT albums.id, albums.title album_title, tracks.title track_title, COUNT(pt.played_track_id) total_played_count "
-                        + "FROM library_entities albums, library_entities tracks, played_tracks pt "
+                        + "(SELECT albums.id album_id, albums.title album_title, tracks.title track_title, COUNT(pt.played_track_id) total_played_count "
+                        + "FROM jamschema.library_entities albums, jamschema.library_entities tracks, jamschema.played_tracks pt "
                         + "WHERE tracks.album_id = albums.id "
                         + "AND tracks.id = pt.played_track_id "
                         + "GROUP BY (albums.id, tracks.title)) subQuery "
@@ -66,11 +66,11 @@ public class UpdateTotalPlayedCountJob implements Job {
             {
             
                 final String query =
-                        "UPDATE library_entities artists "
+                        "UPDATE jamschema.library_entities artists "
                         + "SET total_played_count = subQuery.total_played_count "
                         + "FROM "
-                        + "(SELECT artists.id artist_id, tracks.id, COUNT(pt.played_track_id) total_played_track "
-                        + "FROM library_entities artists, library_entities tracks, played_tracks pt "
+                        + "(SELECT artists.id artist_id, tracks.id, COUNT(pt.played_track_id) total_played_count "
+                        + "FROM jamschema.library_entities artists, jamschema.library_entities tracks, jamschema.played_tracks pt "
                         + "WHERE artists.id = tracks.artist_id "
                         + "AND tracks.id = pt.played_track_id "
                         + "AND tracks.entity_type = 'T' "

@@ -263,47 +263,33 @@ public class LibraryQueryService implements ILibraryQueryService {
         final ArrayList<Predicate> predicates = new ArrayList<>();
         
         Root root;
+        Class<? extends LibraryEntityModel> entityType;
         
         if(filters != null) {
-            
+
+            if(filters.type.isArtwork())
+                entityType = ArtworkModel.class;
+            else if(filters.type.isAlbum())
+                entityType = AlbumModel.class;
+            else if(filters.type.isTrack())
+                entityType = TrackModel.class;
+            else if(filters.type.isArtist())
+                entityType = ArtistModel.class;
+            else if(filters.type.isBand())
+                entityType = BandModel.class;
+            else if(filters.type.isSinger())
+                entityType = SingerModel.class;
+            else
+                entityType = LibraryEntityModel.class;
+
+            root = query.from(entityType);
+
             // entity type
-            if(filters.type != null && filters.artistId == null) {
-                final LibraryEntityType type = filters.type;
-                if(type.isArtwork()) {
-                    root = type.isAlbum() ? query.from(AlbumModel.class) : query.from(TrackModel.class);
-                    // artwork-specific filters
-                    if(filters.releaseDateFrom != null || filters.releaseDateTill != null) {
-                        final YearMonth releaseDateFrom =
-                                filters.releaseDateFrom != null ?
-                                filters.releaseDateFrom.getValue() :
-                                YearMonth.now().minusYears(500);
-                        final YearMonth releaseDateTill =
-                                filters.releaseDateTill != null ?
-                                filters.releaseDateTill.getValue() :
-                                YearMonth.now();
-                        final Predicate predicate =
-                                builder.between(
-                                        root.get("releaseDate"),
-                                        releaseDateFrom,
-                                        releaseDateTill
-                                );
-                        predicates.add(predicate);
-                    }
-                }
-                else // Artist
-                    root = type.isBand() ? query.from(BandModel.class) : query.from(SingerModel.class);
-            } else if(filters.type == null && filters.artistId != null) {
-                root = query.from(ArtworkModel.class);
-                final Predicate predicate =
-                        builder.equal(
-                                root.get("artist").get("id"),
-                                filters.artistId.toValue()
-                        );
+            if(entityType != LibraryEntityModel.class) {
+                final Predicate predicate = builder.equal(root.type(), entityType);
                 predicates.add(predicate);
-            } else {
-                root = query.from(LibraryEntityModel.class);
             }
-            
+
             // search term
             if(filters.searchTerm != null) {
                 final String searchTerm = filters.searchTerm;
@@ -311,7 +297,11 @@ public class LibraryQueryService implements ILibraryQueryService {
                         builder.or(
                                 builder.like(root.get("title"), toSearchPattern(searchTerm)),
                                 builder.like(root.get("description"), toSearchPattern(searchTerm)),
-                                builder.like(root.get("tags"), toSearchPattern(searchTerm))
+                                builder.like(root.get("tags"), toSearchPattern(searchTerm)),
+                                builder.and(
+                                        builder.equal(root.type(), ArtworkModel.class),
+                                        builder.like(((Root<ArtworkModel>) (Root<?>) root).get("inheritedTags"), toSearchPattern(searchTerm))
+                                )
                         );
                 predicates.add(predicate);
             }

@@ -167,9 +167,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                             recordLabel,
                             producer,
                             releaseYear,
-                            lyrics,
-                            artist,
-                            album
+                            lyrics
                     );
             if(trackOrError.isFailure) return trackOrError;
             

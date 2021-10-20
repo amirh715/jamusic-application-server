@@ -260,6 +260,7 @@ public class Album extends Artwork {
         if(tracks != null)
             tracks.forEach(track -> track.setAlbum(instance));
         
+        // 
         if(instance.genres != null) {
             
             if(instance.artist != null && instance.artist.getGenres() != null) {
@@ -276,15 +277,6 @@ public class Album extends Artwork {
                 
             }
             
-        }
-        
-        if(instance.artist != null && instance.artist.getTags() != null) {
-            if(instance.tags != null) {
-                final Set<Tag> artistsTags = instance.artist.getTags().getValue();
-                final Set<Tag> albumsTags = instance.tags.getValue();
-                final Result<TagList> allTagsForTheAlbum = TagList.create(artistsTags, albumsTags);
-                instance.tags = allTagsForTheAlbum.getValue();
-            }
         }
         
         return Result.ok(instance);
@@ -367,15 +359,6 @@ public class Album extends Artwork {
             
             this.genres = genres;
             
-        }
-
-        if(artist != null && artist.getTags() != null) {
-            if(tags != null) {
-                final Set<Tag> artistsTags = artist.getTags().getValue();
-                final Set<Tag> albumsTags = this.tags.getValue();
-                final Result<TagList> allTagsForTheAlbum = TagList.create(artistsTags, albumsTags);
-                this.tags = allTagsForTheAlbum.getValue();
-            }
         }
 
 

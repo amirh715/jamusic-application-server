@@ -15,9 +15,19 @@ import com.jamapplicationserver.modules.notification.infra.http.NotificationRout
 import com.jamapplicationserver.infra.Services.JobManager;
 import com.jamapplicationserver.infra.Services.JWT.JWTUtils;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.jamapplicationserver.core.domain.UserRole;
 import com.jamapplicationserver.core.domain.events.*;
 import com.jamapplicationserver.modules.library.domain.core.subscribers.*;
-import com.jamapplicationserver.modules.library.infra.Jobs.UpdateTotalPlayedCountJob;
+import com.jamapplicationserver.modules.library.infra.Jobs.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
+import java.time.*;
+import javax.persistence.*;
+import java.util.*;
+import java.util.stream.*;
+import javax.persistence.criteria.*;
+import java.util.concurrent.ThreadLocalRandom;
+import com.jamapplicationserver.modules.library.repositories.*;
 
 /**
  *
@@ -36,7 +46,66 @@ public class AppMain {
         before("/*", (req, res) -> req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp")));
                 
         post("/test", (req, res) -> {
+            
+//            final EntityManager em = EntityManagerFactoryHelper.getInstance().createEntityManager();
+//            final EntityTransaction tnx = em.getTransaction();
+//            
+//            try {
+//                
+//                tnx.begin();
+//                
+//                final List<UserModel> players =
+//                        em.createQuery("SELECT users FROM UserModel users", UserModel.class)
+//                        .getResultList();
+//                final List<TrackModel> tracks =
+//                        em.createQuery("SELECT tracks FROM TrackModel tracks", TrackModel.class)
+//                        .getResultList();
+//                final LocalDateTime startDateTime = LocalDateTime.now().minusDays(7);
+//
+//                for(int i=0; i<10000; i++) {
+//                    final UserModel player = players.get(1);
+//                    Collections.shuffle(players);
+//                    final TrackModel track = tracks.get(1);
+//                    Collections.shuffle(tracks);
+//                    final LocalDateTime playedAt = startDateTime.plusMinutes(i);
+//                    final PlayedModel played = new PlayedModel(track, player, playedAt);
+//                    em.persist(played);
+//                }
+//                
+//                tnx.commit();
+//                
+//            } catch(Exception e) {
+//                tnx.rollback();
+//            } finally {
+//                em.close();
+//            }
 
+            try {
+                
+                EntityManager em = EntityManagerFactoryHelper.getInstance().createEntityManager();
+                
+                final CriteriaBuilder builder = em.getCriteriaBuilder();
+                final CriteriaQuery<LibraryEntityModel> query = builder.createQuery(LibraryEntityModel.class);
+                
+                Root root = query.from(LibraryEntityModel.class);
+                query.select(root);
+
+                System.out.println("Type: " + root.getJavaType().getSimpleName());
+                System.out.println("Super Type: " + root.getJavaType().getSuperclass().getSimpleName());
+                query.where(
+                        builder.or(
+                                builder.like(root.get("tags"), "%a")
+                        )
+                );
+                
+                em.createQuery(query)
+                        .getResultList();
+                
+            } catch(Exception e) {
+                e.printStackTrace();
+                throw e;
+            }
+            
             return "";
         });
         
@@ -44,12 +113,13 @@ public class AppMain {
         before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
         before((request, response) -> response.header("Access-Control-Allow-Headers", "x-client-version"));
         
-        // SET UP JOB SCHEDUELER
-//        final JobManager jobManager = JobManager.getInstance();
-//        
-//        jobManager
+//      SET UP JOB SCHEDUELER
+        final JobManager jobManager = JobManager.getInstance();
+        
+        jobManager
 //                .addJob(UpdateTotalPlayedCountJob.class, jobManager.getEveryXSecondsTrigger(5))
-//                .startScheduler();
+//                .addJob(UpdateRateJob.class, jobManager.getEveryXSecondsTrigger(5))
+                .startScheduler();
         
         // REGISTER DOMAIN EVENT HANDLERS
         DomainEvents.register(new AfterArtistPublished());

@@ -7,6 +7,7 @@ package com.jamapplicationserver.core.infra;
 
 import spark.*;
 import java.io.*;
+import java.time.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.TikaUtils;
 import com.jamapplicationserver.core.domain.*;
@@ -175,6 +176,11 @@ public abstract class BaseController implements Route {
     protected final void fail() {
         res.status(500);
         res.body("Internal Server Error (500)");
+    }
+    
+    // CACHE CONTROL
+    protected final void cache(Duration freshDuration) {
+        
     }
     
 }

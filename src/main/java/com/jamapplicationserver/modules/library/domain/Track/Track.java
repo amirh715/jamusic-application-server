@@ -136,9 +136,7 @@ public class Track extends Artwork {
             RecordLabel recordLabel,
             RecordProducer producer,
             ReleaseDate releaseYear,
-            Lyrics lyrics,
-            Artist artist,
-            Album album
+            Lyrics lyrics
     ) {
         
         if(title == null) return Result.fail(new ValidationError("Title is required for tracks."));
@@ -257,7 +255,8 @@ public class Track extends Artwork {
                 album
         );
         
-        // track's genres must be a substitute of its artist/album.
+        // track's genres must be a substitute of its artist/album
+        // remove those that are not
         if(instance.genres != null) {
             
             if(instance.album != null) {
@@ -268,21 +267,15 @@ public class Track extends Artwork {
                 
                 if(instance.artist.getGenres() != null) {
                     
-                    final Set<Genre> trackGenres =
-                            instance.genres.getValue()
-                            .stream()
-                            .dropWhile(trackGenre ->
+                    instance.genres.getValue()
+                            .removeIf(albumGenre ->
                                     instance.artist.getGenres().getValue()
                                     .stream()
                                     .allMatch(artistGenre ->
-                                            !artistGenre.equals(trackGenre) ||
-                                            !artistGenre.isSubGenreOf(trackGenre)
+                                            !artistGenre.equals(albumGenre) ||
+                                            !artistGenre.isSubGenreOf(albumGenre)
                                     )
-                            )
-                            .collect(Collectors.toSet());
-                    
-                    if(!trackGenres.isEmpty())
-                        instance.genres = GenreList.create(trackGenres).getValue();
+                            );
                     
                 }
                 

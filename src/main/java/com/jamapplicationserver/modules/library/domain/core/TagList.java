@@ -16,7 +16,7 @@ import org.apache.commons.compress.utils.Sets;
  */
 public class TagList extends ValueObject<Set<Tag>> {
     
-    public static final int MAX_ALLOWED_TAGS = 10;
+    public static final int MAX_ALLOWED_TAGS = 4;
     
     private final Set<Tag> tags;
     
@@ -27,10 +27,6 @@ public class TagList extends ValueObject<Set<Tag>> {
     
     private TagList(Set tags) {
         this.tags = tags;
-    }
-    
-    private TagList(Set<Tag>... tags) {
-        this.tags = null;
     }
     
     public static final Result<TagList> create(Set<Tag> tags) {
@@ -44,21 +40,7 @@ public class TagList extends ValueObject<Set<Tag>> {
         return Result.ok(new TagList(tags));
         
     }
-    
-    public static final Result<TagList> create(Set<Tag>... tags) {
-        
-        if(tags.length == 0)
-            return Result.fail(new ValidationError("Tags are required"));
-        
-        int count = 0;
-        for(Set<Tag> aSetOfTags : tags) {
-            count = count + aSetOfTags.size();
-        }
-        if(count > MAX_ALLOWED_TAGS)
-            return Result.fail(new ValidationError("Tag lists can have " + MAX_ALLOWED_TAGS + " max."));
-        
-        return Result.ok(new TagList(tags));
-    }
+
     
     public static final Result<TagList> createFromString(Set<String> tags) {
         

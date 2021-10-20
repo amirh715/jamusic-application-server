@@ -334,6 +334,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
         } catch(Exception e) {
             e.printStackTrace();
             tnx.rollback();
+        } finally {
+            em.close();
         }
         
     }
@@ -369,46 +371,36 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
         
         final ArrayList<Predicate> predicates = new ArrayList<>();
         
-        Root root;
+        Root<LibraryEntityModel> root;
+        Class<? extends LibraryEntityModel> entityType;
         
         if(filters != null) {
+
+            if(filters.type != null) {
+                if(filters.type.isArtwork())
+                    entityType = ArtworkModel.class;
+                else if(filters.type.isAlbum())
+                    entityType = AlbumModel.class;
+                else if(filters.type.isTrack())
+                    entityType = TrackModel.class;
+                else if(filters.type.isArtist())
+                    entityType = ArtistModel.class;
+                else if(filters.type.isBand())
+                    entityType = BandModel.class;
+                else if(filters.type.isSinger())
+                    entityType = SingerModel.class;
+                else
+                    entityType = LibraryEntityModel.class;
+            } else {
+                entityType = LibraryEntityModel.class;
+            }
+
+            root = query.from(entityType);
             
             // entity type
-            if(filters.type != null && filters.artistId == null) {
-                final LibraryEntityType type = filters.type;
-                if(type.isArtwork()) {
-                    root = type.isAlbum() ? query.from(AlbumModel.class) : query.from(TrackModel.class);
-                    // artwork-specific filters
-                    if(filters.releaseDateFrom != null || filters.releaseDateTill != null) {
-                        final YearMonth releaseDateFrom =
-                                filters.releaseDateFrom != null ?
-                                filters.releaseDateFrom.getValue() :
-                                YearMonth.now().minusYears(500);
-                        final YearMonth releaseDateTill =
-                                filters.releaseDateTill != null ?
-                                filters.releaseDateTill.getValue() :
-                                YearMonth.now();
-                        final Predicate predicate =
-                                builder.between(
-                                        root.get("releaseDate"),
-                                        releaseDateFrom,
-                                        releaseDateTill
-                                );
-                        predicates.add(predicate);
-                    }
-                }
-                else // Artist
-                    root = type.isBand() ? query.from(BandModel.class) : query.from(SingerModel.class);
-            } else if(filters.type == null && filters.artistId != null) {
-                root = query.from(ArtworkModel.class);
-                final Predicate predicate =
-                        builder.equal(
-                                root.get("artist").get("id"),
-                                filters.artistId.toValue()
-                        );
+            if(entityType != LibraryEntityModel.class) {
+                final Predicate predicate = builder.equal(root.type(), entityType);
                 predicates.add(predicate);
-            } else {
-                root = query.from(LibraryEntityModel.class);
             }
             
             // search term
@@ -418,7 +410,23 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                         builder.or(
                                 builder.like(root.get("title"), toSearchPattern(searchTerm)),
                                 builder.like(root.get("description"), toSearchPattern(searchTerm)),
-                                builder.like(root.get("tags"), toSearchPattern(searchTerm))
+                                builder.like(root.get("tags"), toSearchPattern(searchTerm)),
+                                builder.and(
+                                        builder.equal(root.type(), ArtworkModel.class),
+                                        builder.like(((Root<ArtworkModel>) (Root<?>) root).get("inheritedTags"), toSearchPattern(searchTerm))
+                                )
+                        );
+                predicates.add(predicate);
+            }
+            
+            // artworks with artist id
+            if(filters.artistId != null) {
+                final Root<ArtworkModel> artworkRoot =
+                        builder.treat(root, ArtworkModel.class);
+                final Predicate predicate =
+                        builder.equal(
+                                artworkRoot.get("artist").get("id"),
+                                filters.artistId.toValue()
                         );
                 predicates.add(predicate);
             }
@@ -548,12 +556,6 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                 predicates.add(predicate);
             }
             
-//            query.where(
-//                    builder.and(
-//                            predicates.toArray(new Predicate[predicates.size()])
-//                    )
-//            );
-            
         } else {
             root = query.from(LibraryEntityModel.class);
         }
@@ -667,6 +669,10 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             Artist artist = null;
             if(((ArtworkModel) model).getArtist() != null) {
                 artist = (Artist) toDomain(((ArtworkModel) model).getArtist(), em);
+            }
+            
+            if(((ArtworkModel) model).getInheritedTags() != null) {
+                
             }
             
             if(model instanceof AlbumModel) { // Album
@@ -897,22 +903,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                     ((Track) entity).getLyrics().getValue() : null
             );
             if(((Track) entity).getAlbum() != null) {
-                final Album albumEntity = ((Track) entity).getAlbum();
-                final AlbumModel albumModel = new AlbumModel();
-                albumModel.setId(albumEntity.getId().toValue());
-                albumModel.setPublished(albumEntity.isPublished());
-                albumModel.setImagePath(
-                        albumEntity.hasImage() ?
-                        albumEntity.getImagePath().toString() : null
-                );
-                if(albumEntity.getGenres() != null) {
-                    albumEntity.getGenres()
-                        .getValue()
-                        .stream()
-                        .map(genre -> GenreMapper.toPersistence(genre))
-                        .forEach(genre -> albumModel.addGenre(genre));
-                }
-                ((TrackModel) model).setAlbum(albumModel);
+                final AlbumModel album = em.getReference(AlbumModel.class, ((Track) entity).getAlbum().getId().toValue());
+                ((TrackModel) model).setAlbum(album);
             }
         }
         

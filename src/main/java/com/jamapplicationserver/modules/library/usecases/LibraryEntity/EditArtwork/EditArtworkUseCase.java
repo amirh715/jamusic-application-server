@@ -165,7 +165,7 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
                 artwork.removeImage(request.subjectId);
             }
             
-            this.repository.save(artwork);
+            repository.save(artwork);
             
             return Result.ok();
         } catch(Exception e) {

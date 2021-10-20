@@ -25,15 +25,12 @@ public class Playlist extends AggregateRoot {
     
     private Set<Track> tracks;
     
-    private Duration duration;
-    
     // creation constructor
     private Playlist(
             Title title
     ) {
         super();
         this.title = title;
-        this.duration = Duration.ZERO;
     }
     
     // reconstitution constructor
@@ -53,8 +50,6 @@ public class Playlist extends AggregateRoot {
         if(this.tracks.size() >= MAX_ALLOWED_TRACKS_PER_PLAYLIST)
             return Result.fail(new MaxAllowedTracksPerPlaylistExceededError());
         
-        this.duration = this.duration.plus(track.getDuration());
-        
         this.tracks.add(track);
         
         this.modified();
@@ -67,8 +62,6 @@ public class Playlist extends AggregateRoot {
         if(this.tracks.isEmpty()) return;
         
         if(!this.tracks.contains(track)) return;
-        
-        this.duration = this.duration.minus(track.getDuration());
         
         this.modified();
         

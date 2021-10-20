@@ -120,7 +120,10 @@ public abstract class LibraryEntityModel extends EntityModel {
     }
     
     public void setTags(Set<String> tags) {
-        if(tags == null || tags.isEmpty()) return;
+        if(tags == null || tags.isEmpty()) {
+            this.tags = "";
+            return;
+        }
         final String separator = "#";
         this.tags = tags.stream()
                 .map(tag -> {
@@ -130,10 +133,6 @@ public abstract class LibraryEntityModel extends EntityModel {
                             .concat(separator);
                 })
                 .collect(Collectors.joining());
-    }
-    
-    public void addTag(String tag) {
-        if(tag == null || tag.isEmpty()) return;
     }
     
     public String getFlagNote() {

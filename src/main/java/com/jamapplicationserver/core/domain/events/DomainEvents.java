@@ -51,7 +51,7 @@ public class DomainEvents {
     
     private static void dispatchAggregateEvents(AggregateRoot aggregate) {
         aggregate.getDomainEvents()
-                .forEach(event -> dispatch(event));
+            .forEach(event -> dispatch(event));
     }
     
     private static void dispatch(DomainEvent domainEvent) {

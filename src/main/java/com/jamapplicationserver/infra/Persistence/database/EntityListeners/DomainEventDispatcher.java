@@ -22,7 +22,7 @@ public class DomainEventDispatcher
         PostDeleteEventListener {
     
     public DomainEventDispatcher() {
-        System.out.println("DomainEventDispatcher instantiated");
+        
     }
 
     @Override

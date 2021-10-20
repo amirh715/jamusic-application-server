@@ -42,6 +42,10 @@ public class BandModel extends ArtistModel {
         this.members.remove(member);
     }
     
+    public void replaceMembers(Set<SingerModel> members) {
+        this.members = members;
+    }
+    
     public Set<SingerModel> getMembers() {
         return this.members;
     }

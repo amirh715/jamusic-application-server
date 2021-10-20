@@ -62,8 +62,7 @@ public class UserModel extends EntityModel {
     @Column(name="last_modified_at", nullable=false)
     private LocalDateTime lastModifiedAt;
     
-    @OneToMany(mappedBy="player", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @NotAudited
+    @OneToMany(mappedBy="player", orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private Set<PlayedModel> playedTracks = new HashSet<PlayedModel>();
     
     @OneToMany(mappedBy="recipient", fetch=FetchType.LAZY)

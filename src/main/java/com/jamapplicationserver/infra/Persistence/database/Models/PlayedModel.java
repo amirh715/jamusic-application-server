@@ -9,6 +9,7 @@ import java.util.*;
 import java.time.*;
 import java.io.Serializable;
 import javax.persistence.*;
+import org.hibernate.envers.*;
 
 /**
  *
@@ -17,6 +18,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="played_tracks", schema="jamschema")
 @IdClass(PlayedId.class)
+@Audited
 public class PlayedModel implements Serializable {
     
     @Id

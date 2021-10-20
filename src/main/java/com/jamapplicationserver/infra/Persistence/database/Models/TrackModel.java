@@ -5,8 +5,8 @@
  */
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
+import java.util.*;
 import javax.persistence.*;
-import java.io.Serializable;
 import org.hibernate.envers.*;
 
 /**
@@ -37,6 +37,9 @@ public class TrackModel extends ArtworkModel {
     @ManyToOne
     @JoinColumn(name="album_id")
     private AlbumModel album;
+    
+    @OneToMany(orphanRemoval=true, cascade=CascadeType.REMOVE, mappedBy="playedTrack")
+    private Set<PlayedModel> played = new HashSet<>();
     
     public String getAudioPath() {
         return this.audioPath;
@@ -76,16 +79,10 @@ public class TrackModel extends ArtworkModel {
     
     public void setAlbum(AlbumModel album) {
         this.album = album;
-    }
-    
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
+        final Set<String> tags = new HashSet<>();
+        tags.addAll(album.getTags());
+        tags.addAll(album.getInheritedTags());
+        this.setInheritedTags(tags);
     }
     
 }
