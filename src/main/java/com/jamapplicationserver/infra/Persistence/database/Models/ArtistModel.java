@@ -45,6 +45,8 @@ public abstract class ArtistModel extends LibraryEntityModel {
     }
     
     public void setInstagramId(String instagramId) {
+        if(instagramId == null) return;
+        if(instagramId.isBlank()) this.instagramId = null;
         this.instagramId = instagramId;
     }
     

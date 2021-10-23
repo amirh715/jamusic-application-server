@@ -53,7 +53,7 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
             
             final Result<RecordLabel> recordLabelOrError = RecordLabel.create(request.recordLabel);
             final Result<RecordProducer> producerOrError = RecordProducer.create(request.producer);
-            final Result<ReleaseDate> releaseYearOrError = ReleaseDate.create(request.releaseYear);
+            final Result<ReleaseDate> releaseYearOrError = ReleaseDate.create(request.releaseDate);
             
             final Result<Lyrics> lyricsOrError = Lyrics.create(request.lyrics);
             
@@ -74,7 +74,7 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
                 combinedProps.add(recordLabelOrError);
             if(request.producer != null)
                 combinedProps.add(producerOrError);
-            if(request.releaseYear != null)
+            if(request.releaseDate != null)
                 combinedProps.add(releaseYearOrError);
             
             if(request.lyrics != null)
@@ -113,7 +113,7 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
                     producerOrError.getValue() :
                     null;
             final ReleaseDate releaseYear =
-                    request.releaseYear != null ?
+                    request.releaseDate != null ?
                     releaseYearOrError.getValue() :
                     null;
             

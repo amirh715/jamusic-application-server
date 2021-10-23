@@ -7,7 +7,6 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.util.*;
 import javax.persistence.*;
-import java.io.Serializable;
 import org.hibernate.envers.*;
 
 /**
@@ -17,7 +16,7 @@ import org.hibernate.envers.*;
 @Entity
 @DiscriminatorValue("A")
 @Audited
-public class AlbumModel extends ArtworkModel implements Serializable {
+public class AlbumModel extends ArtworkModel {
     
     @OneToMany(mappedBy="album", cascade=CascadeType.ALL)
     private Set<TrackModel> tracks = new HashSet<>();

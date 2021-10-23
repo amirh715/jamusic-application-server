@@ -79,10 +79,14 @@ public class TrackModel extends ArtworkModel {
     
     public void setAlbum(AlbumModel album) {
         this.album = album;
-        final Set<String> tags = new HashSet<>();
-        tags.addAll(album.getTags());
-        tags.addAll(album.getInheritedTags());
-        this.setInheritedTags(tags);
+    }
+    
+    public boolean isSingleTrack() {
+        return album == null;
+    }
+    
+    public boolean isAlbumTrack() {
+        return album != null;
     }
     
 }

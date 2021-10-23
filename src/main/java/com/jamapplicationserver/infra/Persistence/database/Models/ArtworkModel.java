@@ -8,15 +8,17 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 import java.util.*;
 import javax.persistence.*;
 import java.time.*;
-import com.jamapplicationserver.infra.Persistence.database.AttributeConverters.YearMonthDateAttributeConverter;
 import java.util.stream.Collectors;
 import org.hibernate.envers.*;
+import com.jamapplicationserver.infra.Persistence.database.AttributeConverters.YearMonthDateAttributeConverter;
+import com.jamapplicationserver.infra.Persistence.database.EntityListeners.ArtworksInheritedTagsSetter;
 
 /**
  *
  * @author dada
  */
 @Entity
+@EntityListeners(ArtworksInheritedTagsSetter.class)
 @Audited
 public abstract class ArtworkModel extends LibraryEntityModel {
     
@@ -26,12 +28,13 @@ public abstract class ArtworkModel extends LibraryEntityModel {
     @Column(name="record_producer")
     private String producer;
     
-    @Column(name="inherited_tags")
-    private String inheritedTags;
-    
     @Column(name="release_date", columnDefinition="date")
     @Convert(converter=YearMonthDateAttributeConverter.class)
     private YearMonth releaseDate;
+    
+    @Column(name="inherited_tags")
+    @NotAudited
+    private String inheritedTags;
     
     public ArtworkModel() {
         
@@ -46,8 +49,8 @@ public abstract class ArtworkModel extends LibraryEntityModel {
     }
     
     public void setRecordLabel(String recordLabel) {
-        if(recordLabel != null && recordLabel.isBlank())
-            this.recordLabel = null;
+        if(recordLabel == null) return;
+        if(recordLabel.isBlank()) this.recordLabel = null;
         this.recordLabel = recordLabel;
     }
     
@@ -64,8 +67,8 @@ public abstract class ArtworkModel extends LibraryEntityModel {
     }
     
     public void setProducer(String producer) {
-        if(producer != null && producer.isBlank())
-            this.producer = null;
+        if(producer == null) return;
+        if(producer.isBlank()) this.producer = null;
         this.producer = producer;
     }
     
@@ -75,7 +78,6 @@ public abstract class ArtworkModel extends LibraryEntityModel {
     
     public void setArtist(ArtistModel artist) {
         this.artist = artist;
-        this.setInheritedTags(artist.getTags());
     }
     
     public Set<String> getInheritedTags() {

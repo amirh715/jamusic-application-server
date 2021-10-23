@@ -93,6 +93,8 @@ public abstract class LibraryEntityModel extends EntityModel {
     }
     
     public void setDescription(String description) {
+        if(description == null) return;
+        if(description.isBlank()) this.description = null;
         this.description = description;
     }
     
@@ -121,7 +123,7 @@ public abstract class LibraryEntityModel extends EntityModel {
     
     public void setTags(Set<String> tags) {
         if(tags == null || tags.isEmpty()) {
-            this.tags = "";
+            this.tags = null;
             return;
         }
         final String separator = "#";
@@ -140,6 +142,8 @@ public abstract class LibraryEntityModel extends EntityModel {
     }
     
     public void setFlagNote(String flagNote) {
+        if(flagNote == null) return;
+        if(flagNote.isBlank()) this.flagNote = null;
         this.flagNote = flagNote;
     }
     

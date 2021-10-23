@@ -44,71 +44,7 @@ public class AppMain {
         System.out.println("SERVER STARTED AT ");
         
         before("/*", (req, res) -> req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp")));
-                
-        post("/test", (req, res) -> {
-            
-//            final EntityManager em = EntityManagerFactoryHelper.getInstance().createEntityManager();
-//            final EntityTransaction tnx = em.getTransaction();
-//            
-//            try {
-//                
-//                tnx.begin();
-//                
-//                final List<UserModel> players =
-//                        em.createQuery("SELECT users FROM UserModel users", UserModel.class)
-//                        .getResultList();
-//                final List<TrackModel> tracks =
-//                        em.createQuery("SELECT tracks FROM TrackModel tracks", TrackModel.class)
-//                        .getResultList();
-//                final LocalDateTime startDateTime = LocalDateTime.now().minusDays(7);
-//
-//                for(int i=0; i<10000; i++) {
-//                    final UserModel player = players.get(1);
-//                    Collections.shuffle(players);
-//                    final TrackModel track = tracks.get(1);
-//                    Collections.shuffle(tracks);
-//                    final LocalDateTime playedAt = startDateTime.plusMinutes(i);
-//                    final PlayedModel played = new PlayedModel(track, player, playedAt);
-//                    em.persist(played);
-//                }
-//                
-//                tnx.commit();
-//                
-//            } catch(Exception e) {
-//                tnx.rollback();
-//            } finally {
-//                em.close();
-//            }
 
-            try {
-                
-                EntityManager em = EntityManagerFactoryHelper.getInstance().createEntityManager();
-                
-                final CriteriaBuilder builder = em.getCriteriaBuilder();
-                final CriteriaQuery<LibraryEntityModel> query = builder.createQuery(LibraryEntityModel.class);
-                
-                Root root = query.from(LibraryEntityModel.class);
-                query.select(root);
-
-                System.out.println("Type: " + root.getJavaType().getSimpleName());
-                System.out.println("Super Type: " + root.getJavaType().getSuperclass().getSimpleName());
-                query.where(
-                        builder.or(
-                                builder.like(root.get("tags"), "%a")
-                        )
-                );
-                
-                em.createQuery(query)
-                        .getResultList();
-                
-            } catch(Exception e) {
-                e.printStackTrace();
-                throw e;
-            }
-            
-            return "";
-        });
-        
         before((request, response) -> response.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE"));
         before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
         before((request, response) -> response.header("Access-Control-Allow-Headers", "x-client-version"));
@@ -117,14 +53,71 @@ public class AppMain {
         final JobManager jobManager = JobManager.getInstance();
         
         jobManager
-//                .addJob(UpdateTotalPlayedCountJob.class, jobManager.getEveryXSecondsTrigger(5))
-//                .addJob(UpdateRateJob.class, jobManager.getEveryXSecondsTrigger(5))
+                .addJob(UpdateTotalPlayedCountJob.class, jobManager.getEveryXSecondsTrigger(50))
+                .addJob(UpdateRateJob.class, jobManager.getEveryXSecondsTrigger(50))
                 .startScheduler();
         
         // REGISTER DOMAIN EVENT HANDLERS
         DomainEvents.register(new AfterArtistPublished());
         DomainEvents.register(new AfterArtistArchived());
         DomainEvents.register(new AfterArtistEdited());
+        
+        post(("/test"), (req, res) -> {
+            
+            final EntityManager em =
+                        EntityManagerFactoryHelper
+                                .getInstance()
+                                .createEntityManager();
+            final EntityTransaction tnx = em.getTransaction();
+            
+            try {
+                
+                tnx.begin();
+                
+                final List<TrackModel> tracks =
+                        em.createQuery("SELECT tracks FROM TrackModel tracks")
+                        .getResultList();
+                final List<UserModel> users =
+                        em.createQuery("SELECT users FROM UserModel users")
+                        .getResultList();
+                
+                final Random random = new Random();
+                final int[] forTracks = random.ints(1000, 0, tracks.size()).toArray();
+                final int[] forUsers = random.ints(1000, 0, users.size()).toArray();
+                final Instant playedAtFrom = Instant.now().minus(Duration.ofDays(7));
+                final Instant playedAtTill = Instant.now();
+                
+                for(int i = 0; i < 1000; i++) {
+                    
+                    final TrackModel track = tracks.get(forTracks[i]);
+                    final UserModel user = users.get(forUsers[i]);
+                    final long randomEpochSec =
+                            ThreadLocalRandom
+                                    .current()
+                                    .nextLong(
+                                            playedAtFrom.getEpochSecond(),
+                                            playedAtTill.getEpochSecond()
+                                    );
+                    final LocalDateTime playedAt =
+                            LocalDateTime.ofEpochSecond(randomEpochSec, 0, ZoneOffset.UTC);
+                    
+                    final PlayedModel played =
+                            new PlayedModel(track, user, playedAt);
+                    em.persist(played);
+                    
+                }
+                
+                tnx.commit();
+                
+            } catch(Exception e) {
+                e.printStackTrace();
+                tnx.rollback();
+            } finally {
+                em.close();
+                return "";
+            }
+            
+        });
         
         // API ROUTES (v1)
         path("/api/v1", () -> {

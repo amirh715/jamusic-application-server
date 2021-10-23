@@ -44,7 +44,7 @@ public class EditArtworkController extends BaseController {
                             fields.get("flagNote"),
                             fields.get("recordLabel"),
                             fields.get("producer"),
-                            fields.get("releaseYear"),
+                            fields.get("releaseDate"),
                             fields.get("lyrics"),
                             image,
                             fields.get("removeImage"),

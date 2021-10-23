@@ -413,8 +413,6 @@ public class Album extends Artwork {
         else
             track.archive();
         
-        duration = duration.plus(track.getDuration());
-        
         tracks.add(track);
         
         this.updaterId = updaterId;

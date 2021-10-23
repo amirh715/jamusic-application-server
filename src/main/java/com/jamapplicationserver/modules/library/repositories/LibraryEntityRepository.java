@@ -836,17 +836,17 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                     ((Artist) entity).getInstagramId().getValue()
                             : null
             );
-            ((Artist) entity).getAlbumsIds()
-                    .forEach(albumId -> {
-                        final AlbumModel album = em.getReference(AlbumModel.class, albumId.toValue());
-                        ((ArtistModel) model).addAlbum(album);
-                        album.setArtist((ArtistModel) model);
-                    });
             ((Artist) entity).getAllTracksIds()
                     .forEach(trackId -> {
                         final TrackModel track = em.getReference(TrackModel.class, trackId.toValue());
                         ((ArtistModel) model).addTrack(track);
                         track.setArtist((ArtistModel) model);
+                    });
+            ((Artist) entity).getAlbumsIds()
+                    .forEach(albumId -> {
+                        final AlbumModel album = em.getReference(AlbumModel.class, albumId.toValue());
+                        ((ArtistModel) model).addAlbum(album);
+                        album.setArtist((ArtistModel) model);
                     });
         }
         

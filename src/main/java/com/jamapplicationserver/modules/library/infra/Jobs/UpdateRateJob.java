@@ -5,12 +5,9 @@
  */
 package com.jamapplicationserver.modules.library.infra.Jobs;
 
-import java.util.*;
-import java.util.stream.*;
-import org.quartz.*;
 import javax.persistence.*;
+import org.quartz.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
 /**
  *
@@ -33,37 +30,39 @@ public class UpdateRateJob implements Job {
             {
 
                 final String query =
-                        "SELECT tracks, eg.genre_id "
-                        + "FROM jamschema.library_entities tracks, "
-                        + "jamschema.entity_genres eg, jamschema.played_tracks pt "
-                        + "WHERE tracks.id = pt.played_track_id "
-                        + "AND tracks.id = eg.entity_id "
+                        "UPDATE jamschema.library_entities "
+                        + "SET rate = ratings.rate "
+                        + "FROM "
+                        + "(SELECT res.track_id track_id, AVG(res.rate) rate "
+                        + "FROM ( "
+                        + "SELECT tracks.id track_id, "
+                        + "eg.genre_id, "
+                        + "entity_count_of_each_genre.total_count, "
+                        + "((row_number () OVER (PARTITION BY eg.genre_id ORDER BY COUNT(pt.played_track_id)) * 5) / total_count) rate "
+                        + "FROM "
+                        + "jamschema.library_entities tracks, "
+                        + "jamschema.entity_genres eg, "
+                        + "jamschema.played_tracks pt, "
+                        + "("
+                        + "SELECT eg.genre_id genre_id, COUNT(eg.entity_id) total_count "
+                        + "FROM "
+                        + "jamschema.library_entities le, "
+                        + "jamschema.entity_genres eg "
+                        + "WHERE le.entity_type = 'T' AND eg.entity_id = le.id "
+                        + "GROUP BY (eg.genre_id) "
+                        + ") entity_count_of_each_genre "
+                        + "WHERE tracks.id = eg.entity_id "
                         + "AND tracks.id = pt.played_track_id "
-                        + "AND pt.played_at between NOW() - INTERVAL '7 DAY' AND NOW() "
-                        + "GROUP BY (tracks.id, eg.genre_id) "
-                        + "ORDER BY (count(pt.played_track_id)) DESC";
-//                final List<TrackModel> tracks =
-//                        em.createNativeQuery(query, TrackModel.class)
-//                        .setParameter(1, genre.getId())
-//                        .getResultList();
-
-//                final int tracksCount = tracks.size();
-//                final int rateDivision = 11;
-//                final int unitRange = tracksCount / rateDivision;
-//
-//                for(TrackModel track : tracks) {
-//                    final int rowIndex = tracks.indexOf(track);
-//                    for(int i = 1; i < rateDivision; i++) {
-//                        if(rowIndex < i * unitRange) {
-//                            final double rate = i / 2;
-//                            track.setRate(rate);
-//                            break;
-//                        }
-//                    }
-//                    em.merge(track);
-//                }
-
-
+                        + "AND pt.played_at BETWEEN NOW() - INTERVAL '7 DAY' AND NOW() "
+                        + "AND eg.genre_id = entity_count_of_each_genre.genre_id "
+                        + "GROUP BY (tracks.id, eg.genre_id, entity_count_of_each_genre.total_count) "
+                        + "ORDER BY (row_number () OVER (PARTITION BY eg.genre_id ORDER BY COUNT(pt.played_track_id))) DESC "
+                        + ") res "
+                        + "GROUP BY (res.track_id)"
+                        + ") ratings "
+                        + "WHERE id = ratings.track_id";
+                em.createNativeQuery(query)
+                        .executeUpdate();
 
             } // update tracks rate ends
 
@@ -71,33 +70,31 @@ public class UpdateRateJob implements Job {
             {
 
                 final String query =
-                        "UPDATE jamschema.library_entities albums "
-                        + "SET albums.rate = subQuery.averageTracksRate "
+                        "UPDATE jamschema.library_entities "
+                        + "SET rate = subQuery.averageTracksRate "
                         + "FROM (SELECT "
                         + "AVG(tracks.rate) averageTracksRate, "
                         + "tracks.album_id album_id "
                         + "FROM jamschema.library_entities tracks "
                         + "GROUP BY (tracks.album_id)) subQuery "
-                        + "WHERE albums.id = subQuery.album_id";
+                        + "WHERE id = subQuery.album_id ";
                 em.createNativeQuery(query)
                         .executeUpdate();
 
             } // update albums rate ends
             
-            
-            
             // update artists rate
             {
             
                 final String query =
-                        "UPDATE jamschema.library_entities artists "
-                        + "SET artists.rate = subQuery.averageArtworksRate "
+                        "UPDATE jamschema.library_entities "
+                        + "SET rate = subQuery.averageArtworksRate "
                         + "FROM (SELECT "
                         + "AVG(artworks.rate) averageArtworksRate, "
                         + "artworks.artist_id artist_id "
                         + "FROM jamschema.library_entities artworks "
                         + "GROUP BY (artworks.artist_id)) subQuery "
-                        + "WHERE artworks.id = subQuery.artist_id";
+                        + "WHERE id = subQuery.artist_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
                 
@@ -106,6 +103,7 @@ public class UpdateRateJob implements Job {
             tnx.commit();
             
         } catch(Exception e) {
+            e.printStackTrace();
             tnx.rollback();
         } finally {
             em.close();

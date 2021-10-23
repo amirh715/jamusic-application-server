@@ -25,7 +25,7 @@ public class EditArtworkRequestDTO extends DTOWithAuthClaims {
     public final String flagNote;
     public final String recordLabel;
     public final String producer;
-    public final String releaseYear;
+    public final String releaseDate;
     public final String lyrics;
     public final InputStream image;
     public final Boolean removeImage;
@@ -39,7 +39,7 @@ public class EditArtworkRequestDTO extends DTOWithAuthClaims {
             String flagNote,
             String recordLabel,
             String producer,
-            String releaseYear,
+            String releaseDate,
             String lyrics,
             InputStream image,
             String removeImage,
@@ -59,7 +59,7 @@ public class EditArtworkRequestDTO extends DTOWithAuthClaims {
         this.flagNote = flagNote;
         this.recordLabel = recordLabel;
         this.producer = producer;
-        this.releaseYear = releaseYear;
+        this.releaseDate = releaseDate;
         this.lyrics = lyrics;
         this.image = image;
         this.removeImage = Boolean.parseBoolean(removeImage);
