@@ -151,28 +151,6 @@ public class Album extends Artwork {
                 releaseYear
         );
         
-        if(instance.genres != null) {
-            
-            if(instance.artist != null && instance.artist.getGenres() != null) {
-                
-                final boolean areAlbumGenresThoseOfArtistsGenres =
-                        instance.genres.getValue()
-                        .stream()
-                        .allMatch(albumGenre ->
-                                instance.artist.getGenres().getValue()
-                                .stream()
-                                .anyMatch(artistGenre ->
-                                        artistGenre.equals(albumGenre) ||
-                                        artistGenre.isSubGenreOf(albumGenre)
-                                )
-                        );
-                if(!areAlbumGenresThoseOfArtistsGenres)
-                    return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
-                
-            }
-            
-        }
-        
         return Result.ok(instance);
         
     }
@@ -259,22 +237,19 @@ public class Album extends Artwork {
         // set tracks album
         if(tracks != null)
             tracks.forEach(track -> track.setAlbum(instance));
-        
-        // 
+
         if(instance.genres != null) {
             
             if(instance.artist != null && instance.artist.getGenres() != null) {
-                
-                instance.genres.getValue()
+               instance.genres.getValue()
                         .removeIf(albumGenre ->
                                 instance.artist.getGenres().getValue()
                                 .stream()
                                 .allMatch(artistGenre ->
-                                        !artistGenre.equals(albumGenre) ||
+                                        !artistGenre.equals(albumGenre) &&
                                         !artistGenre.isSubGenreOf(albumGenre)
                                 )
                         );
-                
             }
             
         }
@@ -386,7 +361,7 @@ public class Album extends Artwork {
     
     public final Result addTrack(Track track, UniqueEntityId updaterId) {
         
-        final boolean alreadyExists = this.tracks.contains(track);
+        final boolean alreadyExists = tracks.contains(track);
         if(alreadyExists) return Result.ok();
         
         if(tracks.size() >= MAX_ALLOWED_TRACKS_PER_ALBUM)
