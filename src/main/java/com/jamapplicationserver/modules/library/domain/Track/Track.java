@@ -268,12 +268,12 @@ public class Track extends Artwork {
                 if(instance.artist.getGenres() != null) {
                     
                     instance.genres.getValue()
-                            .removeIf(albumGenre ->
+                            .removeIf(trackGenre ->
                                     instance.artist.getGenres().getValue()
                                     .stream()
                                     .allMatch(artistGenre ->
-                                            !artistGenre.equals(albumGenre) ||
-                                            !artistGenre.isSubGenreOf(albumGenre)
+                                            !artistGenre.equals(trackGenre) &&
+                                            !artistGenre.isSubGenreOf(trackGenre)
                                     )
                             );
                     
