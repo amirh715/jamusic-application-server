@@ -11,7 +11,6 @@ import java.time.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.TikaUtils;
 import com.jamapplicationserver.core.domain.*;
-//import javax.ws.rs.core.Response;
 
 /**
  *
@@ -21,6 +20,7 @@ public abstract class BaseController implements Route {
     
     protected Request req;
     private Response res;
+    protected boolean requireAuthClaims = true;
     
     protected UniqueEntityId subjectId;
     protected UserRole subjectRole;
@@ -35,24 +35,26 @@ public abstract class BaseController implements Route {
         this.req = req;
         this.res = res;
         
-        final Result<UniqueEntityId> subjectIdOrError =
-            UniqueEntityId
-                .createFromString(
-                        req.session().attribute("subjectId")
-                );
-        if(subjectIdOrError.isFailure) {
-            fail("Subject id is invalid");
-            return res.body();
+        if(requireAuthClaims) {
+            final Result<UniqueEntityId> subjectIdOrError =
+                UniqueEntityId
+                    .createFromString(
+                            req.session().attribute("subjectId")
+                    );
+            if(subjectIdOrError.isFailure) {
+                fail("Subject id is invalid");
+                return res.body();
+            }
+            this.subjectId = subjectIdOrError.getValue();
+
+            final Result<UserRole> subjectRoleOrError =
+                    UserRole.create(req.session().attribute("role"));
+            if(subjectRoleOrError.isFailure) {
+                fail("Subject role is invalid");
+                return res.body();
+            }
+            this.subjectRole = subjectRoleOrError.getValue();
         }
-        this.subjectId = subjectIdOrError.getValue();
-        
-        final Result<UserRole> subjectRoleOrError =
-                UserRole.create(req.session().attribute("role"));
-        if(subjectRoleOrError.isFailure) {
-            fail("Subject role is invalid");
-            return res.body();
-        }
-        this.subjectRole = subjectRoleOrError.getValue();
         
         executeImpl();
         
@@ -164,23 +166,26 @@ public abstract class BaseController implements Route {
     
     // INTERNAL ERRORS (5**)
     protected final void fail(Exception exception) {
-        res.status(500);
-        res.body(exception != null ? exception.getMessage() : "Internal Server Error (500)");
+        BaseController.jsonResponse(res, 500, exception != null ? exception.getMessage() : "Internal Server Error (500)");
     }
     
     protected final void fail(String error) {
-        res.status(500);
-        res.body(error != null ? error : "Internal Server Error (500)");
+        BaseController.jsonResponse(res, 500, error != null ? error : "Internal Server Error (500)");
     }
     
     protected final void fail() {
-        res.status(500);
-        res.body("Internal Server Error (500)");
+        BaseController.jsonResponse(res, 500, "Internal Server Error (500)");
     }
     
     // CACHE CONTROL
     protected final void cache(Duration freshDuration) {
         
     }
+    
+    protected final String makeEtag(Object resource) {
+        
+        return "";
+    }
+    
     
 }
