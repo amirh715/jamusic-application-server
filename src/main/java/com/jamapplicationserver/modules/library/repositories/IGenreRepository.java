@@ -5,11 +5,11 @@
  */
 package com.jamapplicationserver.modules.library.repositories;
 
+import com.jamapplicationserver.infra.Persistence.database.Models.GenreModel;
 import java.util.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.core.infra.IRepository;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
 /**
  *

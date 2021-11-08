@@ -15,7 +15,6 @@ import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.EditArtworkRequestDTO;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
 import com.jamapplicationserver.modules.library.repositories.*;
-import com.jamapplicationserver.modules.library.domain.Player.*;
 
 /**
  *
@@ -46,16 +45,24 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
             
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
             final Result<Title> titleOrError = Title.create(request.title);
-            final Result<Description> descriptionOrError = Description.create(request.description);
-            final Result<TagList> tagsOrError = TagList.createFromString(request.tags);
-            final Result<Flag> flagOrError = Flag.create(request.flagNote);
-            final Result<GenreList> genresOrError = fetchAndCreateGenreList(request.genreIds);
+            final Result<Optional<Description>> descriptionOrError =
+                    Description.createNullable(request.description);
+            final Result<Optional<TagList>> tagsOrError =
+                    TagList.createNullableFromString(request.tags);
+            final Result<Optional<Flag>> flagOrError =
+                    Flag.createNullable(request.flagNote);
+            final Result<Optional<GenreList>> genresOrError =
+                    fetchAndCreateGenreList(request.genreIds);
             
-            final Result<RecordLabel> recordLabelOrError = RecordLabel.create(request.recordLabel);
-            final Result<RecordProducer> producerOrError = RecordProducer.create(request.producer);
-            final Result<ReleaseDate> releaseYearOrError = ReleaseDate.create(request.releaseDate);
+            final Result<Optional<RecordLabel>> recordLabelOrError =
+                    RecordLabel.createNullable(request.recordLabel);
+            final Result<Optional<RecordProducer>> producerOrError =
+                    RecordProducer.createNullable(request.producer);
+            final Result<Optional<ReleaseDate>> releaseYearOrError =
+                    ReleaseDate.createNullable(request.releaseDate);
             
-            final Result<Lyrics> lyricsOrError = Lyrics.create(request.lyrics);
+            final Result<Optional<Lyrics>> lyricsOrError =
+                    Lyrics.createNullable(request.lyrics);
             
             combinedProps.add(idOrError);
             
@@ -68,7 +75,7 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
             if(request.flagNote != null)
                 combinedProps.add(flagOrError);
             if(request.genreIds != null && !request.genreIds.isEmpty())
-                combinedProps.add(idOrError);
+                combinedProps.add(genresOrError);
             
             if(request.recordLabel != null)
                 combinedProps.add(recordLabelOrError);
@@ -89,35 +96,35 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
                     request.title != null ?
                     titleOrError.getValue() :
                     null;
-            final Description description =
+            final Optional<Description> description =
                     request.description != null ?
                     descriptionOrError.getValue() :
                     null;
-            final TagList tags =
+            final Optional<TagList> tags =
                     request.tags != null && !request.tags.isEmpty() ?
                     tagsOrError.getValue() :
                     null;
-            final Flag flag =
+            final Optional<Flag> flag =
                     request.flagNote != null ?
                     flagOrError.getValue() :
                     null;
-            final GenreList genres =
+            final Optional<GenreList> genres =
                     request.genreIds != null ? genresOrError.getValue()
                     : null;
-            final RecordLabel recordLabel =
+            final Optional<RecordLabel> recordLabel =
                     request.recordLabel != null ?
                     recordLabelOrError.getValue() :
                     null;
-            final RecordProducer producer =
+            final Optional<RecordProducer> producer =
                     request.producer != null ?
                     producerOrError.getValue() :
                     null;
-            final ReleaseDate releaseYear =
+            final Optional<ReleaseDate> releaseYear =
                     request.releaseDate != null ?
                     releaseYearOrError.getValue() :
                     null;
             
-            final Lyrics lyrics =
+            final Optional<Lyrics> lyrics =
                     request.lyrics != null ?
                     lyricsOrError.getValue() :
                     null;
@@ -169,17 +176,18 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
             
             return Result.ok();
         } catch(Exception e) {
+            e.printStackTrace();
             throw new GenericAppException(e);
         }
         
     }
     
-    private Result<GenreList> fetchAndCreateGenreList(Set<String> genreIds) throws GenericAppException {
+    private Result<Optional<GenreList>> fetchAndCreateGenreList(Set<String> genreIds) throws GenericAppException {
         
         try {
             
             if(genreIds == null || genreIds.isEmpty())
-                return Result.fail(new ValidationError("fetch genre error"));
+                return GenreList.createNullable(null);
             
             final Result<Set<UniqueEntityId>> idsOrErrors = UniqueEntityId.createFromStrings(genreIds);
             if(idsOrErrors.isFailure) return Result.fail(idsOrErrors.getError());
@@ -194,7 +202,7 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
             final Set<Genre> genres = new HashSet<>();
             ids.forEach(id -> genres.add(allGenres.get(id)));
             
-            return GenreList.create(genres);
+            return GenreList.createNullable(genres);
         } catch(Exception e) {
             e.printStackTrace();
             throw new GenericAppException(e);

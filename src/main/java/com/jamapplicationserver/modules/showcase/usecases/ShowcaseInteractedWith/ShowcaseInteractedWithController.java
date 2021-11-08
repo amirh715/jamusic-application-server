@@ -46,7 +46,7 @@ public class ShowcaseInteractedWithController extends BaseController {
                 return;
             }
             
-            this.ok(result.getValue());
+            noContent();
             
         } catch(Exception e) {
             this.fail(e);

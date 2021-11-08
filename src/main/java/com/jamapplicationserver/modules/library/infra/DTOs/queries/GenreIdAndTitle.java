@@ -5,7 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.GenreModel;
 
 /**
  *

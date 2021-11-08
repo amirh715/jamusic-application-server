@@ -32,7 +32,7 @@ public class RemoveGenreUseCase implements IUsecase<String, Genre> {
             
             if(idOrError.isFailure) return idOrError;
             
-            final Genre genre = this.repository.fetchById(idOrError.getValue());
+            final Genre genre = repository.fetchById(idOrError.getValue());
             
             if(genre == null) return Result.fail(new GenreDoesNotExistError());
             

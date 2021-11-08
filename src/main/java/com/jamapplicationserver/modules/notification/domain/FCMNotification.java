@@ -5,10 +5,10 @@
  */
 package com.jamapplicationserver.modules.notification.domain;
 
+import java.net.URL;
+import java.util.*;
 import com.jamapplicationserver.core.domain.DateTime;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
-import java.net.URL;
-import java.util.Map;
 
 /**
  *

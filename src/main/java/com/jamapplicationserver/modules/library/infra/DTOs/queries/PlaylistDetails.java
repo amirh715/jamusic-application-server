@@ -6,28 +6,30 @@
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
+import java.time.*;
 import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.PlaylistModel;
 import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.core.infra.IQueryResponseDTO;
 
 /**
  *
  * @author dada
  */
-public class PlaylistDetails {
+public class PlaylistDetails implements IQueryResponseDTO {
     
-    public final UniqueEntityId id;
-    public final Title title;
-    public final Set<TrackDetails> tracks;
-    public final DateTime createdAt;
-    public final DateTime lastModifiedAt;
+    public final UUID id;
+    public final String title;
+    public final Set<LibraryEntityIdAndTitle> tracks;
+    public final LocalDateTime createdAt;
+    public final LocalDateTime lastModifiedAt;
     
     public PlaylistDetails(
-            UniqueEntityId id,
-            Title title,
-            Set<TrackDetails> tracks,
-            DateTime createdAt,
-            DateTime lastModifiedAt
+            UUID id,
+            String title,
+            Set<LibraryEntityIdAndTitle> tracks,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt
     ) {
         this.id = id;
         this.title = title;
@@ -36,10 +38,9 @@ public class PlaylistDetails {
         this.lastModifiedAt = lastModifiedAt;
     }
     
-    public static PlaylistDetails create(PlaylistModel playlist) {
-        
-        
-        return null;
+    @Override
+    public PlaylistDetails filter(UserRole role) {
+        return this;
     }
     
 }

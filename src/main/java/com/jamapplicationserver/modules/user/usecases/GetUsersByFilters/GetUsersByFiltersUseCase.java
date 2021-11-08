@@ -5,29 +5,29 @@
  */
 package com.jamapplicationserver.modules.user.usecases.GetUsersByFilters;
 
-import com.jamapplicationserver.core.domain.UserRole;
-import com.jamapplicationserver.core.domain.DateTime;
 import java.util.*;
-import com.jamapplicationserver.core.domain.IUsecase;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
+import com.jamapplicationserver.modules.user.infra.DTOs.commands.GetUsersByFiltersRequestDTO;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.*;
+import com.jamapplicationserver.modules.user.infra.services.*;
+import com.jamapplicationserver.modules.user.infra.DTOs.queries.*;
 import com.jamapplicationserver.core.logic.*;
 
 /**
  *
  * @author amirhossein
  */
-public class GetUsersByFiltersUseCase implements IUsecase<GetUsersByFiltersRequestDTO, GetUsersByFiltersResponseDTO> {
+public class GetUsersByFiltersUseCase implements IUsecase<GetUsersByFiltersRequestDTO, Set<UserDetails>> {
     
-    private final IUserRepository repository;
+    private final IUserQueryService queryService;
     
-    private GetUsersByFiltersUseCase(IUserRepository repository) {
-        this.repository = repository;
+    private GetUsersByFiltersUseCase(IUserQueryService queryService) {
+        this.queryService = queryService;
     }
     
     @Override
-    public Result<GetUsersByFiltersResponseDTO> execute(GetUsersByFiltersRequestDTO request) throws GenericAppException {
+    public Result<Set<UserDetails>> execute(GetUsersByFiltersRequestDTO request) throws GenericAppException {
         
         try {
             
@@ -88,15 +88,11 @@ public class GetUsersByFiltersUseCase implements IUsecase<GetUsersByFiltersReque
 //                        request.updaterId != null ? updaterIdOrError.getValue() : null
                 );
             
-            final Set<User> users = this.repository.fetchByFilters(filters);
-
-            final GetUsersByFiltersResponseDTO response =
-                    new GetUsersByFiltersResponseDTO(users);
-            
-            return Result.ok(response);
+            return Result.ok(queryService.getUsersByFilters(filters));
             
         } catch(IllegalStateException e) {
-            throw new GenericAppException();
+            e.printStackTrace();
+            throw new GenericAppException(e);
         }
         
     }
@@ -108,6 +104,6 @@ public class GetUsersByFiltersUseCase implements IUsecase<GetUsersByFiltersReque
     private static class GetUsersByFiltersUseCaseHolder {
 
         private static final GetUsersByFiltersUseCase INSTANCE =
-                new GetUsersByFiltersUseCase(UserRepository.getInstance());
+                new GetUsersByFiltersUseCase(UserQueryService.getInstance());
     }
 }

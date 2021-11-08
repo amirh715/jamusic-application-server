@@ -5,16 +5,16 @@
  */
 package com.jamapplicationserver.modules.library.infra.services;
 
-import com.jamapplicationserver.modules.library.infra.DTOs.queries.ArtworkIdAndTitle;
-import com.jamapplicationserver.modules.library.infra.DTOs.queries.RecommendedCollection;
 import java.util.*;
 import java.util.stream.*;
 import javax.persistence.*;
 import java.time.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.ArtworkModel;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.library.domain.Player.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityIdAndTitle;
 import com.jamapplicationserver.modules.library.repositories.*;
 
 /**
@@ -38,13 +38,13 @@ public class RecommendationService implements IRecommendationService {
     }
     
     @Override
-    public Set<RecommendedCollection<ArtworkIdAndTitle>> getCollections(
+    public Set<RecommendedCollection<LibraryEntityIdAndTitle>> getCollections(
             UniqueEntityId playerId
     ) {
         
         final EntityManager em = emfh.createEntityManager();
         
-        final Set<RecommendedCollection<ArtworkIdAndTitle>> collections = new HashSet<>();
+        final Set<RecommendedCollection<LibraryEntityIdAndTitle>> collections = new HashSet<>();
         
         try {
             
@@ -53,46 +53,46 @@ public class RecommendationService implements IRecommendationService {
 
             if(player.getPlayedTracks().size() < 20) return collections;
 
-            // recommended artworks based on favorite genres
-            {
-                final String title = "شاید از اینا هم خوشت بیاد";
-                final Map<GenreModel, Long> favoriteGenres =
-                    player.getPlayedTracks().stream()
-                    // filter played tracks within the past week
-                    .filter(played -> {
-                        final LocalDateTime playedAt =
-                                played.getPlayedAt().getValue();
-                        final LocalDateTime thePastWeek =
-                                LocalDateTime.now()
-                                .minusDays(5);
-                        return playedAt.isAfter(thePastWeek);
-                    })
-                    // extract genres from played tracks genre lists
-                    .flatMap(played -> played.getTrack().getGenres().getValue().stream())
-                    .map(genre -> genreRepository.toPersistence(genre))
-                    // group played genres and count them
-                    .collect(
-                            Collectors.groupingBy(e -> e, Collectors.counting())
-                    );
-                final Set<UUID> playedTracksIds =
-                        player.getPlayedTracks().stream()
-                        .map(played -> played.track.id.toValue())
-                        .collect(Collectors.toSet());
-                final String query = "SELECT artworks FROM ArtworkModel artworks JOIN artworks.genres genres "
-                        + "WHERE genres.id IN (:favoriteGenres) AND "
-                        + "artworks.id NOT IN (:playedTracksIds)";
-                final Set<ArtworkIdAndTitle> items =
-                        em.createQuery(query, ArtworkModel.class)
-                        .setParameter("favoriteGenres",
-                                favoriteGenres.keySet().stream().map(g -> g.getId()).collect(Collectors.toSet())
-                        )
-                        .setParameter("playedTracksIds", playedTracksIds)
-                        .setMaxResults(15)
-                        .getResultStream()
-                        .map(artwork -> ArtworkIdAndTitle.create(artwork))
-                        .collect(Collectors.toSet());
-                collections.add(new RecommendedCollection(title, items));
-            }
+//            // recommended artworks based on favorite genres
+//            {
+//                final String title = "شاید از اینا هم خوشت بیاد";
+//                final Map<GenreModel, Long> favoriteGenres =
+//                    player.getPlayedTracks().stream()
+//                    // filter played tracks within the past week
+//                    .filter(played -> {
+//                        final LocalDateTime playedAt =
+//                                played.getPlayedAt().getValue();
+//                        final LocalDateTime thePastWeek =
+//                                LocalDateTime.now()
+//                                .minusDays(5);
+//                        return playedAt.isAfter(thePastWeek);
+//                    })
+//                    // extract genres from played tracks genre lists
+//                    .flatMap(played -> played.getTrack().getGenres().getValue().stream())
+//                    .map(genre -> genreRepository.toPersistence(genre))
+//                    // group played genres and count them
+//                    .collect(
+//                            Collectors.groupingBy(e -> e, Collectors.counting())
+//                    );
+//                final Set<UUID> playedTracksIds =
+//                        player.getPlayedTracks().stream()
+//                        .map(played -> played.track.id.toValue())
+//                        .collect(Collectors.toSet());
+//                final String query = "SELECT artworks FROM ArtworkModel artworks JOIN artworks.genres genres "
+//                        + "WHERE genres.id IN (:favoriteGenres) AND "
+//                        + "artworks.id NOT IN (:playedTracksIds)";
+//                final Set<ArtworkIdAndTitle> items =
+//                        em.createQuery(query, ArtworkModel.class)
+//                        .setParameter("favoriteGenres",
+//                                favoriteGenres.keySet().stream().map(g -> g.getId()).collect(Collectors.toSet())
+//                        )
+//                        .setParameter("playedTracksIds", playedTracksIds)
+//                        .setMaxResults(15)
+//                        .getResultStream()
+//                        .map(artwork -> ArtworkIdAndTitle.create(artwork))
+//                        .collect(Collectors.toSet());
+//                collections.add(new RecommendedCollection(title, items));
+//            }
 
             // recommended artworks based on being repetitively played
             {
@@ -111,12 +111,12 @@ public class RecommendationService implements IRecommendationService {
 
                 final String query = "SELECT artworks FROM ArtworkModel artworks "
                         + "WHERE artworks.id IN (:repetitivelyPlayedTracksIds)";
-                final Set<ArtworkIdAndTitle> items =
+                final Set<LibraryEntityIdAndTitle> items =
                         em.createQuery(query, ArtworkModel.class)
                         .setParameter("repetitivelyPlayedTracksIds", null)
                         .setMaxResults(10)
                         .getResultStream()
-                        .map(artwork -> ArtworkIdAndTitle.create(artwork))
+                        .map(artwork -> LibraryEntityIdAndTitle.create(artwork))
                         .collect(Collectors.toSet());
                 collections.add(new RecommendedCollection(title, items));
             }
@@ -132,14 +132,14 @@ public class RecommendationService implements IRecommendationService {
                         + "played.player.id <> :playerId ";
                 final LocalDateTime from = LocalDateTime.now().minusDays(5);
                 final LocalDateTime till = LocalDateTime.now();
-                final Set<ArtworkIdAndTitle> items =
+                final Set<LibraryEntityIdAndTitle> items =
                         em.createQuery(query, ArtworkModel.class)
                         .setParameter("from", from)
                         .setParameter("till", till)
                         .setParameter("playerId", playerId.toValue())
                         .setMaxResults(30)
                         .getResultStream()
-                        .map(artwork -> ArtworkIdAndTitle.create(artwork))
+                        .map(artwork -> LibraryEntityIdAndTitle.create(artwork))
                         .collect(Collectors.toSet());
                 collections.add(new RecommendedCollection(title, items));
             }
@@ -150,12 +150,12 @@ public class RecommendationService implements IRecommendationService {
                 final String query = "SELECT artworks FROM ArtworkModel artworks "
                         + "WHERE artworks.releaseDate = :thisYearMonth";
                 final YearMonth thisYearMonth = YearMonth.now();
-                final Set<ArtworkIdAndTitle> items =
+                final Set<LibraryEntityIdAndTitle> items =
                         em.createQuery(query, ArtworkModel.class)
                         .setParameter("thisYearMonth", thisYearMonth)
                         .setMaxResults(20)
                         .getResultStream()
-                        .map(artwork -> ArtworkIdAndTitle.create(artwork))
+                        .map(artwork -> LibraryEntityIdAndTitle.create(artwork))
                         .collect(Collectors.toSet());
                 collections.add(new RecommendedCollection(title, items));
             }

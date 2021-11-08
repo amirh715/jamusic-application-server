@@ -8,7 +8,7 @@ package com.jamapplicationserver.modules.showcase.usecases.CreateShowcase;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.modules.showcase.infra.DTOs.CreateShowcaseRequestDTO;
+import com.jamapplicationserver.modules.showcase.infra.DTOs.commands.CreateShowcaseRequestDTO;
 import com.jamapplicationserver.modules.showcase.repository.*;
 import com.jamapplicationserver.modules.showcase.domain.Showcase;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;

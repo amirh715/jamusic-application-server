@@ -5,7 +5,6 @@
  */
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
-import java.util.*;
 import java.time.*;
 import javax.persistence.*;
 import org.hibernate.envers.*;
@@ -48,6 +47,10 @@ public class ReportModel extends EntityModel {
     @JoinColumn(name="reported_entity_id")
     private LibraryEntityModel reportedEntity;
     
+    @Enumerated
+    @Column(name="type")
+    private ReportTypeEnum type;
+    
     @ManyToOne(optional=false)
     @JoinColumn(name="reporter_id")
     private UserModel reporter;
@@ -74,6 +77,14 @@ public class ReportModel extends EntityModel {
     
     public void setStatus(ReportStatusEnum status) {
         this.status = status;
+    }
+    
+    public boolean isAssigned() {
+        return this.status.equals(ReportStatusEnum.ASSIGNED);
+    }
+    
+    public boolean isProcessed() {
+        return this.status.equals(ReportStatusEnum.PROCESSED);
     }
     
     public String getProcessorNote() {
@@ -128,6 +139,10 @@ public class ReportModel extends EntityModel {
         return this.reportedEntity;
     }
     
+    public boolean isLibraryEntityReport() {
+        return this.reportedEntity != null;
+    }
+    
     public void setReportedEntity(LibraryEntityModel reportedEntity) {
         this.reportedEntity = reportedEntity;
     }
@@ -146,6 +161,22 @@ public class ReportModel extends EntityModel {
     
     public void setProcessor(UserModel processor) {
         this.processor = processor;
+    }
+
+    public ReportTypeEnum getType() {
+        return this.type;
+    }
+    
+    public void setType(ReportTypeEnum type) {
+        this.type = type;
+    }
+    
+    public boolean isTechnical() {
+        return this.type.equals(ReportTypeEnum.TECHNICAL);
+    }
+    
+    public boolean isContentRelated() {
+        return this.type.equals(ReportTypeEnum.CONTENT);
     }
     
 }

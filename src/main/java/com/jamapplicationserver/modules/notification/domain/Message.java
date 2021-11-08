@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.notification.domain;
 
+import java.util.*;
 import com.jamapplicationserver.core.domain.ValueObject;
 import com.jamapplicationserver.core.logic.*;
 
@@ -39,6 +40,19 @@ public class Message extends ValueObject {
         ) return Result.fail(new ValidationError("Message length must be between 1 to 4000 characters"));
         
         return Result.ok(new Message(message));
+    }
+    
+    public static final Result<Optional<Message>> createNullable(String message) {
+
+        if(message == null || message.isBlank() || message.isEmpty())
+            return Result.ok(Optional.empty());
+        
+        final Result<Message> result = create(message);
+        if(result.isFailure)
+            return Result.fail(result.getError());
+        else
+            return Result.ok(Optional.of(result.getValue()));
+        
     }
     
 }

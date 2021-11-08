@@ -14,25 +14,27 @@ import com.jamapplicationserver.modules.notification.domain.*;
  */
 public class NotificationFilters {
     
-    public final DateTime createdAtFrom;
-    public final DateTime createdAtTill;
+    public DateTime createdAtFrom;
+    public DateTime createdAtTill;
     
-    public final DateTime lastModifiedAtFrom;
-    public final DateTime lastModifiedAtTill;
+    public DateTime lastModifiedAtFrom;
+    public DateTime lastModifiedAtTill;
     
-    public final DateTime scheduledOnFrom;
-    public final DateTime schedulesOnTill;
+    public DateTime scheduledOnFrom;
+    public DateTime schedulesOnTill;
     
-    public final DateTime deliveredAtFrom;
-    public final DateTime deliveredAtTill;
+    public String searchTerm;
     
-    public final String searchTerm; // title, message, recipient
-    
-    public final Boolean isSent;
+    public Boolean isSent;
+    public Boolean withUndeliveredRecipients;
         
-    public final NotifType type;
+    public NotifType type;
     
-    public final SenderType senderType;
+    public SenderType senderType;
+    
+    public NotificationFilters() {
+        
+    }
     
     public NotificationFilters(
             DateTime createdAtFrom,
@@ -41,10 +43,9 @@ public class NotificationFilters {
             DateTime lastModifiedAtTill,
             DateTime scheduledOnFrom,
             DateTime scheduledOnTill,
-            DateTime deliveredAtFrom,
-            DateTime deliveredAtTill,
             String searchTerm,
             Boolean isSent,
+            Boolean withUndeliveredRecipients,
             NotifType type,
             SenderType senderType
     ) {
@@ -54,10 +55,9 @@ public class NotificationFilters {
         this.lastModifiedAtTill = lastModifiedAtTill;
         this.scheduledOnFrom = scheduledOnFrom;
         this.schedulesOnTill = scheduledOnTill;
-        this.deliveredAtFrom = deliveredAtFrom;
-        this.deliveredAtTill = deliveredAtTill;
         this.searchTerm = searchTerm;
         this.isSent = isSent;
+        this.withUndeliveredRecipients = withUndeliveredRecipients;
         this.type = type;
         this.senderType = senderType;
     }

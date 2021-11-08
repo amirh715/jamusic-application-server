@@ -214,7 +214,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             
             final Set<UniqueEntityId> ids = idsOrErrors.getValue();
             
-            final Map<UniqueEntityId, Genre> allGenres = this.genreRepository.fetchAll();
+            final Map<UniqueEntityId, Genre> allGenres = genreRepository.fetchAll();
             
             final boolean doGenresExist = allGenres.keySet().containsAll(ids);
             if(!doGenresExist) return Result.fail(new GenreDoesNotExistError());
@@ -224,6 +224,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             
             return GenreList.create(genres);
         } catch(Exception e) {
+            e.printStackTrace();
             throw new GenericAppException(e);
         }
         

@@ -22,16 +22,13 @@ import com.jamapplicationserver.modules.library.domain.core.errors.*;
  */
 public class CreatePlaylistUseCase implements IUsecase<CreatePlaylistRequestDTO, String> {
     
-    private final IPlaylistRepository playlistRepository;
     private final IPlayerRepository playerRepository;
     private final ILibraryEntityRepository libraryRepository;
     
     private CreatePlaylistUseCase(
-            IPlaylistRepository playlistRepository,
             IPlayerRepository playerRepository,
             ILibraryEntityRepository libraryRepository
     ) {
-        this.playlistRepository = playlistRepository;
         this.playerRepository = playerRepository;
         this.libraryRepository = libraryRepository;
     }
@@ -44,31 +41,34 @@ public class CreatePlaylistUseCase implements IUsecase<CreatePlaylistRequestDTO,
             final ArrayList<Result> combinedProps = new ArrayList<>();
             
             final Result<Title> titleOrError = Title.create(request.title);
-            final Result<UniqueEntityId> playerIdOrError = UniqueEntityId.createFromString(request.playerId);
             
             combinedProps.add(titleOrError);
-            combinedProps.add(playerIdOrError);
             
-            request.trackIds
-                    .forEach(trackId -> combinedProps.add(UniqueEntityId.createFromString(trackId)));
+            final Set<UniqueEntityId> trackIds = new HashSet<>();
+            if(!request.trackIds.isEmpty()) {
+                final Result<Set<UniqueEntityId>> trackIdsOrError =
+                        UniqueEntityId.createFromStrings(request.trackIds);
+                if(trackIdsOrError.isFailure) return trackIdsOrError;
+                trackIds.addAll(trackIdsOrError.getValue());
+            }
             
             final Result combinedPropsResult = Result.combine(combinedProps);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final Title title = titleOrError.getValue();
-            final UniqueEntityId playerId = playerIdOrError.getValue();
-            final Set<UniqueEntityId> trackIds = null;
             
-            final Player player = this.playerRepository.fetchById(playerId);
+            final Player player = playerRepository.fetchById(request.subjectId);
             if(player == null) return Result.fail(new PlayerDoesNotExistError());
             
             final Set<Track> tracks = new HashSet<>();
+
             for(UniqueEntityId trackId : trackIds) {
                 final Track track =
-                        this.libraryRepository.fetchTrackById(trackId).getSingleResult();
+                        libraryRepository.fetchTrackById(trackId).getSingleResult();
                 if(track == null) return Result.fail(new TrackDoesNotExistError());
                 tracks.add(track);
             }
+            
             
             final Result<Playlist> playlistOrError =
                     Playlist.create(title, tracks);
@@ -78,15 +78,13 @@ public class CreatePlaylistUseCase implements IUsecase<CreatePlaylistRequestDTO,
             
             final Result result = player.addPlaylist(playlist);
             if(result.isFailure) return result;
-            
-            // save player too ??
-            this.playerRepository.save(player);
-            
-            this.playlistRepository.save(playlist);
+
+            playerRepository.save(player);
             
             return Result.ok();
             
         } catch(Exception e) {
+            e.printStackTrace();
             throw new GenericAppException(e);
         }
         
@@ -100,7 +98,6 @@ public class CreatePlaylistUseCase implements IUsecase<CreatePlaylistRequestDTO,
 
         private static final CreatePlaylistUseCase INSTANCE =
                 new CreatePlaylistUseCase(
-                        PlaylistRepository.getInstance(),
                         PlayerRepository.getInstance(),
                         LibraryEntityRepository.getInstance()
                 );

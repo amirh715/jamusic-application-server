@@ -6,6 +6,7 @@
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
+import com.jamapplicationserver.core.domain.UserRole;
 
 /**
  *
@@ -13,7 +14,7 @@ import java.util.*;
  */
 public class BandDetails extends ArtistDetails {
     
-    public final Set<LibraryEntityIdAndTitle> members;
+    public Set<LibraryEntityIdAndTitle> members;
     
     public BandDetails(
             String id,
@@ -45,6 +46,21 @@ public class BandDetails extends ArtistDetails {
                 instagramId
         );
         this.members = members;
+    }
+    
+    @Override
+    public BandDetails filter(UserRole role) {
+        switch(role) {
+            case ADMIN: break;
+            case LIBRARY_MANAGER: break;
+            case SUBSCRIBER:
+                this.flagNote = null;
+                this.tags = null;
+                break;
+            default:
+                return null;
+        }
+        return this;
     }
     
 }

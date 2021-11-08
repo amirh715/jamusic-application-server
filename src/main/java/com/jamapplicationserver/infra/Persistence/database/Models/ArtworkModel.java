@@ -18,7 +18,6 @@ import com.jamapplicationserver.infra.Persistence.database.EntityListeners.Artwo
  * @author dada
  */
 @Entity
-@EntityListeners(ArtworksInheritedTagsSetter.class)
 @Audited
 public abstract class ArtworkModel extends LibraryEntityModel {
     
@@ -31,10 +30,6 @@ public abstract class ArtworkModel extends LibraryEntityModel {
     @Column(name="release_date", columnDefinition="date")
     @Convert(converter=YearMonthDateAttributeConverter.class)
     private YearMonth releaseDate;
-    
-    @Column(name="inherited_tags")
-    @NotAudited
-    private String inheritedTags;
     
     public ArtworkModel() {
         
@@ -78,31 +73,6 @@ public abstract class ArtworkModel extends LibraryEntityModel {
     
     public void setArtist(ArtistModel artist) {
         this.artist = artist;
-    }
-    
-    public Set<String> getInheritedTags() {
-        if(this.inheritedTags == null || this.inheritedTags.isEmpty())
-            return new HashSet<>();
-        final String separator = "#";
-        final List<String> tagsList = Arrays.asList(this.inheritedTags.split(separator));
-        return tagsList.stream().collect(Collectors.toSet());
-    }
-    
-    public void setInheritedTags(Set<String> tags) {
-        if(tags == null || tags.isEmpty()) {
-            this.inheritedTags = null;
-            return;
-        }
-        final String separator = "#";
-        this.inheritedTags =
-                tags.stream()
-                .map(tag -> {
-                    return tag
-                            .trim()
-                            .replace(" ", "_")
-                            .concat(separator);
-                })
-                .collect(Collectors.joining());
     }
     
 }

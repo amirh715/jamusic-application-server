@@ -10,7 +10,7 @@ import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.reports.repository.*;
 import com.jamapplicationserver.modules.reports.domain.*;
 import com.jamapplicationserver.modules.reports.domain.errors.*;
-import com.jamapplicationserver.modules.reports.infra.DTOs.ProcessReportRequestDTO;
+import com.jamapplicationserver.modules.reports.infra.DTOs.commands.ProcessReportRequestDTO;
 
 /**
  *

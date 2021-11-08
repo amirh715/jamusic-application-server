@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.domain.core;
 
+import java.util.*;
 import java.nio.file.Path;
 import java.time.Duration;
 import com.jamapplicationserver.core.domain.*;
@@ -18,7 +19,7 @@ public abstract class Artwork extends LibraryEntity {
     
     protected RecordLabel recordLabel;
     protected RecordProducer producer;
-    protected ReleaseDate releaseYear;
+    protected ReleaseDate releaseDate;
     protected Artist artist;
     
     // creation constructor
@@ -43,7 +44,7 @@ public abstract class Artwork extends LibraryEntity {
         );
         this.recordLabel = recordLabel;
         this.producer = producer;
-        this.releaseYear = releaseYear;
+        this.releaseDate = releaseYear;
     }
     
     // reconstitution constructor
@@ -65,7 +66,7 @@ public abstract class Artwork extends LibraryEntity {
             UniqueEntityId updaterId,
             RecordLabel recordLabel,
             RecordProducer producer,
-            ReleaseDate releaseYear,
+            ReleaseDate releaseDate,
             Artist artist
     ) {
         super(
@@ -87,28 +88,28 @@ public abstract class Artwork extends LibraryEntity {
         );
         this.recordLabel = recordLabel;
         this.producer = producer;
-        this.releaseYear = releaseYear;
+        this.releaseDate = releaseDate;
         this.artist = artist;
     }
     
     public abstract Result edit(
             Title title,
-            Description description,
-            TagList tags,
-            GenreList genres,
-            Flag flag,
-            RecordLabel recordLabel,
-            RecordProducer producer,
-            ReleaseDate releaseYear,
+            Optional<Description> description,
+            Optional<TagList> tags,
+            Optional<GenreList> genres,
+            Optional<Flag> flag,
+            Optional<RecordLabel> recordLabel,
+            Optional<RecordProducer> producer,
+            Optional<ReleaseDate> releaseDate,
             UniqueEntityId updaterId
     );
-    
+
     public RecordLabel getRecordLabel() {
         return this.recordLabel;
     }
     
-    public ReleaseDate getReleaseYear() {
-        return this.releaseYear;
+    public ReleaseDate getReleaseDate() {
+        return this.releaseDate;
     }
     
     public RecordProducer getProducer() {

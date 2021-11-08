@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.notification.domain;
 
+import java.util.*;
 import com.jamapplicationserver.core.domain.ValueObject;
 import com.jamapplicationserver.core.logic.*;
 
@@ -23,6 +24,10 @@ public class NotifTitle extends ValueObject {
         this.value = value;
     }
     
+    private NotifTitle() {
+        this.value = null;
+    }
+    
     @Override
     public String getValue() {
         return this.value;
@@ -36,9 +41,22 @@ public class NotifTitle extends ValueObject {
         if(
                 title.length() > MAX_LENGTH ||
                 title.length() < MIN_LENGTH
-        ) return Result.fail(new ValidationError(""));
+        ) return Result.fail(new ValidationError("Notification title must be gooood :)"));
         
         return Result.ok(new NotifTitle(title));
+    }
+    
+    public static final Result<Optional<NotifTitle>> createNullable(String title) {
+        
+        if(title == null || title.isBlank() || title.isEmpty())
+            return Result.ok(Optional.empty());
+        
+        final Result<NotifTitle> result = create(title);
+        if(result.isFailure)
+            return Result.fail(result.getError());
+        else
+            return Result.ok(Optional.of(result.getValue()));
+        
     }
     
 }

@@ -5,11 +5,14 @@
  */
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
+import com.jamapplicationserver.core.infra.IQueryResponseDTO;
+import com.jamapplicationserver.core.domain.UserRole;
+
 /**
  *
  * @author dada
  */
-public class PlaylistSummary {
+public class PlaylistSummary implements IQueryResponseDTO {
     
     public final String id;
     public final int tracksCount;
@@ -26,6 +29,11 @@ public class PlaylistSummary {
         this.tracksCount = tracksCount;
         this.createdAt = createdAt;
         this.lastModifiedAt = lastModifiedAt;
+    }
+    
+    @Override
+    public PlaylistSummary filter(UserRole role) {
+        return this;
     }
     
 }

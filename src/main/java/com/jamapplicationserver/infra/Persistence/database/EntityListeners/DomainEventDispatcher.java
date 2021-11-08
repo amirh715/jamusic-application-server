@@ -22,7 +22,7 @@ public class DomainEventDispatcher
         PostDeleteEventListener {
     
     public DomainEventDispatcher() {
-        
+        System.out.println("DomainEventDispatcher instantiated");
     }
 
     @Override
@@ -64,11 +64,14 @@ public class DomainEventDispatcher
     }
     
     private void dispatchEventsForAggregate(EntityModel entity) {
-        new Thread(() -> {
-            final UniqueEntityId id =
+        final UniqueEntityId id =
                 UniqueEntityId.createFromUUID(entity.getId()).getValue();
-            DomainEvents.dispatchEventsForAggregate(id);
-        }).start();
+        DomainEvents.dispatchEventsForAggregate(id);
+//        new Thread(() -> {
+//            final UniqueEntityId id =
+//                UniqueEntityId.createFromUUID(entity.getId()).getValue();
+//            DomainEvents.dispatchEventsForAggregate(id);
+//        }).start();
     }
     
     public static final DomainEventDispatcher INSTANCE =

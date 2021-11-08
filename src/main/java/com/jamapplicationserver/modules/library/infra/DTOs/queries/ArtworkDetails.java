@@ -13,10 +13,10 @@ import java.util.*;
  */
 public abstract class ArtworkDetails extends LibraryEntityDetails {
     
-    public final String recordLabel;
-    public final String producer;
-    public final String releaseDate;
-    public final LibraryEntityIdAndTitle artist;
+    public String recordLabel;
+    public String producer;
+    public String releaseDate;
+    public LibraryEntityIdAndTitle artist;
     
     public ArtworkDetails(
             String id,
@@ -53,5 +53,4 @@ public abstract class ArtworkDetails extends LibraryEntityDetails {
         this.releaseDate = releaseDate;
         this.artist = artist;
     }
-    
 }

@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.domain.core;
 
+import java.util.Optional;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 
@@ -37,6 +38,19 @@ public class RecordLabel extends ValueObject {
         ) return Result.fail(new ValidationError("Record label is invalid"));
         
         return Result.ok(new RecordLabel(value));
+    }
+    
+    public static final Result<Optional<RecordLabel>> createNullable(String value) {
+        
+        if(value == null || value.isBlank() || value.isEmpty())
+            return Result.ok(Optional.empty());
+        
+        final Result<RecordLabel> result = create(value);
+        if(result.isFailure)
+            return Result.fail(result.getError());
+        else
+            return Result.ok(Optional.of(result.getValue()));
+        
     }
     
 }

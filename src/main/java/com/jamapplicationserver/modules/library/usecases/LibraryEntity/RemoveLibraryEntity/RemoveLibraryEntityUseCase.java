@@ -44,7 +44,6 @@ public class RemoveLibraryEntityUseCase implements IUsecase<RemoveLibraryEntityR
                     repository.fetchById(id)
                             .includeUnpublished(request.subjectRole)
                             .getSingleResult();
-            
             if(entity == null) return Result.fail(new LibraryEntityDoesNotExistError());
 
             repository.remove(entity);

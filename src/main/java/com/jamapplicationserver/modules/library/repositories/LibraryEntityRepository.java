@@ -5,7 +5,15 @@
  */
 package com.jamapplicationserver.modules.library.repositories;
 
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.BandModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.TrackModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.SingerModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.ArtistModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.ArtworkModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.UserModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.GenreModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.AlbumModel;
 import com.jamapplicationserver.modules.library.domain.Band.*;
 import java.time.*;
 import java.util.*;
@@ -330,10 +338,10 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             em.remove(model);
             
             tnx.commit();
-            
         } catch(Exception e) {
             e.printStackTrace();
             tnx.rollback();
+            throw e;
         } finally {
             em.close();
         }
@@ -671,7 +679,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                 artist = (Artist) toDomain(((ArtworkModel) model).getArtist(), em);
             }
             
-            if(((ArtworkModel) model).getInheritedTags() != null) {
+            if(((ArtworkModel) model).getArtworksInheritedTags() != null) {
                 
             }
             
@@ -864,8 +872,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                                     : null
                     );
             ((ArtworkModel) model).setReleaseDate(
-                    ((Artwork) entity).getReleaseYear() != null ?
-                            ((Artwork) entity).getReleaseYear().getValue()
+                    ((Artwork) entity).getReleaseDate() != null ?
+                            ((Artwork) entity).getReleaseDate().getValue()
                             : null
             );
             if(((Artwork) entity).getArtist() != null) {

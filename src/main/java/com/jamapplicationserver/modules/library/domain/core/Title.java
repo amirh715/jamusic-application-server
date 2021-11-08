@@ -42,10 +42,4 @@ public class Title extends ValueObject {
         
     }
     
-    @Override
-    public String toString() {
-        return this.title.toString();
-    }
-    
-    
 }

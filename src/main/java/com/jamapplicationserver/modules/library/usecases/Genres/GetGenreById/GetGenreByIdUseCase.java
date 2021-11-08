@@ -5,37 +5,39 @@
  */
 package com.jamapplicationserver.modules.library.usecases.Genres.GetGenreById;
 
+import com.jamapplicationserver.modules.library.infra.services.LibraryQueryService;
 import com.jamapplicationserver.modules.library.domain.core.Genre;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
+import com.jamapplicationserver.modules.library.infra.services.*;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.GenreDetails;
 
 /**
  *
  * @author dada
  */
-public class GetGenreByIdUseCase implements IUsecase<String, Genre> {
+public class GetGenreByIdUseCase implements IUsecase<String, GenreDetails> {
     
-    private final IGenreRepository repository;
+    private final ILibraryQueryService queryService;
     
-    private GetGenreByIdUseCase(IGenreRepository repository) {
-        this.repository = repository;
+    private GetGenreByIdUseCase(ILibraryQueryService queryService) {
+        this.queryService = queryService;
     }
     
     @Override
-    public Result execute(String idString) throws GenericAppException {
+    public Result<GenreDetails> execute(String idString) throws GenericAppException {
         
         try {
             
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(idString);
             
-            if(idOrError.isFailure) return idOrError;
+            if(idOrError.isFailure) return Result.fail(idOrError.getError());
             
             final UniqueEntityId id = idOrError.getValue();
             
-            final Genre genre = this.repository.fetchById(id);
+            final GenreDetails genre = queryService.getGenreById(id);
             
             if(genre == null) return Result.fail(new GenreDoesNotExistError());
             
@@ -54,6 +56,6 @@ public class GetGenreByIdUseCase implements IUsecase<String, Genre> {
     private static class GetGenreByIdUseCaseHolder {
 
         private static final GetGenreByIdUseCase INSTANCE =
-                new GetGenreByIdUseCase(GenreRepository.getInstance());
+                new GetGenreByIdUseCase(LibraryQueryService.getInstance());
     }
 }

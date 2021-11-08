@@ -8,6 +8,7 @@ package com.jamapplicationserver.modules.library.repositories;
 import java.util.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.domain.Player.*;
+import com.jamapplicationserver.modules.library.domain.Playlist.*;
 
 /**
  *

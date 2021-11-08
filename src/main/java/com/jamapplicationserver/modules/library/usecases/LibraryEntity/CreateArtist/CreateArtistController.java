@@ -67,9 +67,8 @@ public class CreateArtistController extends BaseController {
                 return;
             }
             
-            final Artist artist = (Artist) result.getValue();
+            created();
             
-            this.ok(artist);
         } catch(Exception e) {
             this.fail(e);
         }

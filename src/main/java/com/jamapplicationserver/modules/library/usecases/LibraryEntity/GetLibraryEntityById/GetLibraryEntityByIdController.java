@@ -26,9 +26,7 @@ public class GetLibraryEntityByIdController extends BaseController {
         
         try {
             
-            // ?full=[true || false]
-            
-            final Result result = this.usecase.execute(null);
+            final Result result = usecase.execute("");
             
         } catch(Exception e) {
             this.fail(e);

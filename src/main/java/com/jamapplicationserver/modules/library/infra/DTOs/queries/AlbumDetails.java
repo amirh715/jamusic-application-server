@@ -6,6 +6,8 @@
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
+import java.util.stream.*;
+import com.jamapplicationserver.core.domain.UserRole;
 
 /**
  *
@@ -13,7 +15,7 @@ import java.util.*;
  */
 public class AlbumDetails extends ArtworkDetails {
     
-    public final Set<LibraryEntitySummary> tracks;
+    public Set<LibraryEntitySummary> tracks;
     
     public AlbumDetails(
             String id,
@@ -51,6 +53,23 @@ public class AlbumDetails extends ArtworkDetails {
                 artist
         );
         this.tracks = tracks;
+        
+    }
+    
+    @Override
+    public AlbumDetails filter(UserRole role) {
+        this.tracks.forEach(track -> track.filter(role));
+        switch(role) {
+            case ADMIN: break;
+            case LIBRARY_MANAGER: break;
+            case SUBSCRIBER:
+                this.flagNote = null;
+                this.tags = null;
+                break;
+            default:
+                return null;
+        }
+        return this;
     }
     
 }

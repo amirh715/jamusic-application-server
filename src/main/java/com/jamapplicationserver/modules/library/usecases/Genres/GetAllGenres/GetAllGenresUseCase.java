@@ -5,14 +5,15 @@
  */
 package com.jamapplicationserver.modules.library.usecases.Genres.GetAllGenres;
 
+import com.jamapplicationserver.modules.library.infra.services.LibraryQueryService;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.domain.core.Genre;
 import com.jamapplicationserver.modules.library.infra.services.*;
 import com.jamapplicationserver.core.domain.IUsecase;
-import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.GenreDetails;
 
 /**
  *
@@ -27,7 +28,7 @@ public class GetAllGenresUseCase implements IUsecase {
     }
     
     @Override
-    public Result execute(Object obj) throws GenericAppException {
+    public Result<GenreDetails> execute(Object obj) throws GenericAppException {
         
         try {
             

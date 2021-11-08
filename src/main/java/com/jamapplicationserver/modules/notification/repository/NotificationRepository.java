@@ -10,10 +10,15 @@ import java.time.*;
 import java.util.stream.*;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.FCMNotificationModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.NotificationModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.SMSNotificationModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.EmailNotificationModel;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.notification.domain.*;
 import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.modules.notification.repository.exceptions.*;
 
 /**
  *
@@ -48,6 +53,47 @@ public class NotificationRepository implements INotificationRepository {
         
     }
     
+    @Override
+    public Set<Recipient> fetchRecipientsByIds(Set<UniqueEntityId> recipientsIds) {
+        
+        final EntityManager em =
+                EntityManagerFactoryHelper.getInstance()
+                .createEntityManager();
+        
+        try {
+            
+            final String query = "SELECT r FROM UserModel r WHERE r.id in (?1)";
+            
+            final Set<UUID> ids =
+                    recipientsIds.stream()
+                    .map(id ->  id.toValue())
+                    .collect(Collectors.toSet());
+            return em.createQuery(query, UserModel.class)
+                    .setParameter(1, ids)
+                    .getResultStream()
+                    .map(recipient -> {
+                        return Recipient.reconstitute(
+                                recipient.getId(),
+                                recipient.getName(),
+                                recipient.getMobile(),
+                                recipient.getEmail(),
+                                recipient.isEmailVerified(),
+                                recipient.getFCMToken(),
+                                recipient.getCreatedAt(),
+                                recipient.getLastModifiedAt()
+                        ).getValue();
+                    })
+                    .collect(Collectors.toSet());
+            
+        } catch(Exception e) {
+            throw e;
+        } finally {
+            em.close();
+        }
+        
+    }
+    
+    @Override
     public Set<Notification> fetchByFilters(NotificationFilters filters) {
         
         final EntityManager em = emfh.createEntityManager();
@@ -103,13 +149,13 @@ public class NotificationRepository implements INotificationRepository {
             
             if(exists(entity.id)) { // update existing entity
                                 
-                model = NotificationMapper.toPersistence(entity);
+                model = NotificationMapper.toPersistence(entity, em);
                 
                 em.merge(model);
                 
             } else { // insert new entity
                 
-                model = NotificationMapper.toPersistence(entity);
+                model = NotificationMapper.toPersistence(entity, em);
                 
                 em.persist(model);
                 
@@ -146,7 +192,7 @@ public class NotificationRepository implements INotificationRepository {
     }
     
     @Override
-    public void remove(Notification notification) {
+    public void remove(Notification notification) throws SentNotificationCannotBeRemovedException {
         
         final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
@@ -158,6 +204,9 @@ public class NotificationRepository implements INotificationRepository {
             final NotificationModel model =
                     em.find(NotificationModel.class, notification.getId().toValue());
             
+            if(model.isSent())
+                throw new SentNotificationCannotBeRemovedException();
+            
             em.remove(model);
             
             tnx.commit();
@@ -165,6 +214,7 @@ public class NotificationRepository implements INotificationRepository {
         } catch(Exception e) {
             e.printStackTrace();
             tnx.rollback();
+            throw e;
         } finally {
             em.close();
         }

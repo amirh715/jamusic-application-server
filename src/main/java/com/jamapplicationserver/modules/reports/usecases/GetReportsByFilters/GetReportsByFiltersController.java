@@ -6,10 +6,12 @@
 package com.jamapplicationserver.modules.reports.usecases.GetReportsByFilters;
 
 import spark.QueryParamsMap;
+import java.util.*;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.reports.infra.DTOs.GetReportsByFiltersRequestDTO;
+import com.jamapplicationserver.modules.reports.infra.DTOs.queries.ReportDetails;
+import com.jamapplicationserver.modules.reports.infra.DTOs.commands.GetReportsByFiltersRequestDTO;
 
 /**
  *
@@ -17,7 +19,7 @@ import com.jamapplicationserver.modules.reports.infra.DTOs.GetReportsByFiltersRe
  */
 public class GetReportsByFiltersController extends BaseController {
     
-    private final IUsecase usecase;
+    private final IUsecase<GetReportsByFiltersRequestDTO, Set<ReportDetails>> usecase;
     
     private GetReportsByFiltersController(IUsecase usecase) {
         this.usecase = usecase;
@@ -30,7 +32,7 @@ public class GetReportsByFiltersController extends BaseController {
             
             System.out.println("GetReportsByFiltersController");
             
-            final QueryParamsMap fields = this.req.queryMap();
+            final QueryParamsMap fields = req.queryMap();
             
             final GetReportsByFiltersRequestDTO dto =
                     new GetReportsByFiltersRequestDTO(
@@ -38,6 +40,7 @@ public class GetReportsByFiltersController extends BaseController {
                             fields.get("reporterId").value(),
                             fields.get("processorId").value(),
                             fields.get("reportedEntityId").value(),
+                            fields.get("type").value(),
                             fields.get("assignedAtFrom").value(),
                             fields.get("assignedAtTill").value(),
                             fields.get("processedAtFrom").value(),
@@ -49,11 +52,13 @@ public class GetReportsByFiltersController extends BaseController {
                             fields.get("lastModifiedAtFrom").value(),
                             fields.get("lastModifiedAtTill").value(),
                             fields.get("isContentReport").value(),
+                            fields.get("isTechnicalReport").value(),
+                            fields.get("isLibraryEntityReport").value(),
                             subjectId,
                             subjectRole
                     );
             
-            final Result result = usecase.execute(dto);
+            final Result<Set<ReportDetails>> result = usecase.execute(dto);
             
             if(result.isFailure) {
                 
@@ -69,7 +74,7 @@ public class GetReportsByFiltersController extends BaseController {
                 return;
             }
             
-            this.ok(result.getValue());
+            ok(result.getValue());
             
         } catch(Exception e) {
             fail(e);

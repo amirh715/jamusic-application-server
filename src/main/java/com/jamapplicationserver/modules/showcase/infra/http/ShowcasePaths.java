@@ -14,8 +14,7 @@ public class ShowcasePaths {
     public static final String CREATE_SHOWASE = "/";
     
     public static final String GET_ALL_SHOWCASES = "/";
-    public static final String GET_SHOWCASE_BY_ID = "/:id";
-    public static final String GET_SHOWCASE_IMAGE_BY_ID = "/:id";
+    public static final String GET_SHOWCASE_IMAGE_BY_ID = "/image/:id";
     
     public static final String SHOWCASE_INTERACTED_WITH = "/interacted-with/";
     

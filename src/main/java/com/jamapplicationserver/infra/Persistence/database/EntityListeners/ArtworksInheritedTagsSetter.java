@@ -52,7 +52,7 @@ public class ArtworksInheritedTagsSetter {
                 
             }
             
-            artwork.setInheritedTags(inheritedTags);
+            artwork.setArtworksInheritedTags(inheritedTags);
             
         }
         

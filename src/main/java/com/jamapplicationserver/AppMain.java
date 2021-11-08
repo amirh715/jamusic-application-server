@@ -5,8 +5,12 @@
  */
 package com.jamapplicationserver;
 
+import com.jamapplicationserver.infra.Persistence.database.Models.TrackModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.UserModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.PlayedModel;
 import static spark.Spark.*;
 import javax.servlet.*;
+import com.jamapplicationserver.modules.reports.infra.Jobs.*;
 import com.jamapplicationserver.modules.user.infra.http.UserRoutes;
 import com.jamapplicationserver.modules.library.infra.http.LibraryRoutes;
 import com.jamapplicationserver.modules.reports.infra.http.ReportRoutes;
@@ -15,19 +19,14 @@ import com.jamapplicationserver.modules.notification.infra.http.NotificationRout
 import com.jamapplicationserver.infra.Services.JobManager;
 import com.jamapplicationserver.infra.Services.JWT.JWTUtils;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.jamapplicationserver.core.domain.UserRole;
 import com.jamapplicationserver.core.domain.events.*;
 import com.jamapplicationserver.modules.library.domain.core.subscribers.*;
-import com.jamapplicationserver.modules.library.infra.Jobs.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import java.time.*;
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.*;
-import javax.persistence.criteria.*;
 import java.util.concurrent.ThreadLocalRandom;
-import com.jamapplicationserver.modules.library.repositories.*;
+import com.jamapplicationserver.modules.notification.infra.Jobs.SendScheduledNotificationsJob;
 
 /**
  *
@@ -53,14 +52,17 @@ public class AppMain {
         final JobManager jobManager = JobManager.getInstance();
         
         jobManager
-                .addJob(UpdateTotalPlayedCountJob.class, jobManager.getEveryXSecondsTrigger(50))
-                .addJob(UpdateRateJob.class, jobManager.getEveryXSecondsTrigger(50))
+//                .addJob(UpdateTotalPlayedCountJob.class, jobManager.getEveryXSecondsTrigger(50))
+//                .addJob(UpdateRateJob.class, jobManager.getEveryXSecondsTrigger(50))
+                .addJob(SendScheduledNotificationsJob.class, jobManager.getEveryXMinutesTrigger(1))
+                .addJob(AssignReportsToProcessorsJob.class, jobManager.getEveryXMinutesTrigger(1))
                 .startScheduler();
         
         // REGISTER DOMAIN EVENT HANDLERS
         DomainEvents.register(new AfterArtistPublished());
         DomainEvents.register(new AfterArtistArchived());
         DomainEvents.register(new AfterArtistEdited());
+        DomainEvents.register(new AfterPlaylistCreated());
         
         post(("/test"), (req, res) -> {
             
@@ -129,8 +131,7 @@ public class AppMain {
             before("/*", (req, res) -> {
                 
                 if(
-                        req.pathInfo().equals("/api/v1/user/login") ||
-                        req.pathInfo().equals("/api/v1/user/")
+                        req.pathInfo().equals("/api/v1/user/login")
                 ) return;
                 
                 final String token = req.headers("Authorization").replace("Bearer ", "");

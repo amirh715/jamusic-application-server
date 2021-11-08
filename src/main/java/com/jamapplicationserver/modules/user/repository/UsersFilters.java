@@ -30,6 +30,8 @@ public class UsersFilters {
     public final UserRoleEnum role;
     public final UUID creatorId;
     public final UUID updaterId;
+    public Integer limit;
+    public Integer offset;
     
     public UsersFilters(
            String searchTerm,

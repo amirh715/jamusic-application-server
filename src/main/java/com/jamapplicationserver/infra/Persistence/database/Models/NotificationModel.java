@@ -51,15 +51,29 @@ public abstract class NotificationModel extends EntityModel {
     @Column(name="scheduled_on")
     private LocalDateTime scheduledOn;
     
+    @Column(name="sent_at")
+    private LocalDateTime sentAt;
+    
     @Enumerated
     private NotificationSenderTypeEnum senderType;
     
     @ManyToOne(optional=true)
     private UserModel sender;
     
-    @OneToMany(mappedBy="notification")
+    @OneToMany(mappedBy="notification", orphanRemoval=true, cascade=CascadeType.ALL)
     @Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
-    private Set<NotificationRecipientModel> recipients = new HashSet<>();
+    private Set<NotificationDeliveryModel> deliveries = new HashSet<>();
+    
+    public String getType() {
+        if(this instanceof SMSNotificationModel)
+            return "SMS";
+        if(this instanceof FCMNotificationModel)
+            return "FCM";
+        if(this instanceof EmailNotificationModel)
+            return "EMAIL";
+        else
+            return "N/A";
+    }
     
     public String getTitle() {
         return this.title;
@@ -74,6 +88,9 @@ public abstract class NotificationModel extends EntityModel {
     }
     
     public void setMessage(String message) {
+        if(message == null) return;
+        if(message.isBlank() || message.isEmpty())
+            this.message = null;
         this.message = message;
     }
     
@@ -99,6 +116,14 @@ public abstract class NotificationModel extends EntityModel {
     
     public void setIsSent(boolean isSent) {
         this.isSent = isSent;
+    }
+    
+    public LocalDateTime getSentAt() {
+        return this.sentAt;
+    }
+    
+    public void setSentAt(LocalDateTime sentAt) {
+        this.sentAt = sentAt;
     }
     
     public LocalDateTime getCreatedAt() {
@@ -141,20 +166,23 @@ public abstract class NotificationModel extends EntityModel {
         this.sender = sender;
     }
     
-    public Set<NotificationRecipientModel> getRecipients() {
-        return this.recipients;
+    public Set<NotificationDeliveryModel> getDeliveries() {
+        return this.deliveries;
     }
     
-    private void setRecipients(Set<NotificationRecipientModel> recipients) {
-        this.recipients = recipients;
+    private void replaceDeliveries(Set<NotificationDeliveryModel> deliveries) {
+        this.deliveries = deliveries;
     }
     
-    public void addRecipient(NotificationRecipientModel recipient) {
-        this.recipients.add(recipient);
+    public void addDelivery(UserModel recipient, boolean isDelivered, LocalDateTime deliveredAt) {
+        final NotificationDeliveryModel delivery =
+                new NotificationDeliveryModel(this, recipient, isDelivered, deliveredAt);
+        deliveries.add(delivery);
+        recipient.addNotification(delivery);
     }
     
-    public void removeRecipient(NotificationRecipientModel recipient) {
-        this.recipients.remove(recipient);
+    public void removeDelivery(UserModel recipient) {
+        deliveries.removeIf(delivery -> delivery.getRecipient().equals(recipient));
     }
     
 }

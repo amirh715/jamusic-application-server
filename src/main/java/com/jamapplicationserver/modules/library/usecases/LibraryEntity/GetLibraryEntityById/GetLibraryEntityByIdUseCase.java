@@ -7,38 +7,35 @@ package com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibra
 
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.modules.library.domain.core.errors.*;
-import com.jamapplicationserver.modules.library.repositories.*;
+import com.jamapplicationserver.modules.library.infra.services.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
 
 /**
  *
  * @author dada
  */
-public class GetLibraryEntityByIdUseCase implements IUsecase<String, String> {
+public class GetLibraryEntityByIdUseCase implements IUsecase<String, LibraryEntityDetails> {
     
-    private final IGenreRepository repository;
+    private final ILibraryQueryService queryService;
     
-    private GetLibraryEntityByIdUseCase(IGenreRepository repository) {
-        this.repository = repository;
+    private GetLibraryEntityByIdUseCase(ILibraryQueryService queryService) {
+        this.queryService = queryService;
     }
     
     @Override
-    public Result execute(String id) throws GenericAppException {
+    public Result<LibraryEntityDetails> execute(String idString) throws GenericAppException {
         
         try {
             
-            final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(id);
+            final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(idString);
+            if(idOrError.isFailure) return Result.fail(idOrError.getError());
             
-            if(idOrError.isFailure) return idOrError;
-            
-            final Genre genre = this.repository.fetchById(idOrError.getValue());
-            
-            return Result.ok(genre);
+            final UniqueEntityId id = idOrError.getValue();
+            return Result.ok(queryService.getLibraryEntityById(id));
             
         } catch(Exception e) {
-            return Result.ok();
+            throw new GenericAppException(e);
         }
         
     }
@@ -50,6 +47,6 @@ public class GetLibraryEntityByIdUseCase implements IUsecase<String, String> {
     private static class GetLibraryEntityByIdUseCaseHolder {
 
         private static final GetLibraryEntityByIdUseCase INSTANCE =
-                new GetLibraryEntityByIdUseCase(GenreRepository.getInstance());
+                new GetLibraryEntityByIdUseCase(LibraryQueryService.getInstance());
     }
 }

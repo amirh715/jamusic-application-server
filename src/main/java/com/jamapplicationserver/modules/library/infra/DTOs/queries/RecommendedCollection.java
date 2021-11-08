@@ -8,7 +8,7 @@ package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 import java.util.*;
 
 /**
- *
+ * Used to represent system recommended artworks to users
  * @author dada
  * @param <T>
  */

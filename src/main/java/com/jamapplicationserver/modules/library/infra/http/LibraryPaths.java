@@ -41,5 +41,11 @@ public class LibraryPaths {
     
     public static final String PLAYED_TRACK = "/played-track";
     
+    public static final String CREATE_PLAYLIST = "/playlist/";
+    public static final String EDIT_PLAYLIST = "/playlist/";
+    public static final String GET_PLAYLIST_BY_ID = "/playlist/:id";
+    public static final String GET_PLAYLISTS_BY_PLAYER_ID = "/playlist/";
+    public static final String REMOVE_PLAYLIST = "/playlist/";
+    
     
 }

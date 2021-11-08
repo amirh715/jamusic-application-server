@@ -52,6 +52,7 @@ public class UserRepository implements IUserRepository {
             
             final UserModel model =
                     em.find(UserModel.class, id.toValue());
+            if(model == null) return null;
             
             return toDomain(model);
             

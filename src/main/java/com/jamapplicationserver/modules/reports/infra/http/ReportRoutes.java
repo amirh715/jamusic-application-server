@@ -11,6 +11,7 @@ import com.jamapplicationserver.modules.reports.usecases.CreateReport.CreateRepo
 import com.jamapplicationserver.modules.reports.usecases.GetReportById.GetReportByIdController;
 import com.jamapplicationserver.modules.reports.usecases.GetReportsByFilters.GetReportsByFiltersController;
 import com.jamapplicationserver.modules.reports.usecases.ProcessReport.ProcessReportController;
+import com.jamapplicationserver.modules.reports.usecases.GetReporterById.GetReporterByIdController;
 
 /**
  *
@@ -48,6 +49,12 @@ public class ReportRoutes implements RouteGroup {
         put(
                 ReportPaths.PROCESS_REPORT,
                 ProcessReportController.getInstance()
+        );
+        
+        // get reporter by id
+        get(
+                ReportPaths.GET_REPORTER_BY_ID,
+                GetReporterByIdController.getInstance()
         );
         
     }

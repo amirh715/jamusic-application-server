@@ -73,5 +73,23 @@ public class ReleaseDate extends ValueObject<YearMonth> {
         }
     }
     
+    /**
+     * Value object is considered null if value is null, an empty string, or blank.
+     * @param value
+     * @return 
+     */
+    public static final Result<Optional<ReleaseDate>> createNullable(String value) {
+        
+        if(value == null || value.isBlank() || value.isEmpty())
+            return Result.ok(Optional.empty());
+
+        final Result<ReleaseDate> result = create(value);
+        if(result.isFailure)
+            return Result.fail(result.getError());
+        else
+            return Result.ok(Optional.of(result.getValue()));
+        
+    }
+    
     
 }

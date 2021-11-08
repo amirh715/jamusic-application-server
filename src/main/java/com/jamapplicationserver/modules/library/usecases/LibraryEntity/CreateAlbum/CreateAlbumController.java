@@ -27,6 +27,7 @@ public class CreateAlbumController extends BaseController {
     
     private CreateAlbumController(IUsecase usecase) {
         this.usecase = usecase;
+        this.requireAuthClaims = true;
     }
     
     @Override
@@ -74,9 +75,7 @@ public class CreateAlbumController extends BaseController {
                 return;
             }
             
-            final Album album = (Album) result.getValue();
-            
-            ok(album);
+            created();
             
         } catch(Exception e) {
             e.printStackTrace();

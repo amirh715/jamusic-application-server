@@ -58,6 +58,7 @@ public class EditArtistRequestDTO extends DTOWithAuthClaims {
         this.image = image;
         this.removeImage = Boolean.parseBoolean(removeImage);
         this.bandMemberIds = serializer.deserialize(bandMemberIds, new TypeToken<Set<String>>(){});
+        
     }
     
 }

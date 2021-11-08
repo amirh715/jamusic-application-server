@@ -5,63 +5,106 @@
  */
 package com.jamapplicationserver.modules.notification.domain;
 
-import java.util.regex.*;
+import java.util.*;
+import java.time.*;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.core.domain.ValueObject;
+import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.modules.notification.domain.errors.*;
 
 /**
  *
  * @author amirhossein
  */
-public abstract class Recipient extends ValueObject {
+public class Recipient extends Entity {
     
-    private final String value;
+    private final String name;
+    private final String mobile;
+    private final String email;
+    private final boolean emailVerified;
+    private final String fcmToken;
     
-    protected Recipient(String value) {
-        this.value = value;
+    private Recipient(
+            UniqueEntityId id,
+            String name,
+            String mobile,
+            String email,
+            boolean emailVerified,
+            String fcmToken,
+            DateTime createdAt,
+            DateTime lastModifiedAt
+    ) {
+        super(id, createdAt, lastModifiedAt);
+        this.name = name;
+        this.mobile = mobile;
+        this.email = email;
+        this.emailVerified = emailVerified;
+        this.fcmToken = fcmToken;
     }
     
-    @Override
-    public String getValue() {
-        return this.value;
-    }
-    
-    public static final Result<Recipient> create(String value) {
-        if(value == null) return Result.fail(new ValidationError("Recipient is required"));
+    public static final Result<Recipient> reconstitute(
+            UUID id,
+            String name,
+            String mobile,
+            String email,
+            boolean isEmailVerified,
+            String fcmToken,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt
+    ) {
         
-        Recipient recipient;
+        final Result<UniqueEntityId> idOrError =
+                UniqueEntityId.createFromUUID(id);
+        if(idOrError.isFailure) return Result.fail(idOrError.getError());
         
-        if(isFCMRecipient(value))
-            recipient = new FCMRecipient(value);
-        else if(isSMSRecipient(value))
-            recipient = new SMSRecipient(value);
-        else if(isEmailRecipient(value))
-            recipient = new EmailRecipient(value);
-        else
-            return Result.fail(new ValidationError("Invalid recipient"));
+        // at least one contact item must be present (mobile, email, or fcmToken)
+        if(mobile == null && email == null && fcmToken == null)
+            return Result.fail(new RecipientMustHaveAtLeastOneContactItem());
         
-        return Result.ok(recipient);
+        return Result.ok(
+                new Recipient(
+                        idOrError.getValue(),
+                        name,
+                        mobile,
+                        email,
+                        isEmailVerified,
+                        fcmToken,
+                        DateTime.createWithoutValidation(createdAt),
+                        DateTime.createWithoutValidation(lastModifiedAt)
+                )
+        );
+    }
+
+    public String getName() {
+        return this.name;
     }
     
-    private static boolean isFCMRecipient(String recipient) {
-        if(recipient == null) return false;
-        final Pattern pattern = Pattern.compile("");
-        final Matcher matcher = pattern.matcher(recipient);
-        return matcher.matches();
+    public String getMobile() {
+        return this.mobile;
     }
     
-    private static boolean isSMSRecipient(String recipient) {
-        if(recipient == null) return false;
-        final Pattern pattern = Pattern.compile("");
-        final Matcher matcher = pattern.matcher(recipient);
-        return matcher.matches();
+    public boolean hasMobileNo() {
+        return this.mobile != null;
     }
     
-    private static boolean isEmailRecipient(String recipient) {
-        if(recipient == null) return false;
-        final Pattern pattern = Pattern.compile("");
-        final Matcher matcher = pattern.matcher(recipient);
-        return matcher.matches();
+    public String getEmailAddress() {
+        return this.email;
+    }
+    
+    public boolean hasEmailAddress() {
+        return this.email != null;
+    }
+    
+    public boolean isEmailVerified() {
+        if(email == null) return false;
+        return this.emailVerified;
+    }
+    
+    public String getFCMToken() {
+        return this.fcmToken;
+    }
+    
+    public boolean hasFCMToken() {
+        return this.fcmToken != null;
     }
     
 }

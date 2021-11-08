@@ -5,22 +5,11 @@
  */
 package com.jamapplicationserver.core.infra;
 
-import java.util.*;
+import java.time.*;
+import java.nio.file.Path;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import java.nio.file.Path;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.user.domain.*;
-import com.jamapplicationserver.modules.user.infra.serializers.*;
-import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.modules.library.infra.serializers.*;
-import com.jamapplicationserver.modules.library.domain.Singer.Singer;
-import com.jamapplicationserver.modules.library.domain.Album.Album;
-import com.jamapplicationserver.modules.library.domain.Track.Track;
-import com.jamapplicationserver.modules.library.domain.Band.Band;
-import com.jamapplicationserver.modules.reports.infra.serializers.ReportSerializer;
-import com.jamapplicationserver.modules.reports.domain.*;
-
 
 /**
  *
@@ -57,13 +46,7 @@ public class Serializer implements ISerializer {
         private static final Serializer INSTANCE = new Serializer(
             new GsonBuilder()
             .setExclusionStrategies(new GsonExclusionStrategy(Path.class))
-//            .registerTypeAdapter(User.class, new UserSerializer())
-//            .registerTypeAdapter(Artist.class, new ArtistSerializer())
-//            .registerTypeAdapter(Album.class, new AlbumSerializer())
-//            .registerTypeAdapter(Track.class, new TrackSerializer())
-//            .registerTypeAdapter(Genre.class, new GenreSerializer())
-//            .registerTypeAdapter(Report.class, new ReportSerializer())
-            
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
             .registerTypeAdapter(BusinessError.class, new ErrorSerializer())
             .create()
         );

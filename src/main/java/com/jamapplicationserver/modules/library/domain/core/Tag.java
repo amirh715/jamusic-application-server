@@ -42,5 +42,5 @@ public class Tag extends ValueObject<String> {
         
         return Result.ok(new Tag(tag));
     }
-   
+    
 }

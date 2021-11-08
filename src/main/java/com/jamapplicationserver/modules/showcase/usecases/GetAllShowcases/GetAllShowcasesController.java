@@ -5,9 +5,11 @@
  */
 package com.jamapplicationserver.modules.showcase.usecases.GetAllShowcases;
 
+import java.util.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.showcase.infra.DTOs.queries.ShowcaseDetails;
 
 /**
  *
@@ -26,23 +28,23 @@ public class GetAllShowcasesController extends BaseController {
         
         try {
             
-            final Result result = this.usecase.execute(null);
+            final Result<Set<ShowcaseDetails>> result = usecase.execute(null);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
             
-            this.ok(result.getValue());
+            ok(result.getValue());
             
         } catch(Exception e) {
             this.fail(e);

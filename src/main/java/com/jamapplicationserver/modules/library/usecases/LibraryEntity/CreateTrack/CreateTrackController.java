@@ -73,9 +73,7 @@ public class CreateTrackController extends BaseController {
                 return;
             }
             
-            final Track track = (Track) result.getValue();
-            
-            ok(track);
+            created();
             
         } catch(Exception e) {
             fail(e);

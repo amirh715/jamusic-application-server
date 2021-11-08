@@ -6,26 +6,30 @@
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import java.util.stream.Collectors;
-
+import com.jamapplicationserver.infra.Persistence.database.Models.BandModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.AlbumModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.SingerModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.TrackModel;
+import com.jamapplicationserver.core.infra.IQueryResponseDTO;
 /**
  *
  * @author dada
  */
-public abstract class LibraryEntityDetails {
+public abstract class LibraryEntityDetails implements IQueryResponseDTO {
     
-    public final String id;
-    public final String title;
-    public final String description;
-    public final boolean published;
-    public final Set<String> tags;
-    public final Set<GenreIdAndTitle> genres;
-    public final String monthlyPlayedCount;
-    public final String rate;
-    public final String flagNote;
-    public final String totalPlayedCount;
-    public final String duration;
+    public String id;
+    public String title;
+    public String description;
+    public Boolean published;
+    public Set<String> tags;
+    public Set<GenreIdAndTitle> genres;
+    public String monthlyPlayedCount;
+    public String rate;
+    public String flagNote;
+    public String totalPlayedCount;
+    public String duration;
     
     public LibraryEntityDetails(
             String id,
@@ -53,6 +57,11 @@ public abstract class LibraryEntityDetails {
         this.duration = Long.toString(duration);
     }
     
+    /**
+     * Factory method for creating concrete library entity instances
+     * @param entity
+     * @return LibraryEntityDetails
+     */
     public static LibraryEntityDetails create(LibraryEntityModel entity) {
         
         LibraryEntityDetails dto = null;
@@ -158,6 +167,10 @@ public abstract class LibraryEntityDetails {
                             LibraryEntityIdAndTitle.create(
                                     ((TrackModel) entity).getAlbum()
                             ) : null,
+                            ((TrackModel) entity).getRecordLabel(),
+                            ((TrackModel) entity).getProducer(),
+                            ((TrackModel) entity).getReleaseDate() != null ?
+                                    ((TrackModel) entity).getReleaseDate().toString() : null,
                             ((TrackModel) entity).getArtist() != null ?
                             LibraryEntityIdAndTitle.create(
                                     ((TrackModel) entity).getArtist()

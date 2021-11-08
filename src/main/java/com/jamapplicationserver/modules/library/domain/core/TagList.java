@@ -8,7 +8,6 @@ package com.jamapplicationserver.modules.library.domain.core;
 import java.util.*;
 import com.jamapplicationserver.core.domain.ValueObject;
 import com.jamapplicationserver.core.logic.*;
-import org.apache.commons.compress.utils.Sets;
 
 /**
  *
@@ -31,7 +30,7 @@ public class TagList extends ValueObject<Set<Tag>> {
     
     public static final Result<TagList> create(Set<Tag> tags) {
         
-        if(tags == null)
+        if(tags == null || tags.isEmpty())
             return Result.fail(new ValidationError("Tags are required"));
         
         if(tags.size() > MAX_ALLOWED_TAGS)
@@ -58,6 +57,19 @@ public class TagList extends ValueObject<Set<Tag>> {
         }
         
         return Result.ok(new TagList(tagsSet));
+    }
+    
+    public static final Result<Optional<TagList>> createNullableFromString(Set<String> values) {
+        
+        if(values == null || values.isEmpty())
+            return Result.ok(Optional.empty());
+        
+        final Result result = createFromString(values);
+        if(result.isFailure)
+            return Result.fail(result.getError());
+        else
+            return Result.ok(Optional.of(result.getValue()));
+        
     }
     
 }

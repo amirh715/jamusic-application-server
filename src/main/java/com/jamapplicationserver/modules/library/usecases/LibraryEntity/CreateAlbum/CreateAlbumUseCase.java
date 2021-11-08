@@ -166,9 +166,11 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
             
             final Set<UniqueEntityId> ids = idsOrErrors.getValue();
             
-            final Map<UniqueEntityId, Genre> allGenres = this.genreRepository.fetchAll();
+            final Map<UniqueEntityId, Genre> allGenres = genreRepository.fetchAll();
             
-            final boolean doGenresExist = genreIds.containsAll(genreIds);
+            final boolean doGenresExist =
+                    allGenres.keySet()
+                    .containsAll(ids);
             if(!doGenresExist) return Result.fail(new GenreDoesNotExistError());
             
             final Set<Genre> genres = new HashSet<>();

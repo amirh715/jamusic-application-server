@@ -12,12 +12,13 @@ import com.jamapplicationserver.core.logic.Result;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
 import com.jamapplicationserver.modules.library.domain.Playlist.Playlist;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
+import com.jamapplicationserver.modules.library.domain.core.events.*;
 
 /**
  *
  * @author amirhossein
  */
-public class Player extends Entity {
+public class Player extends AggregateRoot {
     
     private final int MAX_ALLOWED_PLAYLISTS = 100;
     
@@ -68,20 +69,31 @@ public class Player extends Entity {
     
     public Result addPlaylist(Playlist playlist) {
         
-        if(this.playlists.size() >= MAX_ALLOWED_PLAYLISTS)
+        if(playlists.size() >= MAX_ALLOWED_PLAYLISTS)
             return Result.fail(new MaxAllowedPlaylistsExceededError());
         
-        this.playlists.add(playlist);
+        playlists.add(playlist);
+        
+        addDomainEvent(new PlaylistCreated(playlist, this));
         
         return Result.ok();
     }
     
     public void removePlaylist(Playlist playlist) {
-        this.playlists.remove(playlist);
+        playlists.remove(playlist);
     }
     
     public Set<Playlist> getPlaylists() {
         return this.playlists;
+    }
+    
+    public Playlist getPlaylist(UniqueEntityId playlistId) {
+        Playlist p = null;
+        for(Playlist playlist : playlists) {
+            if(playlist.getId().equals(playlistId))
+                p = playlist;
+        }
+        return p;
     }
     
     public Set<PlayedTrack> getPlayedTracks() {
@@ -98,7 +110,7 @@ public class Player extends Entity {
     
     public void played(Track track, DateTime playedAt) {
         
-        final PlayedTrack playedTrack = new PlayedTrack(track, playedAt);
+        final PlayedTrack playedTrack = new PlayedTrack(track.getId(), playedAt);
         
         playedTracks.add(playedTrack);
 

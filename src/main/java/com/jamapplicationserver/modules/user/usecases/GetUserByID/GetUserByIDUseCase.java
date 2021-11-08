@@ -10,9 +10,9 @@ import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.Result;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
-import com.jamapplicationserver.modules.user.repository.IUserRepository;
-import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.user.infra.services.*;
+import com.jamapplicationserver.modules.user.infra.DTOs.queries.*;
 
 /**
  *
@@ -20,10 +20,10 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class GetUserByIDUseCase implements IUsecase<String, User> {
     
-    private final IUserRepository repository;
+    private final IUserQueryService queryService;
     
-    private GetUserByIDUseCase(IUserRepository repository) {
-        this.repository = repository;
+    private GetUserByIDUseCase(IUserQueryService queryService) {
+        this.queryService = queryService;
     }
     
     @Override
@@ -40,8 +40,7 @@ public class GetUserByIDUseCase implements IUsecase<String, User> {
             
             final UniqueEntityId id = userIdOrError.getValue();
             
-            final User user = repository.fetchById(id);
-
+            final UserDetails user = queryService.getUserById(id);
             if(user == null) return Result.fail(new UserDoesNotExistError());
             
             return Result.ok(user);
@@ -59,6 +58,6 @@ public class GetUserByIDUseCase implements IUsecase<String, User> {
     private static class GetUserByIDUseCaseHolder {
 
         private static final GetUserByIDUseCase INSTANCE =
-                new GetUserByIDUseCase(UserRepository.getInstance());
+                new GetUserByIDUseCase(UserQueryService.getInstance());
     }
 }

@@ -5,12 +5,13 @@
  */
 package com.jamapplicationserver.modules.showcase.repository;
 
+import com.jamapplicationserver.infra.Persistence.database.Models.ShowcaseModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.UserModel;
 import java.util.*;
 import javax.persistence.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.showcase.domain.Showcase;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
 /**
  *

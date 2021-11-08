@@ -317,59 +317,217 @@ public class Track extends Artwork {
         this.updaterId = updaterId;
     }
     
+    /**
+     * Edit single track.
+     * @param title
+     * @param description
+     * @param tags
+     * @param genres
+     * @param flag
+     * @param recordLabel
+     * @param producer
+     * @param releaseDate
+     * @param updaterId
+     * @return 
+     */
     @Override
     public Result edit(
             Title title,
-            Description description,
-            TagList tags,
-            GenreList genres,
-            Flag flag,
-            RecordLabel recordLabel,
-            RecordProducer producer,
-            ReleaseDate releaseYear,
+            Optional<Description> description,
+            Optional<TagList> tags,
+            Optional<GenreList> genres,
+            Optional<Flag> flag,
+            Optional<RecordLabel> recordLabel,
+            Optional<RecordProducer> producer,
+            Optional<ReleaseDate> releaseDate,
             UniqueEntityId updaterId
     ) {
         
-        this.title = title;
-        this.description = description;
-        this.tags = tags;
+        if(title != null && !title.equals(this.title)) {
+            this.title = title;
+            modified();
+        }
+        
+        if(description != null) {
+            description.ifPresentOrElse(
+                    newValue -> {
+                        if(1==1) {
+                            this.description = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        this.description = null;
+                        modified();
+                    }
+            );
+        }
+        
+        if(flag != null) {
+            flag.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.flag)) {
+                            this.flag = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        this.flag = null;
+                        modified();
+                    }
+            );
+        }
+        
+        if(tags != null) {
+            tags.ifPresentOrElse(
+                    newValue -> {
+                        if(newValue.equals(this.tags)) {
+                            this.tags = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        this.tags = null;
+                        modified();
+                    }
+            );
+        }
         
         if(genres != null) {
+            if(genres.isPresent()) {
+                
+                if(album != null) {
+                    this.genres = album.getGenres();
+                }
 
-            if(album != null) {
-                genres = album.getGenres();
-            }
-            
-            if(album == null && artist != null) {
+                if(album == null && artist != null) {
+
+                    final boolean areTracksGenresThoseOfArtistsGenres =
+                            genres.get().getValue()
+                            .stream()
+                            .allMatch(albumGenre -> {
+                                    if(artist.getGenres() != null) {
+                                        return artist.getGenres().getValue()
+                                        .stream()
+                                        .anyMatch(artistGenre ->
+                                                artistGenre.equals(albumGenre) ||
+                                                artistGenre.isSubGenreOf(albumGenre)
+                                        );
+                                    }
+                                    return false;
+                            });
+                    if(!areTracksGenresThoseOfArtistsGenres)
+                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+
+                }
+
+                this.genres = genres.get();
+                modified();
                 
-                final boolean areTracksGenresThoseOfArtistsGenres =
-                        genres.getValue()
-                        .stream()
-                        .allMatch(albumGenre ->
-                                artist.getGenres().getValue()
-                                .stream()
-                                .anyMatch(artistGenre ->
-                                        artistGenre.equals(albumGenre) ||
-                                        artistGenre.isSubGenreOf(albumGenre)
-                                )
-                        );
-                if(!areTracksGenresThoseOfArtistsGenres)
-                    return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
-                
+            } else {
+                if(this.genres != null) {
+                    this.genres = null;
+                    modified();
+                }
             }
-            
-            this.genres = genres;
+
+        }
+        
+        if(recordLabel != null) {
+            recordLabel.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.recordLabel)) {
+                            this.recordLabel = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.recordLabel != null) {
+                            this.recordLabel = null;
+                            modified();
+                        }
+                    }
+            );
+        }
+        
+        if(producer != null) {
+            producer.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.producer)) {
+                            this.producer = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.producer != null) {
+                            this.producer = null;
+                            modified();
+                        }
+                    }
+            );
+        }
+        
+        if(releaseDate != null) {
+            releaseDate.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(releaseDate)) {
+                            this.releaseDate = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.releaseDate != null) {
+                            this.releaseDate = null;
+                            modified();
+                        }
+                    }
+            );
         }
 
         this.updaterId = updaterId;
-        modified();
         
         return Result.ok();
     }
     
-    public void changeLyrics(Lyrics lyrics) {
-        this.lyrics = lyrics;
-        modified();
+    /**
+     * Edit album track.
+     * @param genres
+     * @param recordLabel
+     * @param producer
+     * @param releaseDate
+     * @param updaterId 
+     */
+    public final void edit(
+            GenreList genres,
+            RecordLabel recordLabel,
+            RecordProducer producer,
+            ReleaseDate releaseDate,
+            UniqueEntityId updaterId
+    ) {
+        
+        this.genres = genres;
+        this.recordLabel = recordLabel;
+        this.producer = producer;
+        this.releaseDate = releaseDate;
+        this.updaterId = updaterId;
+        
+    }
+    
+    public void changeLyrics(Optional<Lyrics> lyrics) {
+        lyrics.ifPresentOrElse(
+            newValue -> {
+                if(!newValue.equals(this.lyrics)) {
+                    this.lyrics = newValue;
+                    modified();
+                }
+            },
+            () -> {
+                if(this.lyrics != null) {
+                    this.lyrics = null;
+                    modified();
+                }
+            }
+        );
     }
 
     public final long getSize() {

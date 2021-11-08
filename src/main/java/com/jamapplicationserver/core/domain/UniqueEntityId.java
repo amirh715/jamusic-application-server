@@ -35,7 +35,7 @@ public class UniqueEntityId extends Identifier<UUID> {
     }
     
     public static Result<Set<UniqueEntityId>> createFromStrings(Set<String> uuids) {
-        if(uuids == null || uuids.isEmpty()) return Result.fail(new ValidationError(""));
+        if(uuids == null || uuids.isEmpty()) return Result.fail(new ValidationError("Entity ids are required"));
         final Result<Set<Result<UniqueEntityId>>> result =
                 Result.combine(uuids
                 .stream()
@@ -52,12 +52,12 @@ public class UniqueEntityId extends Identifier<UUID> {
     }
     
     public static Result<UniqueEntityId> createFromUUID(UUID uuid) {
-        if(uuid == null) return Result.fail(new ValidationError("Entity id is required."));
+        if(uuid == null) return Result.fail(new ValidationError("Entity id is required"));
         return Result.ok(new UniqueEntityId(uuid));
     }
     
     public static Result<Set<UniqueEntityId>> createFromUUIDs(Set<UUID> uuids) {
-        if(uuids == null || uuids.isEmpty()) return Result.fail(new ValidationError(""));
+        if(uuids == null || uuids.isEmpty()) return Result.fail(new ValidationError("Entity ids are required"));
         final Result<Set<Result<UniqueEntityId>>> result =
                 Result.combine(uuids
                 .stream()

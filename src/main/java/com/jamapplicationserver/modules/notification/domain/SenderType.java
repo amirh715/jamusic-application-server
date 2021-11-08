@@ -46,10 +46,11 @@ public enum SenderType {
     }
     
     public static final Result<SenderType> create(String value) {
-        if(value == null) return Result.fail(new ValidationError(""));
+        if(value == null) return Result.fail(new ValidationError("Notification sender type."));
         final boolean isValid =
                 SenderType.stream().anyMatch(type -> value.equals(type.getValue()));
-        return isValid ? Result.ok(SenderType.valueOf(value)) : Result.fail(new ValidationError(""));
+        return isValid ? Result.ok(SenderType.valueOf(value)) :
+                Result.fail(new ValidationError("Notification sender type is invalid"));
     }
     
 }

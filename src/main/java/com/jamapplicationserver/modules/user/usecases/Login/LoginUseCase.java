@@ -15,12 +15,13 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.infra.Services.JWT.JWTUtils;
 import com.jamapplicationserver.modules.user.infra.services.LoginAuditManager;
 import com.jamapplicationserver.modules.user.repository.IUserRepository;
+import com.jamapplicationserver.modules.user.infra.DTOs.queries.AuthToken;
 
 /**
  *
  * @author amirhossein
  */
-public class LoginUseCase implements IUsecase<LoginRequestDTO, String> {
+public class LoginUseCase implements IUsecase<LoginRequestDTO, AuthToken> {
     
     private final IUserRepository repository;
     
@@ -29,7 +30,7 @@ public class LoginUseCase implements IUsecase<LoginRequestDTO, String> {
     }
     
     @Override
-    public Result execute(LoginRequestDTO request) throws GenericAppException {
+    public Result<AuthToken> execute(LoginRequestDTO request) throws GenericAppException {
         
         System.out.println("LoginUseCase");
         
@@ -88,7 +89,7 @@ public class LoginUseCase implements IUsecase<LoginRequestDTO, String> {
             final String token =
                     JWTUtils.generateToken(user.id, user.getRole(), request.device);
             
-            loginResult = Result.ok(token);
+            loginResult = Result.ok(new AuthToken(token));
             auditLogin(user.id, loginResult, request);
             
             return loginResult;

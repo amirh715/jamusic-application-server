@@ -5,9 +5,12 @@
  */
 package com.jamapplicationserver.modules.user.usecases.GetUsersByFilters;
 
+import com.jamapplicationserver.modules.user.infra.DTOs.commands.GetUsersByFiltersRequestDTO;
+import java.util.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.user.infra.DTOs.queries.UserDetails;
 import spark.QueryParamsMap;
 
 /**
@@ -16,7 +19,7 @@ import spark.QueryParamsMap;
  */
 public class GetUsersByFiltersController extends BaseController {
     
-    private final IUsecase<GetUsersByFiltersRequestDTO, GetUsersByFiltersResponseDTO> useCase;
+    private final IUsecase<GetUsersByFiltersRequestDTO, Set<UserDetails>> useCase;
     
     private GetUsersByFiltersController(IUsecase useCase) {
         this.useCase = useCase;
@@ -27,7 +30,7 @@ public class GetUsersByFiltersController extends BaseController {
         
         System.out.println("GetUsersByFiltersController");
         
-        final QueryParamsMap queryParams = this.req.queryMap();
+        final QueryParamsMap queryParams = req.queryMap();
         
         final GetUsersByFiltersRequestDTO dto =
                 new GetUsersByFiltersRequestDTO(
@@ -46,24 +49,27 @@ public class GetUsersByFiltersController extends BaseController {
         
         try {
 
-            final Result<GetUsersByFiltersResponseDTO> result =
-                    this.useCase.execute(dto);
+            final Result<Set<UserDetails>> result = useCase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
-                
-                if(error instanceof ValidationError)
-                    this.conflict(error);
+
+                if(error instanceof NotFoundError)
+                    notFound(error);
+                if(error instanceof ConflictError)
+                    conflict(error);
+                if(error instanceof ClientErrorError)
+                    clientError(error);
                 
                 return;
             }
             
-            this.ok(result.getValue());
+            ok(result.getValue());
             
         } catch(Exception e) {
             e.printStackTrace();
-            this.fail(e.getMessage());
+            fail(e.getMessage());
         }
         
     }

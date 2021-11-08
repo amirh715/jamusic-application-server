@@ -5,6 +5,12 @@
  */
 package com.jamapplicationserver.modules.library.repositories;
 
+import com.jamapplicationserver.infra.Persistence.database.Models.GenreModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.UserModel;
+import com.jamapplicationserver.infra.Persistence.database.AccessControlException;
+import com.jamapplicationserver.infra.Persistence.database.UpdaterOrCreatorDoesNotExistException;
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.UserRoleEnum;
 import javax.persistence.*;
 import com.jamapplicationserver.modules.library.repositories.exceptions.*;
 import org.hibernate.exception.ConstraintViolationException;
@@ -14,8 +20,6 @@ import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.repositories.mappers.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
-import com.jamapplicationserver.infra.Persistence.database.*;
 
 /**
  *
@@ -47,7 +51,7 @@ public class GenreRepository implements IGenreRepository {
 
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
         } finally {
             em.close();
         }
@@ -217,10 +221,7 @@ public class GenreRepository implements IGenreRepository {
         }
 
     }
-    
-    // 1. remove entity_genres corresponding to the genre being removed.
-    // 2. remove all of genre's sub-genres.
-    // 3. remove the genre itself.
+
     @Override
     public void remove(Genre genre)
             throws UpdaterOrCreatorDoesNotExistException,
@@ -233,6 +234,13 @@ public class GenreRepository implements IGenreRepository {
         final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
 
+        final Set<Genre> subGenres = genre.getSubGenres();
+        if(!subGenres.isEmpty()) {
+            for(Genre subGenre : subGenres) {
+                remove(subGenre);
+            }
+        }
+        
         try {
             
             tnx.begin();
@@ -241,12 +249,12 @@ public class GenreRepository implements IGenreRepository {
             
             final List<LibraryEntityModel> entities =
                     em.createQuery(
-                            "SELECT entity FROM LibraryEntityModel entity JOIN entity.genres genres WHERE genres.id = ?1",
+                            "SELECT entities FROM LibraryEntityModel entities JOIN entities.genres genres WHERE genres.id = ?1",
                             LibraryEntityModel.class
                     )
                     .setParameter(1, model.getId())
                     .getResultList();
-            
+
             entities.forEach(entity -> {
                 entity.removeGenre(model);
                 em.merge(entity);

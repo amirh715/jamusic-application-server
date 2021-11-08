@@ -73,6 +73,7 @@ public class CreateUserController extends BaseController {
     
     private CreateUserController(CreateUserUseCase useCase) {
         this.useCase = useCase;
+        this.requireAuthClaims = false;
     }
     
     public static CreateUserController getInstance() {

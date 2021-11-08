@@ -14,7 +14,6 @@ import com.jamapplicationserver.core.logic.*;
  */
 public enum NotifType {
     
-    APP("APP", "اپلیکیشن"),
     FCM("FCM", "FCM"),
     SMS("SMS", "پیامک"),
     EMAIL("EMAIL", "ایمیل");
@@ -35,10 +34,6 @@ public enum NotifType {
         return this.valueInPersian;
     }
     
-    public boolean isApp() {
-        return this.value.equals(APP.value);
-    }
-    
     public boolean isFCM() {
         return this.value.equals(FCM.value);
     }
@@ -56,10 +51,10 @@ public enum NotifType {
     }
     
     public static final Result<NotifType> create(String value) {
-        if(value == null) return Result.fail(new ValidationError(""));
+        if(value == null) return Result.fail(new ValidationError("Notification type is required"));
         final boolean isValid =
                 NotifType.stream().anyMatch(type -> value.equals(type.getValue()));
-        return isValid ? Result.ok(NotifType.valueOf(value)) : Result.fail(new ValidationError(""));
+        return isValid ? Result.ok(NotifType.valueOf(value)) : Result.fail(new ValidationError("Notification type is invalid"));
     }
     
 }

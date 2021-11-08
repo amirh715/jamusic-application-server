@@ -34,4 +34,19 @@ public class EntityModel implements Serializable {
         this.id = id;
     }
     
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this)
+            return true;
+        if(!(obj instanceof EntityModel))
+            return false;
+        EntityModel entity = (EntityModel) obj;
+        return entity.id.equals(this.id);
+    }
+    
 }

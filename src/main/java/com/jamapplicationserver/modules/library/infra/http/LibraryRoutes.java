@@ -25,6 +25,11 @@ import com.jamapplicationserver.modules.library.usecases.Genres.GetGenreById.Get
 import com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetRecommendedCollections.GetRecommendedCollectionsController;
 import com.jamapplicationserver.modules.library.usecases.LibraryEntity.EditArtist.EditArtistController;
 import com.jamapplicationserver.modules.library.usecases.LibraryEntity.EditArtwork.EditArtworkController;
+import com.jamapplicationserver.modules.library.usecases.Playlist.CreatePlaylist.CreatePlaylistController;
+import com.jamapplicationserver.modules.library.usecases.Playlist.EditPlaylist.EditPlaylistController;
+import com.jamapplicationserver.modules.library.usecases.Playlist.GetPlaylistById.GetPlaylistByIdController;
+import com.jamapplicationserver.modules.library.usecases.Playlist.GetPlaylistsOfPlayer.GetPlaylistsOfPlayerController;
+import com.jamapplicationserver.modules.library.usecases.Playlist.RemovePlaylist.RemovePlaylistController;
         
 /**
  *
@@ -146,6 +151,35 @@ public class LibraryRoutes implements RouteGroup {
         delete(
                 LibraryPaths.REMOVE_GENRE,
                 RemoveGenreController.getInstance()
+        );
+        
+        // create playlist
+        post(
+                LibraryPaths.CREATE_PLAYLIST,
+                CreatePlaylistController.getInstance()
+        );
+        
+        // edit playlist
+        put(LibraryPaths.EDIT_PLAYLIST,
+                EditPlaylistController.getInstance()
+        );
+        
+        // get playlist by id
+        get(
+                LibraryPaths.GET_PLAYLIST_BY_ID,
+                GetPlaylistByIdController.getInstance()
+        );
+        
+        // get playlists by player id
+        get(
+                LibraryPaths.GET_PLAYLISTS_BY_PLAYER_ID,
+                GetPlaylistsOfPlayerController.getInstance()
+        );
+        
+        // remove playlist
+        delete(
+                LibraryPaths.REMOVE_PLAYLIST,
+                RemovePlaylistController.getInstance()
         );
         
     }

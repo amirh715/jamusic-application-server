@@ -91,25 +91,96 @@ public abstract class Artist extends LibraryEntity {
         this.instagramId = instagramId;
     }
 
+    /**
+     * Edit artist info.
+     * Notice: If a nullable (optional) parameter is null, the field won't be
+     * edited. If the parameter is an empty "Optional" instance, the field value
+     * will be set to null. If a non-empty "Optional" instance is given, the field
+     * value will be set.
+     * @param title
+     * @param description
+     * @param tags
+     * @param genres
+     * @param flag
+     * @param instagramId
+     * @param updaterId
+     * @return Result
+     */
     public final Result edit(
             Title title,
-            Description description,
-            TagList tags,
-            GenreList genres,
-            Flag flag,
-            InstagramId instagramId,
+            Optional<Description> description,
+            Optional<TagList> tags,
+            Optional<GenreList> genres,
+            Optional<Flag> flag,
+            Optional<InstagramId> instagramId,
             UniqueEntityId updaterId
     ) {
+
+        if(title != null && !title.equals(this.title)) {
+            this.title = title;
+            modified();
+        }
         
-        this.title = title != null ? title : this.title;
-        this.description = description != null ? description : this.description;
-        this.tags = tags != null ? tags : this.tags;
-        this.genres = genres != null ? genres : this.genres;
-        this.flag = flag != null ? flag : this.flag;
-        this.instagramId = instagramId != null ? instagramId : this.instagramId;
-        this.updaterId = updaterId;
+        if(description != null) {
+            description
+                    .ifPresentOrElse(
+                            newValue -> {
+                                if(!newValue.equals(this.description)) {
+                                    this.description = newValue;
+                                    modified();
+                                }
+                            },
+                            () -> this.description = null
+                    );
+        }
         
-        modified();
+        if(tags != null) {
+            tags.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.tags)) {
+                            this.tags = newValue;
+                            modified();
+                        }
+                    },
+                    () -> this.tags = null
+            );
+        }
+        
+        if(genres != null) {
+            genres.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.genres)) {
+                            this.genres = newValue;
+                            modified();
+                        }
+                    },
+                    () -> this.genres = null
+            );
+        }
+
+        if(flag != null) {
+            flag.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.flag)) {
+                            this.flag = newValue;
+                            modified();
+                        }
+                    },
+                    () -> this.flag = null
+            );
+        }
+        
+        if(instagramId != null) {
+            instagramId.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.instagramId)) {
+                            this.instagramId = newValue;
+                            modified();
+                        }
+                    },
+                    () -> this.instagramId = null
+            );
+        }
         
         addDomainEvent(new ArtistEdited(this));
         

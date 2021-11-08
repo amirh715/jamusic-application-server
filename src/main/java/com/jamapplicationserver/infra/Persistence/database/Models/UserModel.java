@@ -6,6 +6,7 @@
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.util.*;
+import java.util.stream.*;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import org.hibernate.envers.*;
@@ -67,12 +68,20 @@ public class UserModel extends EntityModel {
     
     @OneToMany(mappedBy="recipient", fetch=FetchType.LAZY)
     @NotAudited
-    private Set<NotificationRecipientModel> notifications = new HashSet<>();
+    private Set<NotificationDeliveryModel> notifications = new HashSet<>();
     
-    @OneToMany(fetch=FetchType.LAZY, mappedBy="player")
+    @OneToMany(fetch=FetchType.LAZY, orphanRemoval=true, mappedBy="player", cascade=CascadeType.ALL)
     @NotAudited
-    private final Set<PlaylistModel> playlists = new HashSet<>();
+    private Set<PlaylistModel> playlists = new HashSet<>();
+    
+    @OneToMany(mappedBy="reporter", fetch=FetchType.LAZY)
+    @NotAudited
+    private Set<ReportModel> reports = new HashSet<>();
 
+    @OneToMany(fetch=FetchType.LAZY, mappedBy="user")
+    @NotAudited
+    private Set<LoginAuditModel> logins = new HashSet<>();
+    
     @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinColumn(
             name="creator_id",
@@ -140,6 +149,36 @@ public class UserModel extends EntityModel {
         this.emailVerification = emailVerification;
     }
     
+    public UserModel(
+            UUID id,
+            String name,
+            String mobile,
+            String email,
+            boolean emailVerified,
+            UserStateEnum state,
+            UserRoleEnum role,
+            String imagePath,
+            String FCMToken,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
+            UserVerificationModel verification,
+            UserEmailVerificationModel emailVerification
+    ) {
+        this.id = id;
+        this.name = name;
+        this.mobile = mobile;
+        this.email = email;
+        this.emailVerified = emailVerified;
+        this.state = state;
+        this.role = role;
+        this.imagePath = imagePath;
+        this.FCMToken = FCMToken;
+        this.createdAt = createdAt;
+        this.lastModifiedAt = lastModifiedAt;
+        this.verification = verification;
+        this.emailVerification = emailVerification;
+    }
+    
     public String getName() {
         return this.name;
     }
@@ -182,6 +221,18 @@ public class UserModel extends EntityModel {
     
     public UserStateEnum getState() {
         return this.state;
+    }
+    
+    public boolean isActive() {
+        return this.state.equals(UserStateEnum.ACTIVE);
+    }
+    
+    public boolean isBlocked() {
+        return this.state.equals(UserStateEnum.BLOCKED);
+    }
+    
+    public boolean isVerified() {
+        return !this.state.equals(UserStateEnum.NOT_VERIFIED);
     }
     
     public void setState(UserStateEnum state) {
@@ -284,24 +335,46 @@ public class UserModel extends EntityModel {
         this.playedTracks.add(playedTrack);
     }
     
-    public Set<NotificationRecipientModel> getNotifications() {
+    public void addPlayedTrack(PlayedModel playedTrack) {
+        this.playedTracks.add(playedTrack);
+    }
+    
+    public Set<NotificationDeliveryModel> getNotifications() {
         return this.notifications;
     }
     
-    public void addNotification(NotificationRecipientModel recipient) {
-        this.notifications.add(recipient);
+    public void addNotification(NotificationDeliveryModel delivery) {
+        this.notifications.add(delivery);
     }
     
     public Set<PlaylistModel> getPlaylists() {
         return this.playlists;
     }
     
-    public void addPlaylist(PlaylistModel playlist) {
+    private void addPlaylist(PlaylistModel playlist) {
         this.playlists.add(playlist);
+        playlist.setPlayer(this);
     }
     
-    public void removePlaylist(PlaylistModel playlist) {
+    private void removePlaylist(PlaylistModel playlist) {
         this.playlists.remove(playlist);
+    }
+    
+    public void replacePlaylists(Set<PlaylistModel> newPlaylists) {
+        this.playlists.removeAll(playlists);
+        newPlaylists.forEach(newPlaylist -> addPlaylist(newPlaylist));
+    }
+    
+    public Set<ReportModel> getReports() {
+        return this.reports;
+    }
+    
+    public Set<LoginAuditModel> getLogins() {
+        return this.logins;
+    }
+    
+    public void addLogin(LoginAuditModel login) {
+        this.logins.add(login);
     }
     
     @Override

@@ -18,8 +18,8 @@ public class NotificationDelivery extends ValueObject {
     private final boolean isDelivered;
     
     @Override
-    public String getValue() {
-        return this.toString();
+    public NotificationDelivery getValue() {
+        return this;
     }
     
     private NotificationDelivery(
@@ -61,8 +61,8 @@ public class NotificationDelivery extends ValueObject {
     }
     
     public static final NotificationDelivery create(Recipient recipient) {
-        
         return new NotificationDelivery(recipient);
     }
+    
     
 }

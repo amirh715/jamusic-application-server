@@ -11,7 +11,7 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
-import com.jamapplicationserver.modules.showcase.infra.DTOs.CreateShowcaseRequestDTO;
+import com.jamapplicationserver.modules.showcase.infra.DTOs.commands.CreateShowcaseRequestDTO;
 
 /**
  *
@@ -63,7 +63,7 @@ public class CreateShowcaseController extends BaseController {
                 return;
             }
             
-            this.ok(result.getValue());
+            created();
             
         } catch(Exception e) {
             this.fail(e);

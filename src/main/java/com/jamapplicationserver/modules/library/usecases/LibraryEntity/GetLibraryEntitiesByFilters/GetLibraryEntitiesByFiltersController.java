@@ -6,11 +6,12 @@
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibraryEntitiesByFilters;
 
 import java.util.*;
+import spark.QueryParamsMap;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.GetLibraryEntitiesByFiltersRequestDTO;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import spark.QueryParamsMap;
 
 /**
  *
@@ -18,7 +19,7 @@ import spark.QueryParamsMap;
  */
 public class GetLibraryEntitiesByFiltersController extends BaseController {
     
-    private final IUsecase usecase;
+    private final IUsecase<GetLibraryEntitiesByFiltersRequestDTO, Set<LibraryEntityDetails>> usecase;
     
     private GetLibraryEntitiesByFiltersController(IUsecase usecase) {
         this.usecase = usecase;
@@ -32,14 +33,13 @@ public class GetLibraryEntitiesByFiltersController extends BaseController {
             System.out.println("GetLibraryEntitiesByFiltersController");
             
             final QueryParamsMap fields = req.queryMap();
-            System.out.println(fields.toMap());
                         
             final GetLibraryEntitiesByFiltersRequestDTO dto =
                     new GetLibraryEntitiesByFiltersRequestDTO(
                             fields.get("type").value(),
                             fields.get("searchTerm").value(),
                             fields.get("published").value(),
-                            fields.get("flagged").value(),
+                            fields.get("isFlagged").value(),
                             fields.get("hasImage").value(),
                             fields.get("genreIds").value(),
                             fields.get("rateFrom").value(),
@@ -61,7 +61,7 @@ public class GetLibraryEntitiesByFiltersController extends BaseController {
                             subjectRole
                     );
                         
-            final Result result = usecase.execute(dto);
+            final Result<Set<LibraryEntityDetails>> result = usecase.execute(dto);
             
             if(result.isFailure) {
                 

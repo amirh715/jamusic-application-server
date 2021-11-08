@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.domain.core;
 
+import java.util.*;
 import com.jamapplicationserver.core.domain.ValueObject;
 import com.jamapplicationserver.core.logic.*;
 
@@ -40,6 +41,19 @@ public class Lyrics extends ValueObject {
         );
         
         return Result.ok(new Lyrics(value));
+    }
+    
+    public static final Result<Optional<Lyrics>> createNullable(String value) {
+
+        if(value == null || value.isBlank() || value.isEmpty())
+            return Result.ok(Optional.empty());
+        
+        final Result<Lyrics> result = create(value);
+        if(result.isFailure)
+            return Result.fail(result.getError());
+        else
+            return Result.ok(Optional.of(result.getValue()));
+        
     }
     
 }

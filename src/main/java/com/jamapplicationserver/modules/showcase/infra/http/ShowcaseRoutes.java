@@ -5,11 +5,11 @@
  */
 package com.jamapplicationserver.modules.showcase.infra.http;
 
-import spark.RouteGroup;
 import static spark.Spark.*;
+import spark.RouteGroup;
 import com.jamapplicationserver.modules.showcase.usecases.CreateShowcase.CreateShowcaseController;
 import com.jamapplicationserver.modules.showcase.usecases.GetAllShowcases.GetAllShowcasesController;
-import com.jamapplicationserver.modules.showcase.usecases.GetShowcaseById.GetShowcaseByIdController;
+import com.jamapplicationserver.modules.showcase.usecases.GetShowcaseImageById.GetShowcaseImageByIdController;
 import com.jamapplicationserver.modules.showcase.usecases.RemoveShowcase.RemoveShowcaseController;
 import com.jamapplicationserver.modules.showcase.usecases.ShowcaseInteractedWith.ShowcaseInteractedWithController;
 
@@ -25,28 +25,31 @@ public class ShowcaseRoutes implements RouteGroup {
     @Override
     public void addRoutes() {
         
+        // create new showcase
         post(
                 ShowcasePaths.CREATE_SHOWASE,
                 CreateShowcaseController.getInstance()
         );
         
+        // get all showcases
         get(
                 ShowcasePaths.GET_ALL_SHOWCASES,
                 GetAllShowcasesController.getInstance()
         );
         
+        // get image by id
         get(
-                ShowcasePaths.GET_SHOWCASE_BY_ID,
-                GetShowcaseByIdController.getInstance()
+                ShowcasePaths.GET_SHOWCASE_IMAGE_BY_ID,
+                GetShowcaseImageByIdController.getInstance()
         );
         
-        // get image by id
-        
+        // remove a showcase
         delete(
                 ShowcasePaths.REMOVE_SHOWCASE,
                 RemoveShowcaseController.getInstance()
         );
         
+        // showcase is interacted with
         put(
                 ShowcasePaths.SHOWCASE_INTERACTED_WITH,
                 ShowcaseInteractedWithController.getInstance()

@@ -8,6 +8,7 @@ package com.jamapplicationserver.modules.library.usecases.Genres.GetGenreById;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.*;
 
 /**
  *
@@ -15,7 +16,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class GetGenreByIdController extends BaseController {
     
-    private final IUsecase usecase;
+    private final IUsecase<String, GenreDetails> usecase;
     
     private GetGenreByIdController(IUsecase usecase) {
         this.usecase = usecase;
@@ -28,7 +29,7 @@ public class GetGenreByIdController extends BaseController {
                         
             final String id = this.req.params("id");
                         
-            final Result result = this.usecase.execute(id);
+            final Result<GenreDetails> result = this.usecase.execute(id);
             
             if(result.isFailure) {
                 
@@ -46,7 +47,7 @@ public class GetGenreByIdController extends BaseController {
                 return;
             }
             
-            this.ok(result.getValue());
+            ok(result.getValue());
             
         } catch(Exception e) {
             this.fail(e);

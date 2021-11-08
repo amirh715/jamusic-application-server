@@ -7,10 +7,12 @@ package com.jamapplicationserver.modules.notification.usecases.RemoveNotificatio
 
 import java.util.*;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.modules.notification.infra.DTOs.RemoveNotificationRequestDTO;
+import com.jamapplicationserver.modules.notification.infra.DTOs.commands.RemoveNotificationRequestDTO;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.notification.repository.*;
+import com.jamapplicationserver.modules.notification.repository.exceptions.*;
 import com.jamapplicationserver.modules.notification.domain.*;
+import com.jamapplicationserver.modules.notification.domain.errors.*;
 
 /**
  *
@@ -34,11 +36,14 @@ public class RemoveNotificationUseCase implements IUsecase<RemoveNotificationReq
             
             final UniqueEntityId id = idOrError.getValue();
             
-            final Notification notification = this.repository.fetchById(id);
+            final Notification notification = repository.fetchById(id);
+            if(notification == null) return Result.fail(new NotificationDoesNotExistError());
             
-            this.repository.remove(notification);
+            repository.remove(notification);
             
             return Result.ok();
+        } catch(SentNotificationCannotBeRemovedException e) {
+            return Result.fail(new SentNotificationCannotBeRemovedError());
         } catch(Exception e) {
             throw new GenericAppException(e);
         }

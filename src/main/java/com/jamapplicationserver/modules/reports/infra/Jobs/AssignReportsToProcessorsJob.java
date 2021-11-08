@@ -38,7 +38,7 @@ public class AssignReportsToProcessorsJob implements Job {
         reports.forEach(report -> {
             
             Processor processor;
-            if(report.isAppLibraryEntityReport()) {
+            if(report.hasReportedEntity()) {
                 final UniqueEntityId creatorId = report.getReportedEntity().getCreatorId();
                 processor = repository.fetchProcessorById(creatorId);
             } else {

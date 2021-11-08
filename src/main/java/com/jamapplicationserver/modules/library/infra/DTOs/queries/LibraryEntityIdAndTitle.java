@@ -5,13 +5,15 @@
  */
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
+import com.jamapplicationserver.core.domain.UserRole;
+import com.jamapplicationserver.core.infra.IQueryResponseDTO;
 
 /**
  *
  * @author dada
  */
-public class LibraryEntityIdAndTitle {
+public class LibraryEntityIdAndTitle implements IQueryResponseDTO {
     
     public final String id;
     public final String title;
@@ -26,6 +28,11 @@ public class LibraryEntityIdAndTitle {
                 model.getId().toString(),
                 model.getTitle()
         );
+    }
+    
+    @Override
+    public LibraryEntityIdAndTitle filter(UserRole role) {
+        return this;
     }
     
     

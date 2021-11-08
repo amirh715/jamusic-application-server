@@ -6,8 +6,6 @@
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.util.*;
-import java.time.LocalDateTime;
-import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -16,30 +14,31 @@ import java.io.Serializable;
  */
 public class NotificationDeliveryId implements Serializable {
 
-    private UUID notification_id;
+    private final UUID notification_id;
 
-    private UUID recipient_id;
+    private final UUID recipient_id;
+
+    public NotificationDeliveryId(
+            UUID notificationId,
+            UUID recipientId
+    ) {
+        this.notification_id = notificationId;
+        this.recipient_id = recipientId;
+    }
     
     public NotificationDeliveryId() {
-        
+        this.notification_id = null;
+        this.recipient_id = null;
     }
     
     public UUID getNotificationId() {
         return this.notification_id;
     }
     
-    public void setNotificationId(UUID notification_id) {
-        this.notification_id = notification_id;
-    }
-    
     public UUID getRecipientId() {
         return this.recipient_id;
     }
-    
-    public void setRecipientId(UUID recipientId) {
-        this.recipient_id = recipientId;
-    }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;

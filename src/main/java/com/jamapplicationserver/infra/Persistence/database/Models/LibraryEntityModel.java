@@ -5,12 +5,13 @@
  */
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
+import com.jamapplicationserver.infra.Persistence.database.EntityListeners.ArtworksInheritedTagsSetter;
 import java.util.*;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import javax.persistence.*;
 import org.hibernate.envers.*;
-import com.jamapplicationserver.infra.Persistence.database.EntityListeners.*;
+import com.jamapplicationserver.infra.Persistence.database.EntityListeners.DomainEventDispatcher;
 
 /**
  *
@@ -21,7 +22,7 @@ import com.jamapplicationserver.infra.Persistence.database.EntityListeners.*;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="entity_type", discriminatorType=DiscriminatorType.STRING)
 @org.hibernate.annotations.DiscriminatorOptions(force=true)
-@EntityListeners(DomainEventDispatcher.class)
+@EntityListeners({DomainEventDispatcher.class, ArtworksInheritedTagsSetter.class})
 @Audited
 public abstract class LibraryEntityModel extends EntityModel {
     
@@ -74,11 +75,14 @@ public abstract class LibraryEntityModel extends EntityModel {
     )
     protected Set<GenreModel> genres = new HashSet<GenreModel>();
     
-    @ManyToOne(optional=false, fetch=FetchType.LAZY) // false for production
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
     private UserModel creator;
     
-    @ManyToOne(optional=false, fetch=FetchType.LAZY) // false for production
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
     private UserModel updater;
+    
+    @Column(name="artworks_inherited_tags")
+    private String artworksInheritedTags;
     
     public String getTitle() {
         return this.title;
@@ -192,8 +196,9 @@ public abstract class LibraryEntityModel extends EntityModel {
     }
     
     public void replaceGenres(Set<GenreModel> genres) {
-        this.genres.addAll(genres);
         this.genres.removeIf(g -> !genres.contains(g));
+        genres.forEach(g -> addGenre(g));
+        System.out.println("AA: " + this.genres.size() + " " + genres.size());
     }
     
     public void addGenre(GenreModel genreToAdd) {
@@ -234,6 +239,32 @@ public abstract class LibraryEntityModel extends EntityModel {
     
     public void setUpdater(UserModel updater) {
         this.updater = updater;
+    }
+    
+    public Set<String> getArtworksInheritedTags() {
+        if(this.artworksInheritedTags == null || this.artworksInheritedTags.isEmpty())
+            return new HashSet<>();
+        final String separator = "#";
+        final List<String> tagsList = Arrays.asList(this.artworksInheritedTags.split(separator));
+        return tagsList.stream().collect(Collectors.toSet());
+    }
+    
+    public void setArtworksInheritedTags(Set<String> tags) {
+        if(!(this instanceof ArtworkModel)) return;
+        if(tags == null || tags.isEmpty()) {
+            this.artworksInheritedTags = null;
+            return;
+        }
+        final String separator = "#";
+        this.artworksInheritedTags =
+                tags.stream()
+                .map(tag -> {
+                    return tag
+                            .trim()
+                            .replace(" ", "_")
+                            .concat(separator);
+                })
+                .collect(Collectors.joining());
     }
     
     @Override

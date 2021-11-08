@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.usecases.Genres.CreateGenre;
 
+import com.jamapplicationserver.infra.Persistence.database.UpdaterOrCreatorDoesNotExistException;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.core.logic.*;
@@ -13,7 +14,6 @@ import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateGenreR
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.repositories.exceptions.*;
-import com.jamapplicationserver.infra.Persistence.database.*;
 import org.hibernate.exception.ConstraintViolationException;
 
 /**

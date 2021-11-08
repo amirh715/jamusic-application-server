@@ -5,21 +5,29 @@
  */
 package com.jamapplicationserver.modules.library.infra.services;
 
+import java.util.*;
+import java.util.stream.*;
+import javax.persistence.*;
+import java.time.*;
+import javax.persistence.criteria.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.ArtworkModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.BandModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.PlaylistModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.AlbumModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.ArtistModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.TrackModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.SingerModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.GenreModel;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.PlaylistDetails;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.GenreDetails;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntitySummary;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
-import java.util.*;
-import java.util.stream.*;
-import javax.persistence.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.library.repositories.LibraryEntityFilters;
-import java.time.LocalDateTime;
-import java.time.*;
-import javax.persistence.criteria.*;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.*;
 
 /**
  *
@@ -40,16 +48,19 @@ public class LibraryQueryService implements ILibraryQueryService {
             // ref: https://thorben-janssen.com/fetch-association-of-subclass/
             // fetch bands' members
             {
-                filters.type = LibraryEntityType.B;
+                final LibraryEntityFilters f = new LibraryEntityFilters();
+                f.type = LibraryEntityType.B;
                 final CriteriaQuery<BandModel> query = buildQuery(filters, em);
                 em.createQuery(query).getResultList();
             }
             // fetch albums' tracks
             {
-                filters.type = LibraryEntityType.A;
+                final LibraryEntityFilters f = new LibraryEntityFilters();
+                f.type = LibraryEntityType.A;
                 final CriteriaQuery<AlbumModel> query = buildQuery(filters, em);
                 em.createQuery(query).getResultList();
             }
+            
             
             final CriteriaQuery<LibraryEntityModel> query = buildQuery(filters, em);
             
@@ -164,12 +175,8 @@ public class LibraryQueryService implements ILibraryQueryService {
         
         try {
             
-            final List<GenreModel> genres =
-                    em.createQuery("SELECT genre FROM GenreModel genre WHERE genre.parentGenre IS NULL", GenreModel.class)
-                    .getResultList();
-            
-            return genres
-                    .stream()
+            return em.createQuery("SELECT genre FROM GenreModel genre WHERE genre.parentGenre IS NULL", GenreModel.class)
+                    .getResultStream()
                     .map(genre -> GenreDetails.create(genre))
                     .collect(Collectors.toSet());
             
@@ -204,7 +211,7 @@ public class LibraryQueryService implements ILibraryQueryService {
     }
     
     @Override
-    public Set<PlaylistDetails> getPlaylistsByPlayerId(UniqueEntityId playerId) {
+    public Set<PlaylistDetails> getAllPlaylistsOfPlayer(UniqueEntityId playerId) {
         
         final EntityManager em = emfh.createEntityManager();
         
@@ -217,7 +224,20 @@ public class LibraryQueryService implements ILibraryQueryService {
             
             return playlists
                     .stream()
-                    .map(playlist -> PlaylistDetails.create(playlist))
+                    .map(playlist -> {
+                        final Set<LibraryEntityIdAndTitle> tracks =
+                                playlist.getTracks()
+                                .stream()
+                                .map(track -> LibraryEntityIdAndTitle.create(track))
+                                .collect(Collectors.toSet());
+                        return new PlaylistDetails(
+                                playlist.getId(),
+                                playlist.getTitle(),
+                                tracks,
+                                playlist.getCreatedAt(),
+                                playlist.getLastModifiedAt()
+                        );
+                    })
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
@@ -230,17 +250,34 @@ public class LibraryQueryService implements ILibraryQueryService {
     }
     
     @Override
-    public PlaylistDetails getPlaylistById(UniqueEntityId playlistId) {
+    public PlaylistDetails getPlaylistById(UniqueEntityId playlistId, UniqueEntityId playerId) {
         
         final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            final PlaylistModel playlist = em.find(PlaylistModel.class, playlistId.toValue());
+            final String query = "SELECT p FROM PlaylistModel p WHERE p.id = ?1 AND p.player.id = ?2";
+            final PlaylistModel playlist =
+                    em.createQuery(query, PlaylistModel.class)
+                    .setParameter(1, playlistId.toValue())
+                    .setParameter(2, playerId.toValue())
+                    .getSingleResult();
             if(playlist == null) return null;
+            final Set<LibraryEntityIdAndTitle> tracks =
+                    playlist.getTracks()
+                    .stream()
+                    .map(track -> LibraryEntityIdAndTitle.create(track))
+                    .collect(Collectors.toSet());
+            return new PlaylistDetails(
+                    playlist.getId(),
+                    playlist.getTitle(),
+                    tracks,
+                    playlist.getCreatedAt(),
+                    playlist.getLastModifiedAt()
+            );
             
-            return PlaylistDetails.create(playlist);
-            
+        } catch(NoResultException e) {
+            return null;
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
@@ -267,28 +304,26 @@ public class LibraryQueryService implements ILibraryQueryService {
         
         if(filters != null) {
 
-            if(filters.type.isArtwork())
-                entityType = ArtworkModel.class;
-            else if(filters.type.isAlbum())
-                entityType = AlbumModel.class;
-            else if(filters.type.isTrack())
-                entityType = TrackModel.class;
-            else if(filters.type.isArtist())
-                entityType = ArtistModel.class;
-            else if(filters.type.isBand())
-                entityType = BandModel.class;
-            else if(filters.type.isSinger())
-                entityType = SingerModel.class;
-            else
+            if(filters.type != null) {
+                if(filters.type.isArtwork())
+                    entityType = ArtworkModel.class;
+                else if(filters.type.isAlbum())
+                    entityType = AlbumModel.class;
+                else if(filters.type.isTrack())
+                    entityType = TrackModel.class;
+                else if(filters.type.isArtist())
+                    entityType = ArtistModel.class;
+                else if(filters.type.isBand())
+                    entityType = BandModel.class;
+                else if(filters.type.isSinger())
+                    entityType = SingerModel.class;
+                else
+                    entityType = LibraryEntityModel.class;
+            } else {
                 entityType = LibraryEntityModel.class;
+            }
 
             root = query.from(entityType);
-
-            // entity type
-            if(entityType != LibraryEntityModel.class) {
-                final Predicate predicate = builder.equal(root.type(), entityType);
-                predicates.add(predicate);
-            }
 
             // search term
             if(filters.searchTerm != null) {
@@ -298,10 +333,7 @@ public class LibraryQueryService implements ILibraryQueryService {
                                 builder.like(root.get("title"), toSearchPattern(searchTerm)),
                                 builder.like(root.get("description"), toSearchPattern(searchTerm)),
                                 builder.like(root.get("tags"), toSearchPattern(searchTerm)),
-                                builder.and(
-                                        builder.equal(root.type(), ArtworkModel.class),
-                                        builder.like(((Root<ArtworkModel>) (Root<?>) root).get("inheritedTags"), toSearchPattern(searchTerm))
-                                )
+                                builder.like(root.get("artworksInheritedTags"), toSearchPattern(searchTerm))
                         );
                 predicates.add(predicate);
             }
@@ -335,6 +367,18 @@ public class LibraryQueryService implements ILibraryQueryService {
                         builder.isNull(root.get("flagNote"));
                 predicates.add(predicate);
             }
+            
+            // entities containing these genre ids
+//            if(filters.genreIds != null) {
+//                final Set<UUID> ids =
+//                        filters.genreIds
+//                        .stream()
+//                        .map(id -> id.toValue())
+//                        .collect(Collectors.toSet());
+//                final Predicate predicate =
+//                        root
+//                predicates.add(predicate);
+//            }
             
             // rate from to
             if(filters.rateFrom != null || filters.rateTo != null) {

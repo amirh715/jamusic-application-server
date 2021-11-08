@@ -5,9 +5,11 @@
  */
 package com.jamapplicationserver.modules.library.usecases.Genres.GetAllGenres;
 
+import java.util.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.GenreDetails;
 
 /**
  *
@@ -15,7 +17,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class GetAllGenresController extends BaseController {
     
-    private final IUsecase usecase;
+    private final IUsecase<String, Set<GenreDetails>> usecase;
     
     private GetAllGenresController(IUsecase usecase) {
         this.usecase = usecase;
@@ -26,7 +28,7 @@ public class GetAllGenresController extends BaseController {
         
         try {
             
-            final Result result = this.usecase.execute(null);
+            final Result<Set<GenreDetails>> result = this.usecase.execute("");
             
             if(result.isFailure) {
                 
@@ -44,7 +46,7 @@ public class GetAllGenresController extends BaseController {
                 return;
             }
             
-            this.ok(result.getValue());
+            ok(result.getValue());
             
         } catch(Exception e) {
             e.printStackTrace();

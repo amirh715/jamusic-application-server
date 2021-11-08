@@ -10,19 +10,21 @@ import java.util.stream.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.reports.domain.*;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.reports.infra.DTOs.GetReportsByFiltersRequestDTO;
+import com.jamapplicationserver.modules.reports.infra.DTOs.commands.GetReportsByFiltersRequestDTO;
 import com.jamapplicationserver.modules.reports.repository.*;
+import com.jamapplicationserver.modules.reports.infra.services.*;
+import com.jamapplicationserver.modules.reports.infra.DTOs.queries.*;
 
 /**
  *
  * @author dada
  */
-public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersRequestDTO, Set<Report>> {
+public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersRequestDTO, Set<ReportDetails>> {
     
-    private final IReportRepository repository;
+    private final IReportQueryService queryService;
     
-    private GetReportsByFiltersUseCase(IReportRepository repository) {
-        this.repository = repository;
+    private GetReportsByFiltersUseCase(IReportQueryService queryService) {
+        this.queryService = queryService;
     }
     
     @Override
@@ -34,30 +36,16 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
             
             final ArrayList<Result> combinedProps = new ArrayList<>();
 
-            Set<ReportStatus> statuses = null;
-            if(request.statuses != null && !request.statuses.isEmpty()) {
-                
-                final long erroneousStatusCount = request.statuses
-                        .stream()
-                        .map(status -> ReportStatus.create(status))
-                        .filter(statusOrError -> statusOrError.isFailure)
-                        .count();
-                if(erroneousStatusCount > 0)
-                    return Result.fail(new ValidationError("Report status is invalid"));
-                statuses =
-                        request.statuses
-                        .stream()
-                        .map(status -> ReportStatus.create(status).getValue())
-                        .collect(Collectors.toSet());
-
-            }
-            
+            final Result<ReportStatus> statusOrError =
+                    ReportStatus.create(request.status);
             final Result<UniqueEntityId> reporterIdOrError =
                     UniqueEntityId.createFromString(request.reporterId);
             final Result<UniqueEntityId> processorIdOrError =
                     UniqueEntityId.createFromString(request.processorId);
             final Result<UniqueEntityId> reportedEntityIdOrError =
                     UniqueEntityId.createFromString(request.reportedEntityId);
+            final Result<ReportType> typeOrError =
+                    ReportType.create(request.type);
             final Result<DateTime> assignedAtFromOrError =
                     DateTime.create(request.assignedAtFrom);
             final Result<DateTime> assignedAtTillOrError =
@@ -78,15 +66,17 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
                     DateTime.create(request.lastModifiedAtFrom);
             final Result<DateTime> lastModifiedAtTillOrError =
                     DateTime.create(request.lastModifiedAtTill);
-            final Boolean isContentReport =
-                    Boolean.valueOf(request.isContentReport);
             
+            if(request.status != null)
+                combinedProps.add(statusOrError);
             if(request.reporterId != null)
                 combinedProps.add(reporterIdOrError);
             if(request.processorId != null)
                 combinedProps.add(processorIdOrError);
             if(request.reportedEntityId != null)
                 combinedProps.add(reportedEntityIdOrError);
+            if(request.type != null)
+                combinedProps.add(typeOrError);
             if(request.assignedAtFrom != null)
                 combinedProps.add(assignedAtFromOrError);
             if(request.assignedAtTill != null)
@@ -112,6 +102,9 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
             if(combinedPropsResult.isFailure)
                 return combinedPropsResult;
             
+            final ReportStatus status =
+                    request.status != null ?
+                    statusOrError.getValue() : null;
             final UniqueEntityId reporterId =
                     request.reporterId != null ?
                     reporterIdOrError.getValue()
@@ -124,6 +117,9 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
                     request.reportedEntityId != null ?
                     reportedEntityIdOrError.getValue()
                     : null;
+            final ReportType type =
+                    request.type != null ?
+                    typeOrError.getValue() : null;
             final DateTime assignedAtFrom =
                     request.assignedAtFrom != null ?
                     assignedAtFromOrError.getValue()
@@ -167,10 +163,11 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
             
             final ReportFilters filters =
                     new ReportFilters(
-                            statuses,
+                            status,
                             reporterId,
                             processorId,
                             reportedEntityId,
+                            type,
                             assignedAtFrom,
                             assignedAtTill,
                             processedAtFrom,
@@ -181,10 +178,12 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
                             createdAtTill,
                             lastModifiedAtFrom,
                             lastModifiedAtTill,
-                            isContentReport
+                            request.isContentReport,
+                            request.isTechnicalReport,
+                            request.isLibraryEntityReport
                     );
             
-            final Set<Report> reports = this.repository.fetchByFilters(filters);
+            final Set<ReportDetails> reports = queryService.getReportsByFilters(filters);
             
             return Result.ok(reports);
         } catch(Exception e) {
@@ -201,6 +200,6 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
     private static class GetReportByFiltersUseCaseHolder {
 
         private static final GetReportsByFiltersUseCase INSTANCE =
-                new GetReportsByFiltersUseCase(ReportRepository.getInstance());
+                new GetReportsByFiltersUseCase(ReportQueryService.getInstance());
     }
 }

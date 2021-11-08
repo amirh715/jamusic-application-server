@@ -10,7 +10,7 @@ import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
-import com.jamapplicationserver.modules.notification.infra.DTOs.CreateNotificationRequestDTO;
+import com.jamapplicationserver.modules.notification.infra.DTOs.commands.CreateNotificationRequestDTO;
 
 /**
  *
@@ -61,11 +61,11 @@ public class CreateNotificationController extends BaseController {
                 return;
             }
             
-            this.ok(result.getValue());
+            created();
             
         } catch(Exception e) {
             e.printStackTrace();
-            this.fail(e);
+            fail(e);
         }
         
     }

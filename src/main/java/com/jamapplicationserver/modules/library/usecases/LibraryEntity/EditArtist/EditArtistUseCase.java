@@ -45,16 +45,16 @@ public class EditArtistUseCase implements IUsecase<EditArtistRequestDTO, String>
                     UniqueEntityId.createFromString(request.id);
             final Result<Title> titleOrError =
                     Title.create(request.title);
-            final Result<Description> descriptionOrError =
-                    Description.create(request.description);
-            final Result<TagList> tagsOrError =
-                    TagList.createFromString(request.tags);
-            final Result<Flag> flagOrError =
-                    Flag.create(request.flagNote);
-            final Result<GenreList> genresOrError =
+            final Result<Optional<Description>> descriptionOrError =
+                    Description.createNullable(request.description);
+            final Result<Optional<TagList>> tagsOrError =
+                    TagList.createNullableFromString(request.tags);
+            final Result<Optional<Flag>> flagOrError =
+                    Flag.createNullable(request.flagNote);
+            final Result<Optional<GenreList>> genresOrError =
                     fetchAndCreateGenreList(request.genreIds);
-            final Result<InstagramId> instagramIdOrError =
-                    InstagramId.create(request.instagramId);
+            final Result<Optional<InstagramId>> instagramIdOrError =
+                    InstagramId.createNullable(request.instagramId);
             
             if(request.title != null)
                 combinedProps.add(titleOrError);
@@ -77,19 +77,19 @@ public class EditArtistUseCase implements IUsecase<EditArtistRequestDTO, String>
             final Title title =
                     request.title != null ? titleOrError.getValue()
                     : null;
-            final Description description =
+            final Optional<Description> description =
                     request.description != null ? descriptionOrError.getValue()
                     : null;
-            final TagList tags =
+            final Optional<TagList> tags =
                     request.tags != null ? tagsOrError.getValue()
                     : null;
-            final Flag flag =
+            final Optional<Flag> flag =
                     request.flagNote != null ? flagOrError.getValue()
                     : null;
-            final GenreList genres =
+            final Optional<GenreList> genres =
                     request.genreIds != null ? genresOrError.getValue()
                     : null;
-            final InstagramId instagramId =
+            final Optional<InstagramId> instagramId =
                     request.instagramId != null ? instagramIdOrError.getValue()
                     : null;
 
@@ -98,9 +98,8 @@ public class EditArtistUseCase implements IUsecase<EditArtistRequestDTO, String>
                     .includeUnpublished(request.subjectRole)
                     .getSingleResult();
             if(artist == null) return Result.fail(new ArtistDoesNotExistError());
- 
-            final Result result =
-                    artist.edit(title, description, tags, genres, flag, instagramId, request.subjectId);
+
+            final Result result = artist.edit(title, description, tags, genres, flag, instagramId, request.subjectId);
             if(result.isFailure) return result;
             
             if(request.removeImage) {
@@ -111,17 +110,18 @@ public class EditArtistUseCase implements IUsecase<EditArtistRequestDTO, String>
             
             return Result.ok();
         } catch(Exception e) {
+            e.printStackTrace();
             throw new GenericAppException(e);
         }
         
     }
     
-    private Result<GenreList> fetchAndCreateGenreList(Set<String> genreIds) throws GenericAppException {
+    private Result<Optional<GenreList>> fetchAndCreateGenreList(Set<String> genreIds) throws GenericAppException {
         
         try {
             
             if(genreIds == null || genreIds.isEmpty())
-                return Result.fail(new ValidationError("fetch genre error"));
+                return GenreList.createNullable(null);
             
             final Result<Set<UniqueEntityId>> idsOrErrors = UniqueEntityId.createFromStrings(genreIds);
             if(idsOrErrors.isFailure) return Result.fail(idsOrErrors.getError());
@@ -136,7 +136,7 @@ public class EditArtistUseCase implements IUsecase<EditArtistRequestDTO, String>
             final Set<Genre> genres = new HashSet<>();
             ids.forEach(id -> genres.add(allGenres.get(id)));
             
-            return GenreList.create(genres);
+            return GenreList.createNullable(genres);
         } catch(Exception e) {
             e.printStackTrace();
             throw new GenericAppException(e);

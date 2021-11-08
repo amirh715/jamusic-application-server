@@ -8,25 +8,27 @@ package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 import java.util.*;
 import java.time.*;
 import java.util.stream.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.GenreModel;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.core.domain.UserRole;
+import com.jamapplicationserver.core.infra.IQueryResponseDTO;
 
 /**
  *
  * @author dada
  */
-public class GenreDetails {
+public class GenreDetails implements IQueryResponseDTO {
     
-    public final String id;
-    public final String title;
-    public final String titleInPersian;
-    public final String createdAt;
-    public final String lastModifiedAt;
-    public final String creatorName;
-    public final String creatorId;
-    public final String updaterName;
-    public final String updaterId;
-    public final Set<GenreDetails> subGenres;
+    public String id;
+    public String title;
+    public String titleInPersian;
+    public String createdAt;
+    public String lastModifiedAt;
+    public String creatorName;
+    public String creatorId;
+    public String updaterName;
+    public String updaterId;
+    public Set<GenreDetails> subGenres;
     
     private GenreDetails(
             String id,
@@ -68,6 +70,32 @@ public class GenreDetails {
                     .map(subGenre -> create(subGenre))
                     .collect(Collectors.toSet())
         );
+    }
+    
+    @Override
+    public GenreDetails filter(UserRole role) {
+        this.subGenres.forEach(subGenre -> subGenre.filter(role));
+        switch(role) {
+            case ADMIN: break;
+            case LIBRARY_MANAGER:
+                this.createdAt = null;
+                this.lastModifiedAt = null;
+                this.creatorId = null;
+                this.creatorName = null;
+                this.updaterId = null;
+                this.updaterName = null;
+                break;
+            case SUBSCRIBER:
+                this.title = null;
+                this.createdAt = null;
+                this.lastModifiedAt = null;
+                this.creatorId = null;
+                this.creatorName = null;
+                this.updaterId = null;
+                this.updaterName = null;
+                break;
+        }
+        return this;
     }
     
 }

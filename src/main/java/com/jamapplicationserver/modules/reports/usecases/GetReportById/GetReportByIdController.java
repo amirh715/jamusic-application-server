@@ -8,8 +8,8 @@ package com.jamapplicationserver.modules.reports.usecases.GetReportById;
 import java.util.*;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.domain.IUsecase;
+import com.jamapplicationserver.modules.reports.infra.DTOs.queries.ReportDetails;
 
 /**
  *
@@ -17,7 +17,7 @@ import com.jamapplicationserver.core.domain.IUsecase;
  */
 public class GetReportByIdController extends BaseController {
     
-    private final IUsecase usecase;
+    private final IUsecase<String, ReportDetails> usecase;
     
     private GetReportByIdController(IUsecase usecase) {
         this.usecase = usecase;
@@ -28,28 +28,28 @@ public class GetReportByIdController extends BaseController {
         
         try {
             
-            final String id = this.req.params(":id");
+            final String id = req.params(":id");
             
-            final Result result = this.usecase.execute(id);
+            final Result<ReportDetails> result = usecase.execute(id);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
             
-            this.ok(result.getValue());
+            ok(result.getValue());
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

@@ -17,12 +17,10 @@ import com.google.gson.reflect.TypeToken;
 public class CreatePlaylistRequestDTO extends DTOWithAuthClaims {
     
     public final String title;
-    public final String playerId;
     public final Set<String> trackIds;
     
     public CreatePlaylistRequestDTO(
             String title,
-            String playerId,
             String trackIds,
             UniqueEntityId creatorId,
             UserRole creatorRole
@@ -33,8 +31,9 @@ public class CreatePlaylistRequestDTO extends DTOWithAuthClaims {
         final ISerializer serializer = Serializer.getInstance();
         
         this.title = title;
-        this.playerId = playerId;
-        this.trackIds = serializer.deserialize(trackIds, new TypeToken<Set<String>>(){});
+        this.trackIds =
+                trackIds != null ?
+                serializer.deserialize(trackIds, new TypeToken<Set<String>>(){}) : new HashSet<>();
         
     }
     

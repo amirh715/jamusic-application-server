@@ -10,7 +10,7 @@ import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
-import com.jamapplicationserver.modules.reports.infra.DTOs.ProcessReportRequestDTO;
+import com.jamapplicationserver.modules.reports.infra.DTOs.commands.ProcessReportRequestDTO;
 
 /**
  *
@@ -55,7 +55,7 @@ public class ProcessReportController extends BaseController {
                 return;
             }
             
-            ok(result.getValue());
+            noContent();
             
         } catch(Exception e) {
             fail(e);

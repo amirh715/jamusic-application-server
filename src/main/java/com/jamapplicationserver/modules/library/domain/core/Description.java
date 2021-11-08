@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.domain.core;
 
+import java.util.Optional;
 import com.jamapplicationserver.core.domain.ValueObject;
 import com.jamapplicationserver.core.logic.*;
 
@@ -23,21 +24,38 @@ public class Description extends ValueObject {
         this.description = description.trim();
     }
     
+    private Description() {
+        this.description = null;
+    }
+    
     @Override
     public String getValue() {
         return this.description;
     }
     
-    public static Result<Description> create(String description) {
+    public static Result<Description> create(String value) {
         
-        if(description == null) return Result.fail(new ValidationError("Description is required."));
+        if(value == null) return Result.fail(new ValidationError("Description is required."));
         
         if(
-                description.length() > MAX_LENGTH ||
-                description.length() < MIN_LENGTH
+                value.length() > MAX_LENGTH ||
+                value.length() < MIN_LENGTH
         ) return Result.fail(new ValidationError("Description must be " + MIN_LENGTH + " to " + MAX_LENGTH + " characters long."));
         
-        return Result.ok(new Description(description));
+        return Result.ok(new Description(value));
+        
+    }
+    
+    public static Result<Optional<Description>> createNullable(String value) {
+        
+        if(value == null || value.isBlank() || value.isEmpty())
+            return Result.ok(Optional.empty());
+        
+        final Result<Description> result = create(value);
+        if(result.isFailure)
+            return Result.fail(result.getError());
+        else
+            return Result.ok(Optional.of(result.getValue()));
         
     }
     

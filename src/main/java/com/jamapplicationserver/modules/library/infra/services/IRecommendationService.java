@@ -5,8 +5,8 @@
  */
 package com.jamapplicationserver.modules.library.infra.services;
 
-import com.jamapplicationserver.modules.library.infra.DTOs.queries.ArtworkIdAndTitle;
 import java.util.*;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.RecommendedCollection;
 
@@ -16,6 +16,6 @@ import com.jamapplicationserver.modules.library.infra.DTOs.queries.RecommendedCo
  */
 public interface IRecommendationService {
     
-    Set<RecommendedCollection<ArtworkIdAndTitle>> getCollections(UniqueEntityId playerId);
+    Set<RecommendedCollection<LibraryEntityIdAndTitle>> getCollections(UniqueEntityId playerId);
     
 }

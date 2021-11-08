@@ -101,6 +101,8 @@ public class LibraryEntityQueryScope<T extends LibraryEntity>
                     entityManager
             );
             
+        } catch(NoResultException e) {
+            return null;
         } catch(Exception e) {
             throw e;
         } finally {

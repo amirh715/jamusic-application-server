@@ -11,6 +11,7 @@ import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import java.util.*;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.user.infra.services.LoginAuditManager;
+import com.jamapplicationserver.modules.user.infra.DTOs.queries.AuthToken;
 import ua_parser.*;
 
 /**
@@ -23,6 +24,7 @@ public class LoginController extends BaseController {
     
     private LoginController(IUsecase useCase) {
         this.useCase = useCase;
+        this.requireAuthClaims = false;
     }
     
     @Override
@@ -49,7 +51,7 @@ public class LoginController extends BaseController {
         
         try {
             
-            final Result result = useCase.execute(dto);
+            final Result<AuthToken> result = useCase.execute(dto);
             
             if(result.isFailure) {
                 
@@ -67,7 +69,7 @@ public class LoginController extends BaseController {
                 return;
             }
             
-            this.ok(result.getValue());
+            ok(result.getValue());
             
         } catch(Exception e) {
             fail(e);

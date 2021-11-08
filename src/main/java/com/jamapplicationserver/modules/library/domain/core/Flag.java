@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.domain.core;
 
+import java.util.Optional;
 import com.jamapplicationserver.core.domain.ValueObject;
 import com.jamapplicationserver.core.logic.*;
 
@@ -25,6 +26,11 @@ public class Flag extends ValueObject {
         this.flagNote = flagNote;
     }
     
+    @Override
+    public String getValue() {
+        return this.flagNote;
+    }
+    
     public static Result<Flag> create(
             String flagNote
     ) {
@@ -39,10 +45,22 @@ public class Flag extends ValueObject {
         return Result.ok(new Flag(flagNote));
     }
     
-    @Override
-    public String getValue() {
-        return this.flagNote;
+    /**
+     * Value object is considered null if value is null, an empty string, or blank.
+     * @param value
+     * @return 
+     */
+    public static Result<Optional<Flag>> createNullable(String value) {
+
+        if(value == null || value.isBlank() || value.isEmpty())
+            return Result.ok(Optional.empty());
+        
+        final Result<Flag> result = create(value);
+        if(result.isFailure)
+            return Result.fail(result.getError());
+        else
+            return Result.ok(Optional.of(result.getValue()));
+        
     }
-    
-    
+
 }

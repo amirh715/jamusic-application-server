@@ -10,7 +10,7 @@ import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.domain.IUsecase;
-import com.jamapplicationserver.modules.reports.infra.DTOs.CreateReportRequestDTO;
+import com.jamapplicationserver.modules.reports.infra.DTOs.commands.CreateReportRequestDTO;
 
 /**
  *
@@ -37,30 +37,31 @@ public class CreateReportController extends BaseController {
                     new CreateReportRequestDTO(
                             fields.get("message"),
                             fields.get("reportedEntityId"),
+                            fields.get("reportType"),
                             subjectId,
                             subjectRole
                     );
             
-            final Result result = this.usecase.execute(dto);
+            final Result result = usecase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
             
-            this.ok(result.getValue());
+            created();
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

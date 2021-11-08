@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.repositories;
 
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
 import javax.persistence.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.domain.core.*;
@@ -12,7 +13,6 @@ import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.domain.Band.Band;
 import com.jamapplicationserver.modules.library.domain.Singer.Singer;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
 /**
  *

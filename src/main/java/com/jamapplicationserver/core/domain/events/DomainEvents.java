@@ -29,7 +29,6 @@ public class DomainEvents {
     
     private static AggregateRoot findMarkedAggregateById(UniqueEntityId id) {
         AggregateRoot found = null;
-        System.out.println(id.toString());
         if(markedAggregates.get() != null && !markedAggregates.get().isEmpty()) {
             for(AggregateRoot aggregate : markedAggregates.get()) {
                 if(aggregate.getId().equals(id)) found = aggregate;
@@ -58,7 +57,6 @@ public class DomainEvents {
         try {
             
             if(handlers != null) {
-                System.out.println("handlers is not null");
                 for(IDomainEventHandler handler : handlers) {
                     final Class subscribedTo = handler.subscribedToEventType();
                     if (subscribedTo == domainEvent.getClass()) {

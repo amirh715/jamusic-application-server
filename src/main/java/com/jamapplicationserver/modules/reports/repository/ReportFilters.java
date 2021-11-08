@@ -5,7 +5,6 @@
  */
 package com.jamapplicationserver.modules.reports.repository;
 
-import java.util.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.reports.domain.*;
 
@@ -15,11 +14,13 @@ import com.jamapplicationserver.modules.reports.domain.*;
  */
 public class ReportFilters {
     
-    public final Set<ReportStatus> statuses;
+    public final ReportStatus status;
     
     public final UniqueEntityId reporterId;
     public final UniqueEntityId processorId;
     public final UniqueEntityId reportedEntityId;
+    
+    public final ReportType type;
     
     public final DateTime assignedAtFrom;
     public final DateTime assignedAtTill;
@@ -37,12 +38,15 @@ public class ReportFilters {
     public final DateTime lastModifiedAtTill;
     
     public final Boolean isContentReport;
+    public final Boolean isTechnicalReport;
+    public final Boolean isLibraryEntityReport;
     
     public ReportFilters(
-            Set<ReportStatus> statuses,
+            ReportStatus status,
             UniqueEntityId reporterId,
             UniqueEntityId processorId,
             UniqueEntityId reportedEntityId,
+            ReportType type,
             DateTime assignedAtFrom,
             DateTime assignedAtTill,
             DateTime processedAtFrom,
@@ -53,12 +57,15 @@ public class ReportFilters {
             DateTime createdAtTill,
             DateTime lastModifiedAtFrom,
             DateTime lastModifiedAtTill,
-            Boolean isContentReport
+            String isContentReport,
+            String isTechnicalReport,
+            String isLibraryEntityReport
     ) {
-        this.statuses = statuses;
+        this.status = status;
         this.reporterId = reporterId;
         this.processorId = processorId;
         this.reportedEntityId = reportedEntityId;
+        this.type = type;
         this.assignedAtFrom = assignedAtFrom;
         this.assignedAtTill = assignedAtTill;
         this.processedAtFrom = processedAtFrom;
@@ -69,16 +76,19 @@ public class ReportFilters {
         this.createdAtTill = createdAtTill;
         this.lastModifiedAtFrom = lastModifiedAtFrom;
         this.lastModifiedAtTill = lastModifiedAtTill;
-        this.isContentReport = isContentReport != null ? isContentReport : null;
+        this.isContentReport = isContentReport != null ? Boolean.parseBoolean(isContentReport) : null;
+        this.isTechnicalReport = isTechnicalReport != null ? Boolean.parseBoolean(isTechnicalReport) : null;
+        this.isLibraryEntityReport = isLibraryEntityReport != null ? Boolean.parseBoolean(isLibraryEntityReport) : null;
     }
     
     public ReportFilters(
-            Set<ReportStatus> statuses
+            ReportStatus status
     ) {
-        this.statuses = statuses;
+        this.status = status;
         this.reporterId = null;
         this.processorId = null;
         this.reportedEntityId = null;
+        this.type = null;
         this.assignedAtFrom = null;
         this.assignedAtTill = null;
         this.processedAtFrom = null;
@@ -90,16 +100,19 @@ public class ReportFilters {
         this.lastModifiedAtFrom = null;
         this.lastModifiedAtTill = null;
         this.isContentReport = null;
+        this.isTechnicalReport = null;
+        this.isLibraryEntityReport = null;
     }
     
     public ReportFilters(
             DateTime createdAtFrom,
             DateTime createdAtTill
     ) {
-        this.statuses = null;
+        this.status = null;
         this.reporterId = null;
         this.processorId = null;
         this.reportedEntityId = null;
+        this.type = null;
         this.assignedAtFrom = null;
         this.assignedAtTill = null;
         this.processedAtFrom = null;
@@ -108,11 +121,11 @@ public class ReportFilters {
         this.archivedAtTill = null;
         this.createdAtFrom = createdAtFrom;
         this.createdAtTill = createdAtTill;
-        System.out.println("%%% " + createdAtFrom);
-        System.out.println("%%% " + createdAtTill);
         this.lastModifiedAtFrom = null;
         this.lastModifiedAtTill = null;
         this.isContentReport = null;
+        this.isTechnicalReport = null;
+        this.isLibraryEntityReport = null;
     }
     
 }

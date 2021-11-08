@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import org.hibernate.envers.*;
 
 /**
  *

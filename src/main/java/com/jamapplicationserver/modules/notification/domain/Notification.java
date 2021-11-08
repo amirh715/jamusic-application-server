@@ -54,7 +54,7 @@ public abstract class Notification extends AggregateRoot {
         this.message = message;
         this.route = route;
         this.senderType = senderType;
-        this.scheduledOn = scheduledOn;
+        this.scheduledOn = scheduledOn != null ? scheduledOn : DateTime.createNow();
         this.isSent = false;
         this.senderId = senderId;
         this.deliveries = new HashMap<>();
@@ -100,7 +100,7 @@ public abstract class Notification extends AggregateRoot {
     }
     
     public boolean isBulk() {
-        return this.getRecipients().size() > 1;
+        return getRecipients().size() > 1;
     }
     
     public DateTime getSentAt() {
@@ -123,34 +123,81 @@ public abstract class Notification extends AggregateRoot {
         return this.deliveries.keySet();
     }
     
-    public Map<Recipient, NotificationDelivery> getDeliveries() {
-        return this.deliveries;
+    public Set<NotificationDelivery> getDeliveries() {
+        return this.deliveries.values().stream().collect(Collectors.toSet());
+    }
+    
+    public boolean hasRemainingDeliveries() {
+        return this.deliveries.values()
+                .stream()
+                .filter(d -> !d.isDelivered())
+                .count() > 0;
+    }
+    
+    public NotifType getType() {
+        if(this instanceof FCMNotification)
+            return NotifType.FCM;
+        if(this instanceof EmailNotification)
+            return NotifType.EMAIL;
+        if(this instanceof SMSNotification)
+            return NotifType.SMS;
+        else
+            return null;
     }
     
     public final Result addRecipient(Recipient recipient) {
         
-        if(this.isSent())
+        if(isSent())
             return Result.fail(new NotificationIsAlreadySentError());
         
-        if(this.getRecipients().size() >= MAX_ALLOWED_RECIPIENTS)
+        if(getRecipients().size() >= MAX_ALLOWED_RECIPIENTS)
             return Result.fail(new MaxAllowedRecipientsExceededError());
+        
+        switch(getType()) {
+            case FCM:
+                if(!recipient.hasFCMToken())
+                    return Result.fail(new RecipientIsNotEligibleForThisNotificationTypeError());
+                break;
+            case EMAIL:
+                if(!recipient.hasEmailAddress())
+                    return Result.fail(new RecipientIsNotEligibleForThisNotificationTypeError());
+                if(!recipient.isEmailVerified())
+                    return Result.fail(new RecipientIsNotEligibleForThisNotificationTypeError());
+                break;
+            case SMS:
+                if(!recipient.hasMobileNo())
+                    return Result.fail(new RecipientIsNotEligibleForThisNotificationTypeError());
+                break;
+            default:
+                return Result.fail(new ValidationError("Notification type is invalid"));
+        }
             
         final NotificationDelivery delivery = NotificationDelivery.create(recipient);
-        this.deliveries.put(recipient, delivery);
+        deliveries.put(recipient, delivery);
         
-        this.modified();
+        modified();
         
         return Result.ok();
     }
     
     public final void removeRecipient(Recipient recipient) {
+        if(isSent()) return;
+        deliveries.remove(recipient);
+        modified();
+    }
+    
+    public final Result replaceRecipients(Set<Recipient> recipients) {
         
-        if(this.isSent()) return;
+        getRecipients().stream()
+                .filter(recipient -> !recipients.contains(recipient))
+                .forEach(recipientToRemove -> removeRecipient(recipientToRemove));
         
-        this.deliveries.remove(recipient);
+        for(Recipient recipient : recipients) {
+            final Result result = addRecipient(recipient);
+            if(result.isFailure) return result;
+        }
         
-        this.modified();
-        
+        return Result.ok();
     }
     
     public final boolean hasRecipient(Recipient recipient) {
@@ -162,23 +209,23 @@ public abstract class Notification extends AggregateRoot {
             DateTime deliveredAt
     ) {
         
-        if(!this.isSent()) return;
+        if(!isSent()) return;
+        if(isDelivered(recipient)) return;
         
         final NotificationDelivery delivery =
                 NotificationDelivery.create(recipient, deliveredAt, true);
         
-        this.deliveries.replace(recipient, delivery);
+        deliveries.put(recipient, delivery);
         
-        this.modified();
+        modified();
     }
     
     public final void markAsSent() {
-        if(this.isSent()) return;
-        if(!this.isOnSchedule()) return;
+        if(isSent()) return;
+        if(!isOnSchedule()) return;
         this.sentAt = DateTime.createNow();
         this.isSent = true;
-        this.modified();
-        // domain event ??
+        modified();
     }
     
     public boolean isOnSchedule() {
@@ -186,7 +233,9 @@ public abstract class Notification extends AggregateRoot {
     }
     
     public final boolean isDelivered(Recipient recipient) {
-        return this.deliveries.get(recipient).isDelivered(); 
+        return
+                deliveries.containsKey(recipient) &&
+                deliveries.get(recipient).isDelivered();
     }
     
     public final boolean isSent() {
@@ -194,23 +243,88 @@ public abstract class Notification extends AggregateRoot {
     }
     
     public Result edit(
-            NotifTitle title,
-            NotifType type,
-            Message message,
-            URL route,
+            Optional<NotifTitle> title,
+            Optional<Message> message,
+            Optional<URL> route,
             DateTime scheduledOn
     ) {
         
-        if(this.isSent())
+        if(isSent())
             return Result.fail(new NotificationIsAlreadySentError());
+
+        if(title != null) {
+            title.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.title)) {
+                            this.title = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.title != null) {
+                            this.title = null;
+                            modified();
+                        }
+                    }
+            );
+        }
         
-        this.title = title;
-        this.message = message;
-        this.route = route;
-        this.scheduledOn = scheduledOn;
+        if(message != null) {
+            message.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.message)) {
+                            this.message = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.message != null) {
+                            this.message = null;
+                            modified();
+                        }
+                    }
+            );
+        }
         
-        this.modified();
+        if(route != null) {
+            route.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.route)) {
+                            this.route = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.route != null) {
+                            this.route = null;
+                            modified();
+                        }
+                    }
+            );
+        }
+
+        if(scheduledOn != null) {
+            this.scheduledOn = scheduledOn;
+            modified();
+        }
         
+        return Result.ok();
+    }
+    
+    public Result edit(
+            Optional<NotifTitle> title,
+            Optional<Message> message,
+            Optional<URL> route,
+            DateTime scheduledOn,
+            Set<Recipient> recipients
+    ) {
+        
+        final Result editResult = edit(title, message, route, scheduledOn);
+        if(editResult.isFailure) return editResult;
+        
+        final Result recipientsReplacementResult = replaceRecipients(recipients);
+        if(recipientsReplacementResult.isFailure) return recipientsReplacementResult;
+
         return Result.ok();
     }
     
@@ -221,7 +335,8 @@ public abstract class Notification extends AggregateRoot {
             URL route,
             SenderType senderType,
             DateTime scheduledOn,
-            UniqueEntityId senderId
+            UniqueEntityId senderId,
+            Set<Recipient> recipients
     ) {
         
         if(type == null)
@@ -232,13 +347,17 @@ public abstract class Notification extends AggregateRoot {
             return Result.fail(new ValidationError("Notification needs to be scheduled"));
         if(senderId == null)
             return Result.fail(new ValidationError("Notification sender id is required"));
+        if(scheduledOn.getValue().isBefore(LocalDateTime.now()))
+            return Result.fail(new ValidationError("Notification is scheduled in the past"));
+        if(recipients == null || recipients.isEmpty())
+            return Result.fail(new ValidationError("Notification must have at least one recipient"));
         
-        Notification entity;
+        Notification instance;
         
         switch(type) {
             case SMS:
                 
-                entity = new SMSNotification(
+                instance = new SMSNotification(
                         title,
                         message,
                         route,
@@ -250,7 +369,7 @@ public abstract class Notification extends AggregateRoot {
                 break;
             case FCM:
                 
-                entity = new FCMNotification(
+                instance = new FCMNotification(
                         title,
                         message,
                         route,
@@ -262,7 +381,7 @@ public abstract class Notification extends AggregateRoot {
                 break;
             case EMAIL:
                 
-                entity = new EmailNotification(
+                instance = new EmailNotification(
                         title,
                         message,
                         route,
@@ -276,7 +395,12 @@ public abstract class Notification extends AggregateRoot {
                 return Result.fail(new ValidationError("Notification type is unknown"));
         }
         
-        return Result.ok(entity);
+        for(Recipient recipient : recipients) {
+            final Result result = instance.addRecipient(recipient);
+            if(result.isFailure) return result;
+        }
+        
+        return Result.ok(instance);
     }
 
     public static final Result<Notification> reconstitute(
@@ -284,7 +408,7 @@ public abstract class Notification extends AggregateRoot {
             UUID id,
             String title,
             String message,
-            String route,
+            URL route,
             String senderType,
             LocalDateTime sentAt,
             boolean isSent,
@@ -292,10 +416,10 @@ public abstract class Notification extends AggregateRoot {
             UUID senderId,
             LocalDateTime createdAt,
             LocalDateTime lastModifiedAt,
-            Map<Recipient, NotificationDelivery> deliveries
+            Set<NotificationDelivery> deliveries
     ) {
         
-        Notification entity;
+        Notification instance;
         
         final ArrayList<Result> combinedProps = new ArrayList<>();
         
@@ -326,35 +450,31 @@ public abstract class Notification extends AggregateRoot {
         if(combinedPropsResult.isFailure) return combinedPropsResult;
         
         URL routeURL = null;
-        try {
-            if(route != null) routeURL = new URL(route);
-        } catch(MalformedURLException e) {
-            return Result.fail(new ValidationError("Route is invalid"));
-        }
         
         switch(typeOrError.getValue()) {
             case SMS:
                 
-                entity =
+                instance =
                         new SMSNotification(
                                 idOrError.getValue(),
-                                titleOrError.getValue(),
-                                messageOrError.getValue(),
-                                routeURL,
+                                title != null ? titleOrError.getValue() : null,
+                                message != null ? messageOrError.getValue() : null,
+                                routeURL != null ? routeURL : null,
                                 senderTypeOrError.getValue(),
                                 scheduledOnOrError.getValue(),
                                 senderIdOrError.getValue(),
-                                sentAtOrError.getValue(),
+                                sentAt != null ? sentAtOrError.getValue() : null,
                                 isSent,
                                 createdAtOrError.getValue(),
                                 lastModifiedAtOrError.getValue(),
-                                deliveries
+                                deliveries.stream()
+                                    .collect(Collectors.toMap(k -> k.getRecipient(), v -> v))
                         );
                 
             break;
             case FCM:
                 
-                entity =
+                instance =
                         new FCMNotification(
                                 idOrError.getValue(),
                                 titleOrError.getValue(),
@@ -367,13 +487,14 @@ public abstract class Notification extends AggregateRoot {
                                 isSent,
                                 createdAtOrError.getValue(),
                                 lastModifiedAtOrError.getValue(),
-                                deliveries
+                                deliveries.stream()
+                                    .collect(Collectors.toMap(k -> k.getRecipient(), v -> v))
                         );
                 
             break;
             case EMAIL:
                 
-                entity =
+                instance =
                         new EmailNotification(
                                 idOrError.getValue(),
                                 titleOrError.getValue(),
@@ -386,15 +507,16 @@ public abstract class Notification extends AggregateRoot {
                                 isSent,
                                 createdAtOrError.getValue(),
                                 lastModifiedAtOrError.getValue(),
-                                deliveries
+                                deliveries.stream()
+                                    .collect(Collectors.toMap(k -> k.getRecipient(), v -> v))
                         );
                 
             break;
             default:
-                entity = null;
+                instance = null;
         }
         
-        return Result.ok(entity);
+        return Result.ok(instance);
     }
     
 }

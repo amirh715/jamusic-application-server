@@ -294,67 +294,170 @@ public class Album extends Artwork {
     @Override
     public Result edit(
             Title title,
-            Description description,
-            TagList tags,
-            GenreList genres,
-            Flag flag,
-            RecordLabel recordLabel,
-            RecordProducer producer,
-            ReleaseDate releaseYear,
+            Optional<Description> description,
+            Optional<TagList> tags,
+            Optional<GenreList> genres,
+            Optional<Flag> flag,
+            Optional<RecordLabel> recordLabel,
+            Optional<RecordProducer> producer,
+            Optional<ReleaseDate> releaseDate,
             UniqueEntityId updaterId
     ) {
         
-        this.title = title != null ? title : this.title;
-        this.description = description != null ? description : null;
-        this.tags = tags != null ? tags : null;
-        this.flag = flag != null ? flag : null;
-        this.recordLabel = recordLabel != null ? recordLabel : null;
-        this.producer = producer != null ? producer : null;
-        this.releaseYear = releaseYear != null ? releaseYear : null;
+        if(title != null) {
+            this.title = title;
+            modified();
+        }
+        
+        if(description != null) {
+            description.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.description)) {
+                            this.description = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.description != null) {
+                            this.description = null;
+                            modified();
+                        }
+                    }
+            );
+        }
+        
+        if(tags != null) {
+            tags.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.tags)) {
+                            this.tags = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.tags != null) {
+                            this.tags = null;
+                            modified();
+                        }
+                    }
+            );
+        }
 
         if(genres != null) {
             
-            if(artist != null && artist.getGenres() != null) {
+            if(genres.isPresent()) {
                 
-                final boolean areAlbumGenresThoseOfArtistsGenres =
-                        genres.getValue()
-                        .stream()
-                        .allMatch(albumGenre ->
-                                artist.getGenres().getValue()
-                                .stream()
-                                .anyMatch(artistGenre ->
-                                        artistGenre.equals(albumGenre) ||
-                                        artistGenre.isSubGenreOf(albumGenre)
-                                )
-                        );
-                if(!areAlbumGenresThoseOfArtistsGenres)
-                    return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+                if(artist != null && artist.getGenres() != null) {
+
+                    final boolean areAlbumGenresThoseOfArtistsGenres =
+                            genres.get().getValue()
+                            .stream()
+                            .allMatch(albumGenre ->
+                                    artist.getGenres().getValue()
+                                    .stream()
+                                    .anyMatch(artistGenre ->
+                                            artistGenre.equals(albumGenre) ||
+                                            artistGenre.isSubGenreOf(albumGenre)
+                                    )
+                            );
+                    if(!areAlbumGenresThoseOfArtistsGenres)
+                        return Result.fail(new GenresMustMatchASubsetOfArtistsOrAlbumsGenresError());
+
+                }
+            
+                this.genres = genres.get();
+                
+            } else {
+                
+                if(this.genres != null) {
+                    this.genres = null;
+                    modified();
+                }
                 
             }
             
-            this.genres = genres;
-            
+        }
+        
+        if(flag != null) {
+            flag.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.flag)) {
+                            this.flag = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.flag != null) {
+                            this.flag = null;
+                            modified();
+                        }
+                    }
+            );
         }
 
+        if(recordLabel != null) {
+            recordLabel.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.recordLabel)) {
+                            this.recordLabel = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.recordLabel != null) {
+                            this.recordLabel = null;
+                            modified();
+                        }
+                    }
+            );
+        }
+        
+        if(producer != null) {
+            producer.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.producer)) {
+                            this.producer = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.producer != null) {
+                            this.producer = null;
+                            modified();
+                        }
+                    }
+            );
+        }
 
+        if(releaseDate != null) {
+            releaseDate.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.releaseDate)) {
+                            this.releaseDate = newValue;
+                            modified();
+                        }
+                    },
+                    () -> {
+                        if(this.releaseDate != null) {
+                            this.releaseDate = null;
+                            modified();
+                        }
+                    }
+            );
+        }
+
+        this.updaterId = updaterId;
+        
         for(Track track : tracks) {
             track.setAlbum(this);
-            final Result result = track.edit(
-                    track.getTitle(),
-                    track.getDescription(),
-                    track.getTags(),
-                    genres,
-                    track.getFlag(),
-                    recordLabel,
-                    producer,
-                    releaseYear,
-                    updaterId
+            track.edit(
+                    this.genres,
+                    this.recordLabel,
+                    this.producer,
+                    this.releaseDate,
+                    this.updaterId
             );
-            if(result.isFailure) return result;
         }
-            
-        this.updaterId = updaterId;
-        modified();
         
         return Result.ok();
     }
@@ -372,14 +475,10 @@ public class Album extends Artwork {
         
         track.changeImage(getImagePath(), updaterId);
         track.edit(
-                track.getTitle(),
-                track.getDescription(),
-                track.getTags(),
-                getGenres(),
-                track.getFlag(),
-                recordLabel,
-                producer,
-                releaseYear,
+                this.genres,
+                this.recordLabel,
+                this.producer,
+                this.releaseDate,
                 updaterId
         );
         

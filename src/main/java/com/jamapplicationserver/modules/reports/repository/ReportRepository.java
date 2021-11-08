@@ -10,7 +10,11 @@ import java.util.stream.*;
 import java.time.*;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.ReportModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.UserRoleEnum;
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.UserModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.ReportStatusEnum;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.reports.domain.*;
 import com.jamapplicationserver.core.domain.*;
@@ -35,7 +39,7 @@ public class ReportRepository implements IReportRepository {
         try {
             
             final ReportModel model = em.find(ReportModel.class, id.toValue());
-            
+    
             if(model == null) return null;
             
             return ReportMapper.toDomain(model);
@@ -78,8 +82,6 @@ public class ReportRepository implements IReportRepository {
                 );
             }
             
-            System.out.println("Predicates Size : " + predicates.size());
-            
             final List<ReportModel> results =
                     em.createQuery(cq).getResultList();
             
@@ -103,14 +105,16 @@ public class ReportRepository implements IReportRepository {
         
         try {
             
-            final UserModel model = em.find(UserModel.class, id.toValue());
+            final UserModel model =
+                    em.find(UserModel.class, id.toValue());
             
             if(model == null) return null;
             
             return ReportMapper.toReporter(model);
             
+        } catch(NoResultException e) {
+            return null;
         } catch(Exception e) {
-            e.printStackTrace();
             throw e;
         } finally {
             em.close();
@@ -131,6 +135,7 @@ public class ReportRepository implements IReportRepository {
             query.setParameter(1, processorRoles);
             query.setParameter(2, id.toValue());
             final UserModel model = (UserModel) query.getSingleResult();
+            if(model == null) return null;
             
             return ReportMapper.toProcessor(model);
         } catch(Exception e) {
@@ -153,6 +158,7 @@ public class ReportRepository implements IReportRepository {
             final Query query = em.createQuery(q);
             query.setParameter(1, UserRoleEnum.ADMIN);
             final UserModel model = (UserModel) query.getSingleResult();
+            if(model == null) return null;
             
             return ReportMapper.toProcessor(model);
             
@@ -174,6 +180,7 @@ public class ReportRepository implements IReportRepository {
             
             final LibraryEntityModel model =
                     em.find(LibraryEntityModel.class, id.toValue());
+            if(model == null) return null;
             
             return ReportMapper.toReportedEntity(model);
             

@@ -5,9 +5,10 @@
  */
 package com.jamapplicationserver.modules.reports.repository;
 
+import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.reports.domain.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
 /**
  *
@@ -37,6 +38,7 @@ public class ReportMapper {
                 model.getArchivedAt(),
                 reporter,
                 reportedEntity,
+                model.getType().toString(),
                 processor,
                 model.getCreatedAt(),
                 model.getLastModifiedAt()
@@ -50,6 +52,7 @@ public class ReportMapper {
         model.setId(entity.id.toValue());
         model.setMessage(entity.getMessage().getValue());
         model.setStatus(ReportStatusEnum.valueOf(entity.getStatus().getValue()));
+        model.setType(ReportTypeEnum.valueOf(entity.getReportType().toString()));
         model.setProcessorNote(entity.getProcessorNote() != null ? entity.getProcessorNote().getValue() : null);
         model.setAssignedAt(entity.getAssignedAt() != null ? entity.getAssignedAt().getValue() : null);
         model.setProcessedAt(entity.getProcessedAt() != null ? entity.getProcessedAt().getValue() : null);

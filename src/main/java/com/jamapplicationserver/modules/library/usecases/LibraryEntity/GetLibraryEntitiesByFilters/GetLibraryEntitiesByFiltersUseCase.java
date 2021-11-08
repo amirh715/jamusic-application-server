@@ -5,9 +5,10 @@
  */
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibraryEntitiesByFilters;
 
-import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
 import java.util.*;
 import java.util.stream.Collectors;
+import com.jamapplicationserver.modules.library.infra.services.LibraryQueryService;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.GetLibraryEntitiesByFiltersRequestDTO;
@@ -20,7 +21,7 @@ import com.jamapplicationserver.modules.library.infra.services.*;
  *
  * @author dada
  */
-public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEntitiesByFiltersRequestDTO, String> {
+public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEntitiesByFiltersRequestDTO, Set<LibraryEntityDetails>> {
     
     private final ILibraryQueryService queryService;
     
@@ -31,7 +32,7 @@ public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEn
     }
     
     @Override
-    public Result execute(GetLibraryEntitiesByFiltersRequestDTO request) throws GenericAppException {
+    public Result<Set<LibraryEntityDetails>> execute(GetLibraryEntitiesByFiltersRequestDTO request) throws GenericAppException {
         
         System.out.println("GetLibraryEntitiesByFiltersUsecase");
         

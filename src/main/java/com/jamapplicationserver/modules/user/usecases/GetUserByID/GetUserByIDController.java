@@ -6,10 +6,9 @@
 package com.jamapplicationserver.modules.user.usecases.GetUserByID;
 
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.user.domain.errors.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.modules.user.domain.*;
+import com.jamapplicationserver.modules.user.infra.DTOs.queries.UserDetails;
 
 /**
  *
@@ -30,25 +29,26 @@ public class GetUserByIDController extends BaseController {
         
         try {
             
-            final Result<User> result = this.useCase.execute(this.req.params(":id"));
+            final Result<UserDetails> result = useCase.execute(this.req.params(":id"));
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
-                if(error instanceof ValidationError)
-                    this.clientError(error);
-                
-                if(error instanceof UserDoesNotExistError)
-                    this.notFound(error);
+                if(error instanceof NotFoundError)
+                    notFound(error);
+                if(error instanceof ConflictError)
+                    conflict(error);
+                if(error instanceof ClientErrorError)
+                    clientError(error);
                 
                 return;            
             }
             
-            this.ok(result.getValue());
+            ok(result.getValue());
             
         } catch(GenericAppException e) {
-            this.fail(e);
+            fail(e);
         }
 
     }

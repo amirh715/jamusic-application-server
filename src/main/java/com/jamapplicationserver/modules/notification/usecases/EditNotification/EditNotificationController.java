@@ -5,9 +5,12 @@
  */
 package com.jamapplicationserver.modules.notification.usecases.EditNotification;
 
+import java.util.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.notification.infra.DTOs.commands.EditNotificationRequestDTO;
+import com.jamapplicationserver.utils.MultipartFormDataUtil;
 
 /**
  *
@@ -26,26 +29,42 @@ public class EditNotificationController extends BaseController {
         
         try {
             
-            final Result result = this.usecase.execute(null);
+            final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
+            
+            final EditNotificationRequestDTO dto =
+                    new EditNotificationRequestDTO(
+                            fields.get("id"),
+                            fields.get("type"),
+                            fields.get("title"),
+                            fields.get("message"),
+                            fields.get("route"),
+                            fields.get("scheduledOn"),
+                            fields.get("sendNow"),
+                            fields.get("recipients"),
+                            subjectId,
+                            subjectRole
+                    );
+            
+            final Result result = usecase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
             
-            this.ok(result.getValue());
+            noContent();
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

@@ -43,5 +43,17 @@ public class GenreList extends ValueObject {
         return Result.ok(new GenreList(genres));
     }
     
+    public static final Result<Optional<GenreList>> createNullable(Set<Genre> genres) {
+        
+        if(genres == null || genres.isEmpty())
+            return Result.ok(Optional.empty());
+        
+        final Result result = create(genres);
+        if(result.isFailure)
+            return Result.fail(result.getError());
+        else
+            return Result.ok(Optional.of(result.getValue()));
+        
+    }
     
 }

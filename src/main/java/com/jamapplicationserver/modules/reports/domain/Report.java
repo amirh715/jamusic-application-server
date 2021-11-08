@@ -19,6 +19,7 @@ public class Report extends AggregateRoot {
     
     private final Message message;
     private ReportStatus status;
+    private ReportType type;
     private Message processorNote;
     private DateTime assignedAt;
     private DateTime processedAt;
@@ -31,14 +32,15 @@ public class Report extends AggregateRoot {
     private Report(
             Message message,
             Reporter reporter,
-            ReportedEntity reportedEntity
+            ReportedEntity reportedEntity,
+            ReportType type
     ) {
         super();
         this.message = message;
         this.reporter = reporter;
         this.reportedEntity = reportedEntity;
         this.status = ReportStatus.PENDING_ASSIGNMENT;
-        
+        this.type = type;
     }
     
     // reconstitution constructor
@@ -54,6 +56,7 @@ public class Report extends AggregateRoot {
             DateTime archivedAt,
             Reporter reporter,
             ReportedEntity reportedEntity,
+            ReportType type,
             Processor processor
     ) {
         super(id, createdAt, lastModifiedAt);
@@ -65,6 +68,7 @@ public class Report extends AggregateRoot {
         this.archivedAt = archivedAt;
         this.reporter = reporter;
         this.reportedEntity = reportedEntity;
+        this.type = type;
         this.processor = processor;
     }
     
@@ -100,20 +104,36 @@ public class Report extends AggregateRoot {
         return this.processor;
     }
     
+    public ReportType getReportType() {
+        return this.type;
+    }
+    
     public ReportedEntity getReportedEntity() {
         return this.reportedEntity;
     }
     
+    public boolean isTechnicalReport() {
+        return this.type.isTechnical();
+    }
+    
+    public boolean isContentReport() {
+        return this.type.isContentRelated();
+    }
+    
+    public boolean hasReportedEntity() {
+        return this.reportedEntity != null;
+    }
+    
     public Result markAsAssignedTo(Processor processor) {
         // report has already passed assigning stage
-        if(this.status.isAssigned())
+        if(status.isAssigned())
             return Result.fail(new ReportIsAssignedError());
-        if(this.status.isProcessed())
+        if(status.isProcessed())
             return Result.fail(new ReportIsProcessedError());
-        if(this.status.isArchived())
+        if(status.isArchived())
             return Result.fail(new ReportIsArchivedError());
         
-        if(this.isAppBugReport()) { // general app bug report
+        if(!hasReportedEntity()) { // general app bug report
             
             // general app bug report must be assigned to the admin
             if(!processor.getRole().isAdmin()) return Result.fail(new AppBugReportsMustBeAssignedToAdminError());
@@ -130,7 +150,7 @@ public class Report extends AggregateRoot {
         this.processor = processor;
         this.status = ReportStatus.ASSIGNED;
         this.assignedAt = DateTime.createNow();
-        this.modified();
+        modified();
         
         return Result.ok();
     }
@@ -150,35 +170,30 @@ public class Report extends AggregateRoot {
         this.processorNote = processorNote;
         this.status = ReportStatus.PROCESSED;
         this.processedAt = DateTime.createNow();
-        this.modified();
+        modified();
         
         return Result.ok();
     }
     
     public void archive() {
+        if(status.isArchived()) return;
         this.status = ReportStatus.ARCHIVED;
         this.archivedAt = DateTime.createNow();
-        this.modified();
+        modified();
     }
-    
-    public boolean isAppBugReport() {
-        return this.reportedEntity == null;
-    }
-    
-    public boolean isAppLibraryEntityReport() {
-        return this.reportedEntity != null;
-    }
-    
+
     public static final Result<Report> create(
             Message message,
             Reporter reporter,
-            ReportedEntity reportedEntity
+            ReportedEntity reportedEntity,
+            ReportType type
     ) {
         
-        if(message == null) return Result.fail(new ValidationError(""));
-        if(reporter == null) return Result.fail(new ValidationError(""));
+        if(message == null) return Result.fail(new ValidationError("Report message is required"));
+        if(reporter == null) return Result.fail(new ValidationError("Reporter of the report must be known"));
+        if(type == null) return Result.fail(new ValidationError("Report type is required"));
         
-        return Result.ok(new Report(message, reporter, reportedEntity));
+        return Result.ok(new Report(message, reporter, reportedEntity, type));
     }
     
     public static final Result<Report> reconstitute(
@@ -191,6 +206,7 @@ public class Report extends AggregateRoot {
             LocalDateTime archivedAt,
             Reporter reporter,
             ReportedEntity reportedEntity,
+            String type,
             Processor processor,
             LocalDateTime createdAt,
             LocalDateTime lastModifiedAt
@@ -203,6 +219,7 @@ public class Report extends AggregateRoot {
         final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromUUID(id);
         final Result<Message> messageOrError = Message.create(message);
         final Result<ReportStatus> statusOrError = ReportStatus.create(status);
+        final Result<ReportType> typeOrError = ReportType.create(type);
         final Result<Message> processorNoteOrError = Message.create(processorNote);
         final Result<DateTime> assignedAtOrError = DateTime.create(assignedAt);
         final Result<DateTime> processedAtOrError = DateTime.create(processedAt);
@@ -213,11 +230,12 @@ public class Report extends AggregateRoot {
         combinedProps.add(idOrError);
         combinedProps.add(messageOrError);
         combinedProps.add(statusOrError);
+        combinedProps.add(typeOrError);
         combinedProps.add(createdAtOrError);
         combinedProps.add(lastModifiedAtOrError);
         
         if(processorNote != null) combinedProps.add(processorNoteOrError);
-        if(assignedAtOrError != null) combinedProps.add(assignedAtOrError);
+        if(assignedAt != null) combinedProps.add(assignedAtOrError);
         if(processedAt != null) combinedProps.add(processedAtOrError);
         if(archivedAt != null) combinedProps.add(archivedAtOrError);
         
@@ -237,6 +255,7 @@ public class Report extends AggregateRoot {
                         archivedAt != null ? archivedAtOrError.getValue() : null,
                         reporter,
                         reportedEntity,
+                        typeOrError.getValue(),
                         processor
                 );
         

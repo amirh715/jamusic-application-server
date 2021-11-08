@@ -5,14 +5,14 @@
  */
 package com.jamapplicationserver.modules.library.infra.services;
 
+import java.util.*;
+import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.GenreDetails;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntitySummary;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.PlaylistDetails;
-import java.util.*;
-import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.repositories.LibraryEntityFilters;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
 
 /**
  *
@@ -36,9 +36,9 @@ public interface ILibraryQueryService {
     
     GenreDetails getGenreById(UniqueEntityId id);
     
-    Set<PlaylistDetails> getPlaylistsByPlayerId(UniqueEntityId playerId);
+    Set<PlaylistDetails> getAllPlaylistsOfPlayer(UniqueEntityId playerId);
     
-    PlaylistDetails getPlaylistById(UniqueEntityId playlistId);
+    PlaylistDetails getPlaylistById(UniqueEntityId playlistId, UniqueEntityId playerId);
     
     
 }

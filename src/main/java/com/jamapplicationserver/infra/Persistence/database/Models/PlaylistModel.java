@@ -40,7 +40,7 @@ public class PlaylistModel extends EntityModel {
             }
     )
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    private Set<TrackModel> tracks;
+    private Set<TrackModel> tracks = new HashSet<>();
     
     @ManyToOne()
     @JoinColumn(name="player_id")
@@ -80,6 +80,12 @@ public class PlaylistModel extends EntityModel {
     
     public void removeTrack(TrackModel track) {
         this.tracks.remove(track);
+    }
+    
+    public void replaceTracks(Set<TrackModel> newTracks) {
+        this.tracks.removeAll(tracks);
+        newTracks
+                .forEach(newTrack -> tracks.add(newTrack));
     }
     
     private void setTrack(Set<TrackModel> tracks) {

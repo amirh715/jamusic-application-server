@@ -5,17 +5,17 @@
  */
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
+import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
 import java.util.*;
 import java.util.stream.*;
-import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.modules.library.domain.core.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.core.infra.IQueryResponseDTO;
+import com.jamapplicationserver.core.domain.UserRole;
 
 /**
  *
  * @author dada
  */
-public class LibraryEntitySummary {
+public class LibraryEntitySummary implements IQueryResponseDTO {
     
     public final String id;
     public final String title;
@@ -40,6 +40,11 @@ public class LibraryEntitySummary {
         this.genres = genres;
     }
     
+    /**
+     * Factory method for creating LibraryEntitySummary instances
+     * @param entity
+     * @return LibraryEntitySummary
+     */
     public static LibraryEntitySummary create(LibraryEntityModel entity) {
         
         return new LibraryEntitySummary(
@@ -54,6 +59,20 @@ public class LibraryEntitySummary {
                     .map(genre -> genre.getTitleInPersian())
                     .collect(Collectors.toSet())
         );
+    }
+    
+    @Override
+    public IQueryResponseDTO filter(UserRole role) {
+        switch(role) {
+            case ADMIN: break;
+            case LIBRARY_MANAGER: break;
+            case SUBSCRIBER:
+                
+                break;
+            default:
+                return null;
+        }
+        return this;
     }
     
 }

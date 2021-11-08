@@ -8,6 +8,8 @@ package com.jamapplicationserver.core.infra;
 import spark.*;
 import java.io.*;
 import java.time.*;
+import java.util.*;
+import java.util.stream.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.TikaUtils;
 import com.jamapplicationserver.core.domain.*;
@@ -94,8 +96,18 @@ public abstract class BaseController implements Route {
     }
 
     // SUCCESS RESPONSES (2**)
-    protected <T> void ok(T dto) {
-        BaseController.jsonResponse(res, 200, dto);
+    protected <T extends IQueryResponseDTO> void ok(T dto) {
+        BaseController.jsonResponse(res, 200, dto.filter(subjectRole));
+    }
+    
+    protected <T extends IQueryResponseDTO> void ok(Set<T> dto) {
+        BaseController.jsonResponse(
+                res,
+                200,
+                dto
+                        .stream()
+                        .map(item -> item.filter(subjectRole))
+                        .collect(Collectors.toSet()));
     }
     
     protected void sendFile(InputStream stream) {

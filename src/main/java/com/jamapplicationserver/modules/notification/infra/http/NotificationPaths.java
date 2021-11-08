@@ -14,9 +14,8 @@ public class NotificationPaths {
     public static final String CREATE_NOTIFICATION = "/";
     public static final String GET_NOTIFICATIONS_BY_FILTERS = "/";
     public static final String GET_NOTIFICATION_BY_ID = "/:id";
-    public static final String GET_APP_NOTIFICATIONS_BY_RECIPIENT_ID = "/app/:recipientId";
+    public static final String GET_NOTIFICATIONS_OF_RECIPIENT = "/recipient/:recipientId";
     public static final String EDIT_NOTIFICATION = "/";
-    public static final String MARK_APP_NOTIFICATION_AS_DELIVERED = "/app-delivered/:recipientId";
     public static final String REMOVE_NOTIFICATION = "/";
     
 }

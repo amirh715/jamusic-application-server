@@ -13,7 +13,7 @@ import java.util.*;
  */
 public abstract class ArtistDetails extends LibraryEntityDetails {
     
-    public final String instagramId;
+    public String instagramId;
     
     protected ArtistDetails(
             String id,
