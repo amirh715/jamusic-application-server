@@ -6,7 +6,6 @@
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.util.*;
-import java.util.stream.*;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import org.hibernate.envers.*;
@@ -100,16 +99,16 @@ public class UserModel extends EntityModel {
             foreignKey=@ForeignKey(name="updater_id_fk_key")
     )
     private UserModel updater;
-    
-    @OneToOne(mappedBy="user", cascade={CascadeType.MERGE, CascadeType.REMOVE}, fetch=FetchType.LAZY)
+
+    @Embedded
     @NotAudited
     private UserVerificationModel verification;
-    
-    @OneToOne(mappedBy="user", cascade={CascadeType.MERGE, CascadeType.REMOVE}, fetch=FetchType.LAZY)
+
+    @Embedded
     @NotAudited
     private UserEmailVerificationModel emailVerification;
-    
-    @OneToOne(mappedBy="user", cascade={CascadeType.MERGE, CascadeType.REMOVE}, fetch=FetchType.LAZY)
+
+    @Embedded
     @NotAudited
     private UserPasswordResetVerificationModel passwordResetVerification;
     

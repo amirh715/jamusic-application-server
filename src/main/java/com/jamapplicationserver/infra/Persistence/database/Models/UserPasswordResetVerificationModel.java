@@ -6,7 +6,6 @@
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import javax.persistence.*;
-import java.util.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -14,23 +13,16 @@ import java.time.LocalDateTime;
  *
  * @author amirhossein
  */
-@Entity
-@Table(name="users_password_reset_code")
+//@Entity
+//@Table(name="users_password_reset_code")
+@Embeddable
 public class UserPasswordResetVerificationModel implements Serializable {
     
-    @Id
-    @Column(name="user_id")
-    private UUID userId;
-    
-    @Column(name="code", nullable=false)
+    @Column(name="password_reset_code")
     private int code;
     
-    @Column(name="issued_at")
+    @Column(name="password_reset_issued_at")
     private LocalDateTime issuedAt;
-    
-    @OneToOne
-    @MapsId
-    private UserModel user;
     
     public int getCode() {
         return this.code;
@@ -46,14 +38,6 @@ public class UserPasswordResetVerificationModel implements Serializable {
     
     public void setIssuedAt(LocalDateTime issuedAt) {
         this.issuedAt = issuedAt;
-    }
-    
-    public UserModel getUser() {
-        return this.user;
-    }
-    
-    public void setUser(UserModel user) {
-        this.user = user;
     }
 
 }

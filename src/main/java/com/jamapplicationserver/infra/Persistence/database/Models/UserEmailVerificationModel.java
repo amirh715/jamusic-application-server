@@ -6,7 +6,6 @@
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.io.Serializable;
-import java.util.UUID;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 
@@ -14,23 +13,14 @@ import javax.persistence.*;
  *
  * @author amirhossein
  */
-@Entity
-@Table(name="users_email_verification", schema="jamschema")
+@Embeddable
 public class UserEmailVerificationModel implements Serializable {
     
-    @Id
-    @Column(name="user_id")
-    private UUID userID;
-    
-    @Column(name="link", unique=true, nullable=false)
+    @Column(name="email_verification_link", unique=true)
     private String link;
     
-    @Column(name="issued_at")
+    @Column(name="email_verification_link_issued_at")
     private LocalDateTime issuedAt;
-    
-    @OneToOne
-    @MapsId
-    private UserModel user;
     
     public String getLink() {
         return this.link;
@@ -46,14 +36,6 @@ public class UserEmailVerificationModel implements Serializable {
     
     public void setIssuedAt(LocalDateTime issuedAt) {
         this.issuedAt = issuedAt;
-    }
-    
-    public UserModel getUser() {
-        return this.user;
-    }
-    
-    public void setUser(UserModel user) {
-        this.user = user;
     }
     
 }

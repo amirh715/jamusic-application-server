@@ -7,41 +7,23 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.util.UUID;
 import java.time.LocalDateTime;
 
 /**
  *
  * @author amirhossein
  */
-@Entity
-@Table(name="users_verification", schema="jamschema")
+@Embeddable
 public class UserVerificationModel implements Serializable {
-
-    @Id
-    @Column(name="user_id")
-    private UUID userID;
     
-    @Column(name="code", nullable=false)
+    @Column(name="account_verification_code")
     private int code;
     
-    @Column(name="issued_at", nullable=false)
+    @Column(name="account_verification_code_issued_at")
     private LocalDateTime issued_at;
-    
-    @OneToOne
-    @MapsId
-    private UserModel user;
 
     public UserVerificationModel() {
 
-    }
-    
-    public UUID getUserID() {
-        return this.userID;
-    }
-    
-    public void setUserID(UUID userID) {
-        this.userID = userID;
     }
     
     public LocalDateTime getIssuedAt() {
@@ -59,28 +41,5 @@ public class UserVerificationModel implements Serializable {
     public void setCode(int code) {
         this.code = code;
     }
-    
-    public UserModel getUser() {
-        return this.user;
-    }
-    
-    public void setUser(UserModel user) {
-        this.user = user;
-    }
-    
-    @Override
-    public boolean equals(Object verif) {
-        if(verif == this)
-            return true;
-        if(!(verif instanceof UserVerificationModel))
-            return false;
-        UserVerificationModel v = (UserVerificationModel) verif;
-        return v.getUserID().equals(this.userID);
-    }
-    
-    @Override
-    public int hashCode() {
-        return this.userID.hashCode();
-    }
-    
+
 }
