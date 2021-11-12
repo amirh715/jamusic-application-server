@@ -5,25 +5,13 @@
  */
 package com.jamapplicationserver.modules.library.repositories;
 
-import com.jamapplicationserver.infra.Persistence.database.Models.BandModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.TrackModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.SingerModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.ArtistModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.ArtworkModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.UserModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.GenreModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.AlbumModel;
-import com.jamapplicationserver.modules.library.domain.Band.*;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
-import org.hibernate.FlushMode;
-import com.jamapplicationserver.core.infra.QueryScope;
+import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.core.domain.events.DomainEvents;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.repositories.mappers.*;
@@ -31,7 +19,6 @@ import com.jamapplicationserver.modules.library.domain.Band.Band;
 import com.jamapplicationserver.modules.library.domain.Singer.Singer;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
-import com.jamapplicationserver.core.logic.*;
 
 /**
  *
@@ -254,10 +241,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
     
     @Override
     public void save(LibraryEntity entity) throws EntityNotFoundException, Exception {
-        
-        System.out.println("save called on " + entity.getClass().getSimpleName());
-        System.out.println("entity.isPublished(): " + entity.isPublished());
-        
+
         final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
@@ -419,10 +403,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                                 builder.like(root.get("title"), toSearchPattern(searchTerm)),
                                 builder.like(root.get("description"), toSearchPattern(searchTerm)),
                                 builder.like(root.get("tags"), toSearchPattern(searchTerm)),
-                                builder.and(
-                                        builder.equal(root.type(), ArtworkModel.class),
-                                        builder.like(((Root<ArtworkModel>) (Root<?>) root).get("inheritedTags"), toSearchPattern(searchTerm))
-                                )
+                                builder.like(root.get("inheritedTags"), toSearchPattern(searchTerm))
                         );
                 predicates.add(predicate);
             }
