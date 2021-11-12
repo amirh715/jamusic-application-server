@@ -5,28 +5,18 @@
  */
 package com.jamapplicationserver.modules.user.repository;
 
-import com.jamapplicationserver.core.domain.UserRole;
-import com.jamapplicationserver.core.domain.MobileNo;
-import com.jamapplicationserver.core.domain.Email;
-import com.jamapplicationserver.infra.Persistence.database.Models.UserRoleEnum;
-import com.jamapplicationserver.infra.Persistence.database.Models.UserModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.UserVerificationModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.UserEmailVerificationModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.UserStateEnum;
-import com.jamapplicationserver.infra.Persistence.database.Models.UserPasswordResetVerificationModel;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
-import org.hibernate.exception.ConstraintViolationException;
 import java.util.*;
 import java.nio.file.Path;
-import java.net.*;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+import org.hibernate.exception.ConstraintViolationException;
+import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.user.domain.*;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
-import java.util.stream.Collectors;
-import com.jamapplicationserver.core.domain.DateTime;
 import com.jamapplicationserver.core.logic.Result;
-import java.time.LocalDateTime;
 import com.jamapplicationserver.modules.user.repository.exceptions.*;
 
 /**
@@ -149,17 +139,23 @@ public class UserRepository implements IUserRepository {
     }
     
     @Override
-    public User fetchByEmailVerificationLink(URL link) {
+    public User fetchByEmailVerificationToken(UUID token) {
         
         final EntityManager em = emfh.createEntityManager();
         
         try {
             
-            TypedQuery<UserModel> query =
-                    em.createQuery("SELECT ev.user FROM UserEmailVerificationModel ev", UserModel.class);
+            final String query = "SELECT users FROM UserModel users WHERE users.emailVerification.token = ?1";
             
-            return toDomain(query.getSingleResult());
+            final UserModel user =
+                    em.createQuery(query, UserModel.class)
+                    .setParameter(1, token)
+                    .getSingleResult();
             
+            return toDomain(user);
+            
+        } catch(NoResultException e) {
+            return null;
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
@@ -211,19 +207,8 @@ public class UserRepository implements IUserRepository {
                 if(user.isAdmin()) {
                     
                     final UsersFilters adminOnlyFilter =
-                            new UsersFilters(
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    UserRole.ADMIN,
-                                    null,
-                                    null
-                            );
+                            new UsersFilters();
+                    adminOnlyFilter.role = UserRoleEnum.ADMIN;
                     
                     final CriteriaQuery<UserModel> cq = buildCriteriaQuery(adminOnlyFilter);
                     
@@ -231,7 +216,7 @@ public class UserRepository implements IUserRepository {
                     
                     // an admin already exists
                     if(admin != null)
-                        throw new Exception();
+                        throw new OnlyOneAdminCanExistException();
                     
                 }
                 
@@ -291,8 +276,57 @@ public class UserRepository implements IUserRepository {
 
     }
     
+    /**
+     * NOTICE: This method is broken. DO NOT USE!
+     * @param user
+     * @throws RemovingUserIsNotActiveException
+     * @throws RemovingUserIsNotAdminException 
+     */
     @Override
-    public void remove(User user) throws Exception {
+    public void remove(User user)
+            throws RemovingUserIsNotActiveException,
+            RemovingUserIsNotAdminException
+            {
+        
+        final EntityManager em = emfh.createEntityManager();
+        final EntityTransaction tnx = em.getTransaction();
+        
+        try {
+                
+            tnx.begin();
+            
+            final UserModel model = em.find(UserModel.class, user.id.toValue());
+            
+            UserModel updater;
+            if(user.getId().equals(user.getUpdaterId()))
+                updater = model;
+            else
+                updater = em.find(UserModel.class, user.getUpdaterId().toValue());
+            
+            if(!updater.isActive())
+                throw new RemovingUserIsNotActiveException();
+            
+            if(!model.equals(updater) && !updater.isAdmin())
+                throw new RemovingUserIsNotAdminException();
+            
+            em.remove(model);
+            
+            tnx.commit();
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+            tnx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+        
+    }
+    
+    @Override
+    public void remove(User user, UniqueEntityId removerId)
+            throws RemovingUserIsNotActiveException,
+            RemovingUserIsNotAdminException {
         
         final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
@@ -301,14 +335,26 @@ public class UserRepository implements IUserRepository {
             
             tnx.begin();
             
-            final UserModel model = em.find(UserModel.class, user.id.toValue());
+            final UserModel model = em.find(UserModel.class, user.getId().toValue());
+            
+            UserModel updater;
+            if(user.getId().equals(removerId)) {
+                updater = model;
+            } else {
+                updater = em.find(UserModel.class, removerId.toValue());
+            }
+            
+            if(!updater.isActive())
+                throw new RemovingUserIsNotActiveException();
+            
+            if(!updater.equals(model) && !updater.isAdmin())
+                throw new RemovingUserIsNotAdminException();
             
             em.remove(model);
             
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
             tnx.rollback();
             throw e;
         } finally {
@@ -352,14 +398,8 @@ public class UserRepository implements IUserRepository {
         if(model.getEmailVerification() != null) {
             final UserEmailVerificationModel vm = model.getEmailVerification();
             final DateTime issuedAt = DateTime.create(vm.getIssuedAt()).getValue();
-            URL link;
-            try {
-                link = new URL(vm.getLink());
-                emailVerification =
-                    EmailVerification.create(link, issuedAt).getValue();
-            } catch(MalformedURLException e) {
-                System.err.println(e);
-            }
+            emailVerification =
+                EmailVerification.create(vm.getToken(), issuedAt).getValue();
         }
         
         if(model.getPasswordResetVerification() != null) {
@@ -402,18 +442,20 @@ public class UserRepository implements IUserRepository {
             final UserVerificationModel vm = new UserVerificationModel();
             vm.setCode(code);
             vm.setIssuedAt(issuedAt.getValue());
-            vm.setUser(model);
             model.setVerification(vm);
+        } else {
+            model.setVerification(null);
         }
         
         if(entity.getEmailVerification() != null) {
-            final URL link = entity.getEmailVerification().getLink();
+            final UUID token = entity.getEmailVerification().getToken();
             final DateTime issuedAt = entity.getEmailVerification().getIssuedAt();
             final UserEmailVerificationModel evm = new UserEmailVerificationModel();
-            evm.setLink(link.toString());
+            evm.setToken(token);
             evm.setIssuedAt(issuedAt.getValue());
-            evm.setUser(model);
             model.setEmailVerification(evm);
+        } else {
+            model.setEmailVerification(null);
         }
         
         if(entity.getPasswordResetCode() != null) {
@@ -422,8 +464,9 @@ public class UserRepository implements IUserRepository {
             final UserPasswordResetVerificationModel prvm = new UserPasswordResetVerificationModel();
             prvm.setCode(code);
             prvm.setIssuedAt(issuedAt.getValue());
-            prvm.setUser(model);
             model.setPasswordResetVerification(prvm);
+        } else {
+            model.setPasswordResetVerification(null);
         }
         
         model.setId(entity.id.toValue());
@@ -462,7 +505,6 @@ public class UserRepository implements IUserRepository {
                 final UserVerificationModel vm = new UserVerificationModel();
                 vm.setCode(code);
                 vm.setIssuedAt(issuedAt.getValue());
-                vm.setUser(model);
                 model.setVerification(vm);
             }
         }
@@ -471,15 +513,14 @@ public class UserRepository implements IUserRepository {
             final EmailVerification verification = entity.getEmailVerification();
             final UserEmailVerificationModel verificationModel = model.getEmailVerification();
             if(model.getEmailVerification() != null) {
-                verificationModel.setLink(verification.getLink().toString());
+                verificationModel.setToken(verification.getToken());
                 verificationModel.setIssuedAt(verification.getIssuedAt().getValue());
             } else {
-                final URL link = entity.getEmailVerification().getLink();
+                final UUID token = entity.getEmailVerification().getToken();
                 final DateTime issuedAt = entity.getEmailVerification().getIssuedAt();
                 final UserEmailVerificationModel evm = new UserEmailVerificationModel();
-                evm.setLink(link.toString());
+                evm.setToken(token);
                 evm.setIssuedAt(issuedAt.getValue());
-                evm.setUser(model);
                 model.setEmailVerification(evm);
             }
         }
@@ -496,7 +537,6 @@ public class UserRepository implements IUserRepository {
                 final UserPasswordResetVerificationModel prvm = new UserPasswordResetVerificationModel();
                 prvm.setCode(code);
                 prvm.setIssuedAt(issuedAt.getValue());
-                prvm.setUser(model);
                 model.setPasswordResetVerification(prvm);
             }
         }
