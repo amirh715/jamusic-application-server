@@ -5,7 +5,7 @@
  */
 package com.jamapplicationserver.core.domain;
 
-import com.jamapplicationserver.core.domain.ValueObject;
+import java.util.*;
 import com.jamapplicationserver.core.logic.*;
 
 /**
@@ -31,6 +31,19 @@ public class Email extends ValueObject<String> {
             return Result.fail(new ValidationError("Email is required."));
         
         return Result.ok(new Email(email));
+    }
+    
+    public static Result<Optional<Email>> createNullable(String value) {
+        
+        if(value == null || value.isBlank() || value.isEmpty())
+            return Result.ok(Optional.empty());
+        
+        final Result<Email> result = create(value);
+        if(result.isFailure)
+            return Result.fail(result.getError());
+        else
+            return Result.ok(Optional.of(result.getValue()));
+        
     }
     
 }
