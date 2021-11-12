@@ -19,17 +19,17 @@ import com.jamapplicationserver.modules.user.domain.*;
  */
 public class UsersFilters {
     
-    public final String searchTerm;
-    public final LocalDateTime createdAtFrom;
-    public final LocalDateTime createdAtTill;
-    public final LocalDateTime lastModifiedAtFrom;
-    public final LocalDateTime lastModifiedAtTill;
-    public final Boolean hasImage;
-    public final Boolean hasEmail;
-    public final UserStateEnum state;
-    public final UserRoleEnum role;
-    public final UUID creatorId;
-    public final UUID updaterId;
+    public String searchTerm;
+    public LocalDateTime createdAtFrom;
+    public LocalDateTime createdAtTill;
+    public LocalDateTime lastModifiedAtFrom;
+    public LocalDateTime lastModifiedAtTill;
+    public Boolean hasImage;
+    public Boolean hasEmail;
+    public UserStateEnum state;
+    public UserRoleEnum role;
+    public UUID creatorId;
+    public UUID updaterId;
     public Integer limit;
     public Integer offset;
     
@@ -57,6 +57,10 @@ public class UsersFilters {
         this.role = role != null ? UserRoleEnum.valueOf(role.getValue()) : null;
         this.creatorId = creatorId;
         this.updaterId = updaterId;
+    }
+    
+    public UsersFilters() {
+        
     }
     
 }
