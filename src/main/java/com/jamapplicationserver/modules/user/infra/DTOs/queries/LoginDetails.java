@@ -50,8 +50,12 @@ public class LoginDetails implements IQueryResponseDTO {
     
     @Override
     public LoginDetails filter(UserRole role) {
-        
-        
+        switch(role) {
+            case ADMIN: break;
+            case LIBRARY_MANAGER: return null;
+            case SUBSCRIBER: return null;
+            default: return null;
+        }
         return this;
     }
     
