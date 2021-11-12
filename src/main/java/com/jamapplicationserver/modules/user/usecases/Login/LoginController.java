@@ -44,6 +44,7 @@ public class LoginController extends BaseController {
                 new LoginRequestDTO(
                         fields.get("mobile"),
                         fields.get("password"),
+                        fields.get("FCMToken"),
                         device,
                         ip,
                         os

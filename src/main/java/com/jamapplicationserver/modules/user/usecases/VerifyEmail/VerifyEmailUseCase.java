@@ -5,13 +5,12 @@
  */
 package com.jamapplicationserver.modules.user.usecases.VerifyEmail;
 
+import java.util.*;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
-import java.nio.file.*;
-import java.net.URL;
 
 /**
  *
@@ -31,25 +30,26 @@ public class VerifyEmailUseCase implements IUsecase<VerifyEmailRequestDTO, Strin
         System.out.println("VerifyEmailUseCase");
         
         try {
+
+            if(request.token == null)
+                return Result.fail(new ValidationError("Email verification token is required"));
+                
+            final UUID token = UUID.fromString(request.token);
             
-            final URL link =
-                    new URL(request.link);
+            final User user = repository.fetchByEmailVerificationToken(token);
             
-            final User user = this.repository.fetchByEmailVerificationLink(link);
+            if(user == null) return Result.fail(new EmailVerificationLinkDoesNotExistError());
             
-            if(user == null) return Result.fail(new UserDoesNotExistError());
-            
-            final Result result = user.verifyEmail(link);
+            final Result result = user.verifyEmail(token);
             
             if(result.isFailure) return result;
             
-            this.repository.save(user);
+            repository.save(user);
 
             return Result.ok();
             
-        } catch(InvalidPathException e) {
-            return Result.fail(new ValidationError("link is invalid"));
         } catch(Exception e) {
+            e.printStackTrace();
             throw new GenericAppException(e);
         }
         

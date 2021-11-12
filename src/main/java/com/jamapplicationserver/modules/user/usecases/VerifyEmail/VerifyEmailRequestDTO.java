@@ -11,12 +11,12 @@ package com.jamapplicationserver.modules.user.usecases.VerifyEmail;
  */
 public class VerifyEmailRequestDTO {
     
-    public final String link;
+    public final String token;
     
     public VerifyEmailRequestDTO(
-            String link
+            String token
     ) {
-        this.link = link;
+        this.token = token;
     }
     
 }

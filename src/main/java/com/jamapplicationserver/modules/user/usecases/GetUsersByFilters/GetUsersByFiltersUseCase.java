@@ -44,32 +44,23 @@ public class GetUsersByFiltersUseCase implements IUsecase<GetUsersByFiltersReque
             
             if(request.createdAtFrom != null)
                 combinedProps.add(createdAtFromOrError);
-            
             if(request.createdAtTill != null)
                 combinedProps.add(createdAtTillOrError);
-            
             if(request.lastModifiedAtFrom != null)
                 combinedProps.add(lastModifiedAtFromOrError);
-            
             if(request.lastModifiedAtTill != null)
                 combinedProps.add(lastModifiedAtTillOrError);
-            
             if(request.state != null)
                 combinedProps.add(stateOrError);
-            
             if(request.role != null) 
                 combinedProps.add(roleOrError);
-            
             if(request.creatorId != null)
                 combinedProps.add(creatorIdOrError);
-            
             if(request.updaterId != null)
                 combinedProps.add(updaterIdOrError);
             
             final Result combinedPropsResult = Result.combine(combinedProps);
-            
-            if(combinedPropsResult.isFailure)
-                return combinedPropsResult;
+            if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final UsersFilters filters =
                 new UsersFilters(

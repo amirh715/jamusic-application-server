@@ -5,11 +5,9 @@
  */
 package com.jamapplicationserver.modules.user.usecases.VerifyEmail;
 
-import java.util.Map;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.utils.MultipartFormDataUtil;
 
 /**
  *
@@ -30,32 +28,31 @@ public class VerifyEmailController extends BaseController {
         
         try {
             
-            final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
+            final VerifyEmailRequestDTO dto = new VerifyEmailRequestDTO(req.queryParams("token"));
             
-            final VerifyEmailRequestDTO dto = new VerifyEmailRequestDTO(fields.get("link"));
-            
-            final Result result = this.useCase.execute(dto);
+            final Result result = useCase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
             
-            this.noContent();
+            noContent();
                     
         } catch(Exception e) {
-            this.fail(e);
+            e.printStackTrace();
+            fail(e);
         }
         
     }

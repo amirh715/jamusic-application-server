@@ -40,20 +40,22 @@ public class LoginUseCase implements IUsecase<LoginRequestDTO, AuthToken> {
             
             final Result<MobileNo> mobileOrError = MobileNo.create(request.mobile);
             final Result<Password> passwordOrError = Password.create(request.password, false);
+            final Result<FCMToken> fcmTokenOrError = FCMToken.create(request.FCMToken);
             
             final Result[] combinedProps = {
                 mobileOrError,
-                passwordOrError
+                passwordOrError,
+                fcmTokenOrError
             };
             
             final Result combinedPropsResult = Result.combine(combinedProps);
-            
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final MobileNo mobile = mobileOrError.getValue();
             final Password password = passwordOrError.getValue();
+            final FCMToken fcmToken = fcmTokenOrError.getValue();
             
-            final User user = this.repository.fetchByMobile(mobile);
+            final User user = repository.fetchByMobile(mobile);
 
             if(user == null) return Result.fail(new UserMobileOrPasswordIsIncorrectError());
             
@@ -88,6 +90,13 @@ public class LoginUseCase implements IUsecase<LoginRequestDTO, AuthToken> {
             // generate token
             final String token =
                     JWTUtils.generateToken(user.id, user.getRole(), request.device);
+            
+            // if current fcm token is different from the new one, replace it
+            final FCMToken previousFCMToken = user.getFCMToken();
+            if(previousFCMToken != null && !previousFCMToken.equals(fcmToken)) {
+                user.changeFCMToken(fcmToken);
+                repository.save(user);
+            }
             
             loginResult = Result.ok(new AuthToken(token));
             auditLogin(user.id, loginResult, request);

@@ -24,13 +24,13 @@ public class VerifyAccountController extends BaseController {
         
         System.out.println("VerifyAccountController");
         
-        final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+        final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         
         try {
             
             final VerifyAccountRequestDTO dto = new VerifyAccountRequestDTO(
-                    fields.get("id"),
-                    fields.get("resetCode")
+                    fields.get("mobileNo"),
+                    fields.get("code")
             );
             
             final Result result = useCase.execute(dto);

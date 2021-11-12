@@ -32,46 +32,47 @@ public class EditUserController extends BaseController {
         try {
             
             
-            final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+            final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
             final InputStream profileImage = MultipartFormDataUtil
                     .toInputStream(
-                            this.req.raw().getPart("profileImage") != null ?
-                            this.req.raw().getPart("profileImage") : null
+                            req.raw().getPart("profileImage") != null ?
+                            req.raw().getPart("profileImage") : null
                     );
             final EditUserRequestDTO dto = new EditUserRequestDTO(
                     fields.get("id"),
                     fields.get("name"),
                     fields.get("email"),
                     Boolean.valueOf(fields.get("removeEmail")),
+                    fields.get("role"),
                     profileImage,
                     Boolean.valueOf(fields.get("removeProfileImage")),
                     subjectId,
                     subjectRole
             );
             
-            final Result result = this.useCase.execute(dto);
+            final Result result = useCase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
              
                 return;
             }
             
-            this.noContent();
+            noContent();
             
         } catch(Exception e) {
             e.printStackTrace();
-            this.fail(e);
+            fail(e);
         }
         
     }

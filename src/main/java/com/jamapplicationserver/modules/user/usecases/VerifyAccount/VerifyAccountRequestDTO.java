@@ -11,14 +11,14 @@ package com.jamapplicationserver.modules.user.usecases.VerifyAccount;
  */
 public class VerifyAccountRequestDTO {
     
-    public final String id;
+    public final String mobileNo;
     public final int code;
     
     public VerifyAccountRequestDTO(
-            String id,
+            String mobileNo,
             String code
     ) {
-        this.id = id;
+        this.mobileNo = mobileNo;
         this.code = Integer.parseInt(code);
     }
     

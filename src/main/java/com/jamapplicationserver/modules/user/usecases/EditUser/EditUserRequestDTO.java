@@ -19,6 +19,7 @@ public class EditUserRequestDTO extends DTOWithAuthClaims {
     public final String name;
     public final String email;
     public final Boolean removeEmail;
+    public final String role;
     public final InputStream profileImage;
     public final Boolean removeProfileImage;
     
@@ -27,6 +28,7 @@ public class EditUserRequestDTO extends DTOWithAuthClaims {
             String name,
             String email,
             boolean removeEmail,
+            String role,
             InputStream profileImage,
             boolean removeProfileImage,
             UniqueEntityId updaterId,
@@ -37,6 +39,7 @@ public class EditUserRequestDTO extends DTOWithAuthClaims {
         this.name = name;
         this.email = email;
         this.removeEmail = removeEmail;
+        this.role = role;
         this.profileImage = profileImage;
         this.removeProfileImage = removeProfileImage;
     }

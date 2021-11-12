@@ -28,7 +28,7 @@ public class ChangePasswordController extends BaseController {
         
         System.out.println("ChangePasswordController");
         
-        final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+        final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         final ChangePasswordRequestDTO dto =
                 new ChangePasswordRequestDTO(
                         fields.get("id"),
@@ -40,28 +40,28 @@ public class ChangePasswordController extends BaseController {
         
         try {
             
-            final Result result = this.useCase.execute(dto);
+            final Result result = useCase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                     
                 return;
             }
             
-            this.noContent();
+            noContent();
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

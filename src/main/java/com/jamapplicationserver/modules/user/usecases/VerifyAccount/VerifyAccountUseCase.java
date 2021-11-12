@@ -5,12 +5,11 @@
  */
 package com.jamapplicationserver.modules.user.usecases.VerifyAccount;
 
-import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
+import com.jamapplicationserver.core.domain.*;
 
 /**
  *
@@ -27,12 +26,15 @@ public class VerifyAccountUseCase implements IUsecase<VerifyAccountRequestDTO, R
         
         try {            
             
-            final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
+            final Result<MobileNo> mobileNoOrError =
+                    MobileNo.create(request.mobileNo);
             final int code = request.code;
             
-            if(idOrError.isFailure) return idOrError;
+            if(mobileNoOrError.isFailure) return mobileNoOrError;
             
-            final User user = this.repository.fetchById(idOrError.getValue());
+            final MobileNo mobileNo = mobileNoOrError.getValue();
+            
+            final User user = repository.fetchByMobile(mobileNo);
             
             if(user == null) return Result.fail(new UserDoesNotExistError());
             
@@ -40,7 +42,7 @@ public class VerifyAccountUseCase implements IUsecase<VerifyAccountRequestDTO, R
             
             if(result.isFailure) return result;
             
-            this.repository.save(user);
+            repository.save(user);
             
             return Result.ok();
             

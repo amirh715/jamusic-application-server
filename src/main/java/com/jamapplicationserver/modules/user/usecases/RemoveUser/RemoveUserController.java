@@ -28,7 +28,7 @@ public class RemoveUserController extends BaseController {
         
         System.out.println("RemoveUserController");
         
-        final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+        final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         
         try {
             
@@ -39,28 +39,28 @@ public class RemoveUserController extends BaseController {
                             subjectRole
                     );
             
-            final Result result = this.useCase.execute(dto);
+            final Result result = useCase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof ConflictError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 return;
             }
             
-            this.noContent();
+            noContent();
             
         } catch(Exception e) {
-            this.fail(e.getMessage());
+            fail(e.getMessage());
         }
         
     }

@@ -47,9 +47,9 @@ public class ActivateBlockUserUseCase implements IUsecase<ActivateBlockUserReque
             final UniqueEntityId id = idOrError.getValue();
             final UserState state = stateOrError.getValue();
             
-            final User user = this.repository.fetchById(id);
+            final User user = repository.fetchById(id);
             
-            final User updater = this.repository.fetchById(request.subjectId);
+            final User updater = repository.fetchById(request.subjectId);
             
             if(user == null) return Result.fail(new UserDoesNotExistError("Admin is not active"));
             
@@ -57,14 +57,14 @@ public class ActivateBlockUserUseCase implements IUsecase<ActivateBlockUserReque
             
             Result result;
             
-            if(!state.equals(UserState.ACTIVE))
+            if(state.equals(UserState.ACTIVE))
                 result = user.activateUser(updater);
             else
                 result = user.blockUser(updater);
             
             if(result.isFailure) return result;
 
-            this.repository.save(user);
+            repository.save(user);
             
             return Result.ok();
             

@@ -5,29 +5,33 @@
  */
 package com.jamapplicationserver.modules.user.usecases.RequestAccountVerificationCode;
 
-import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.modules.user.domain.*;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
 
 /**
  *
  * @author amirhossein
  */
-public class RequestAccountVerificationCodeUseCase implements IUsecase<UniqueEntityId, Result> {
+public class RequestAccountVerificationCodeUseCase implements IUsecase<String, String> {
     
     private final IUserRepository repository;
     
     @Override
-    public Result execute(UniqueEntityId id) throws GenericAppException {
+    public Result execute(String mobileNoString) throws GenericAppException {
         
         System.out.println("RequestAccountVerificationCodeUseCase");
 
         try {
             
-            final User user = this.repository.fetchById(id);
+            final Result<MobileNo> mobileNoOrError = MobileNo.create(mobileNoString);
+            if(mobileNoOrError.isFailure)
+                return mobileNoOrError;
+            final MobileNo mobileNo = mobileNoOrError.getValue();
+            
+            final User user = repository.fetchByMobile(mobileNo);
             
             if(user == null) return Result.fail(new UserDoesNotExistError());
         
@@ -35,7 +39,7 @@ public class RequestAccountVerificationCodeUseCase implements IUsecase<UniqueEnt
 
             if(result.isFailure) return result;
             
-            this.repository.save(user);
+            repository.save(user);
             
             return Result.ok();
             

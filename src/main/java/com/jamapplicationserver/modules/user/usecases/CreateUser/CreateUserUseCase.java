@@ -13,7 +13,6 @@ import com.jamapplicationserver.core.domain.MobileNo;
 import com.jamapplicationserver.core.domain.Email;
 import com.jamapplicationserver.modules.user.domain.errors.*;
 import com.jamapplicationserver.core.domain.IUsecase;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.exceptions.*;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
@@ -98,6 +97,7 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
 
             final User user = userOrError.getValue();
             
+            // ## POSSIBLE DOMAIN LOGIC LEAK
             // fetch creator user & change user role
             if(
                     request.subjectId != null &&
@@ -109,13 +109,12 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
                 final Result roleChangeResult = user.changeRole(role, creator);
                 if(roleChangeResult.isFailure) return roleChangeResult;
             }
-            
-            // save user image
+            // ##
 
             // save user to database
-            this.repository.save(user);
+            repository.save(user);
 
-            return Result.ok(user);
+            return Result.ok();
                     
         } catch(ConstraintViolationException e) {
             

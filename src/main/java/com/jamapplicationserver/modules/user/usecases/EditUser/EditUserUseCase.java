@@ -9,7 +9,7 @@ import java.util.*;
 import java.nio.file.Path;
 import org.hibernate.exception.*;
 import javax.persistence.EntityNotFoundException;
-import com.jamapplicationserver.core.domain.Email;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.infra.Persistence.filesystem.FilePersistenceManager;
 import com.jamapplicationserver.modules.user.domain.errors.*;
 import com.jamapplicationserver.core.domain.IUsecase;
@@ -44,7 +44,9 @@ public class EditUserUseCase implements IUsecase<EditUserRequestDTO, String> {
             
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
             final Result<UserName> nameOrError = UserName.create(request.name);
-            final Result<Email> emailOrError = Email.create(request.email);
+            final Result<Optional<Email>> emailOrError = Email.createNullable(request.email);
+            final Result<UserRole> roleOrError = UserRole.create(request.role);
+            final Result<ImageStream> imageOrError = ImageStream.createAndValidate(request.profileImage);
             
             final List<Result> combinedProps = new ArrayList<>();
             
@@ -52,10 +54,13 @@ public class EditUserUseCase implements IUsecase<EditUserRequestDTO, String> {
             
             if(request.name != null)
                 combinedProps.add(nameOrError);
-            
             if(request.email != null)
                 combinedProps.add(emailOrError);
-
+            if(request.role != null)
+                combinedProps.add(roleOrError);
+            if(request.profileImage != null)
+                combinedProps.add(imageOrError);
+            
             final Result combinedPropsResult = Result.combine(combinedProps);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
@@ -63,48 +68,46 @@ public class EditUserUseCase implements IUsecase<EditUserRequestDTO, String> {
                     request.id != null ? idOrError.getValue() : null;
             final UserName name =
                     request.name != null ? nameOrError.getValue() : null;
-            final Email email =
+            final Optional<Email> email =
                     request.email != null ? emailOrError.getValue() : null;
+            final UserRole role =
+                    request.role != null ? roleOrError.getValue() : null;
+            final ImageStream image =
+                    request.profileImage != null ? imageOrError.getValue() : null;
             
-            final User user = this.repository.fetchById(id);
-            
+            final User user = repository.fetchById(id);
             if(user == null) return Result.fail(new UserDoesNotExistError());
             
             User updater;
             
-            if(!user.id.equals(request.subjectId))
+            if(!user.getId().equals(request.subjectId)) {
                 updater = repository.fetchById(request.subjectId);
-            else
-                updater = user;
-
-            final List<Result> combinedResults = new ArrayList<>();
-            
-            // change/remove email
-            if(request.email != null && !request.removeEmail)
-                combinedResults.add(user.changeEmail(email, updater));
-            else
-                combinedResults.add(user.removeEmail(updater));
-
-            // change name
-            if(request.name != null)
-                combinedResults.add(user.editProfile(name, updater));
-            
-            // remove or change profile image
-            if(request.profileImage != null && !request.removeProfileImage) {
-                
-                final Path path = this.persistence.buildPath(User.class);
-                
-                combinedResults.add(user.changeProfileImage(path, updater));
-                
+                if(updater == null) return Result.fail(new UpdaterUserDoesNotExistError());
             } else {
-                combinedResults.add(user.removeProfileImage(updater));
+                updater = user;
             }
             
-            final Result result = Result.combine(combinedResults);
-            
-            if(result.isFailure) return result;
+            Path profileImagePath = null;
+            if(image != null) {
+                profileImagePath = persistence.buildPath(User.class);
+            }
 
-            this.repository.save(user);
+            final Result result =
+                    user.editProfile(
+                            name,
+                            email,
+                            profileImagePath,
+                            request.removeProfileImage,
+                            updater
+                    );
+            if(result.isFailure) return result;
+            
+            // save profile image
+            if(image != null) {
+                persistence.write(image, profileImagePath);
+            }
+            
+            repository.save(user);
             
             return Result.ok();
             

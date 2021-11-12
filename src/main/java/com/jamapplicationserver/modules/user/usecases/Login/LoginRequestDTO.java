@@ -15,13 +15,15 @@ public class LoginRequestDTO {
     
     public final String mobile;
     public final String password;
+    public final String FCMToken;
     public final Device device;
     public final OS os;
     public final String ip;
     
-    public LoginRequestDTO(String mobile, String password, Device device, String ip, OS os) {
+    public LoginRequestDTO(String mobile, String password, String FCMToken, Device device, String ip, OS os) {
         this.mobile = mobile;
         this.password = password;
+        this.FCMToken = FCMToken;
         this.device = device;
         this.ip = ip;
         this.os = os;

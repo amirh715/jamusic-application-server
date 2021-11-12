@@ -5,10 +5,10 @@
  */
 package com.jamapplicationserver.modules.user.usecases.CreateUser;
 
+import java.util.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
-import java.util.*;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.user.domain.User;
 
@@ -25,7 +25,7 @@ public class CreateUserController extends BaseController {
         
         System.out.println("CreateUserController");
         
-        final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+        final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         final CreateUserRequestDTO dto =
                 new CreateUserRequestDTO(
                         fields.get("name"),
@@ -41,7 +41,7 @@ public class CreateUserController extends BaseController {
         
         try {
             
-            final Result<User> result = this.useCase.execute(dto);
+            final Result<User> result = useCase.execute(dto);
 
             if(result.isFailure) {
 
@@ -62,7 +62,7 @@ public class CreateUserController extends BaseController {
                 return;
             }
 
-            created(result.getValue());
+            created();
             
         } catch(Exception e) {
             e.printStackTrace();

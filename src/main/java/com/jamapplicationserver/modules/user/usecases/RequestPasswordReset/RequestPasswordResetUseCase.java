@@ -36,7 +36,7 @@ public class RequestPasswordResetUseCase implements IUsecase<RequestPasswordRese
             
             if(mobileOrError.isFailure) return mobileOrError;
             
-            final User user = this.repository.fetchByMobile(mobileOrError.getValue());
+            final User user = repository.fetchByMobile(mobileOrError.getValue());
             
             if(user == null) return Result.fail(new UserDoesNotExistError());
             
@@ -44,7 +44,7 @@ public class RequestPasswordResetUseCase implements IUsecase<RequestPasswordRese
             
             if(result.isFailure) return result;
             
-            this.repository.save(user);
+            repository.save(user);
             
             return Result.ok();
             

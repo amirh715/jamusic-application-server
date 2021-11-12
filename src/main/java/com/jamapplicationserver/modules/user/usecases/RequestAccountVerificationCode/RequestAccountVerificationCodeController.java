@@ -26,38 +26,32 @@ public class RequestAccountVerificationCodeController extends BaseController {
         
         System.out.println("RequestUserVerificationRequestController");
         
-        final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
-        final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(fields.get("id"));
-        
-        if(idOrError.isFailure) {
-            this.clientError(idOrError.getError());
-            return;
-        }
+        final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         
         try {
             
-            final Result result = this.useCase.execute(idOrError.getValue());
+            final Result result = useCase.execute(fields.get("mobile"));
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 return;
             }
             
-            this.noContent();
+            noContent();
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

@@ -50,7 +50,7 @@ public class ChangePasswordUseCase implements IUsecase<ChangePasswordRequestDTO,
             final Password currentPassword = currentPasswordOrError.getValue();
             final Password newPassword = newPasswordOrError.getValue();
             
-            final User user = this.repository.fetchById(id);
+            final User user = repository.fetchById(id);
             
             if(user == null) return Result.fail(new UserDoesNotExistError());
             
@@ -67,7 +67,7 @@ public class ChangePasswordUseCase implements IUsecase<ChangePasswordRequestDTO,
             
             if(result.isFailure) return result;
             
-            this.repository.save(user);
+            repository.save(user);
             
             return Result.ok();
             

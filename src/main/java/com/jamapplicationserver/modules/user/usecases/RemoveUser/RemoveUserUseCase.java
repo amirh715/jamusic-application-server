@@ -11,6 +11,7 @@ import com.jamapplicationserver.modules.user.repository.IUserRepository;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
+import com.jamapplicationserver.modules.user.repository.exceptions.*;
 
 /**
  *
@@ -44,17 +45,18 @@ public class RemoveUserUseCase implements IUsecase<RemoveUserRequestDTO, Object>
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final User user = repository.fetchById(idOrError.getValue());
-            
             if(user == null) return Result.fail(new UserDoesNotExistError());
             
-            if(!user.isActive()) return Result.fail(new UserIsNotActiveError());
-            
-            repository.remove(user);
+            repository.remove(user, request.subjectId);
             
             return Result.ok();
             
+        } catch(RemovingUserIsNotAdminException e) {
+            return Result.fail(new UserIsNotAdminError(e.getMessage()));
+        } catch(RemovingUserIsNotActiveException e) {
+            return Result.fail(new UserIsNotActiveError(e.getMessage()));
         } catch(Exception e) {
-            throw new GenericAppException();
+            throw new GenericAppException(e);
         }
         
     }
