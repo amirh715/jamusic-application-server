@@ -6,11 +6,11 @@
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibraryEntityImageById;
 
 import java.util.*;
+import java.time.*;
 import java.io.InputStream;
-import com.jamapplicationserver.core.infra.BaseController;
+import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.utils.MultipartFormDataUtil;
 
 /**
  *
@@ -29,30 +29,38 @@ public class GetLibraryEntityImageByIdController extends BaseController {
         
         try {
             
-            final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+            final Map<String, String> fields = req.params();
             
-            final Result<InputStream> result = this.usecase.execute(fields.get("id"));
+            final Result<InputStream> result = usecase.execute(fields.get(":id"));
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                     
                 return;
             }
             
-            this.sendFile(result.getValue());
+            cache(Duration.ofMinutes(5));
+//            final ETag etag = ETag.create(result.getValue());
+//            if(etag.same(getEtag())) {
+//                notModified();
+//                return;
+//            }
+            
+//            attachEtag(etag);
+            sendFile(result.getValue());
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

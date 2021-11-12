@@ -5,7 +5,6 @@
  */
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibraryEntityImageById;
 
-import com.jamapplicationserver.infra.Persistence.filesystem.FilePersistenceManager;
 import java.io.File;
 import java.io.InputStream;
 import com.jamapplicationserver.core.domain.IUsecase;
@@ -14,13 +13,13 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.domain.core.LibraryEntity;
-import com.jamapplicationserver.infra.Persistence.filesystem.IFilePersistenceManager;
+import com.jamapplicationserver.infra.Persistence.filesystem.*;
 
 /**
  *
  * @author dada
  */
-public class GetLibraryEntityImageByIdUseCase implements IUsecase<String, String> {
+public class GetLibraryEntityImageByIdUseCase implements IUsecase<String, InputStream> {
     
     private final ILibraryEntityRepository repository;
     private final IFilePersistenceManager persistence;
@@ -44,15 +43,13 @@ public class GetLibraryEntityImageByIdUseCase implements IUsecase<String, String
             final UniqueEntityId id = idOrError.getValue();
             
             final LibraryEntity entity =
-                    this.repository.fetchById(id).getSingleResult();
-            
+                    repository.fetchById(id).getSingleResult();
             if(entity == null) return Result.fail(new LibraryEntityDoesNotExistError());
-            
-            // get image
             
             final File file = entity.getImagePath().toFile();
             
-            final InputStream stream = this.persistence.read(file);
+            final InputStream stream = persistence.read(file);
+            if(stream == null) return Result.fail(new LibraryEntityDoesNotHaveAnImage());
             
             return Result.ok(stream);
         } catch(Exception e) {
