@@ -5,17 +5,10 @@
  */
 package com.jamapplicationserver.modules.user.domain;
 
-import com.jamapplicationserver.core.domain.UserRole;
-import com.jamapplicationserver.core.domain.FCMToken;
-import com.jamapplicationserver.core.domain.MobileNo;
-import com.jamapplicationserver.core.domain.Email;
 import java.nio.file.*;
-import java.net.URL;
 import java.util.*;
 import java.time.LocalDateTime;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
-import com.jamapplicationserver.core.domain.AggregateRoot;
-import com.jamapplicationserver.core.domain.DateTime;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
 
@@ -291,13 +284,45 @@ public class User extends AggregateRoot {
     
     public Result editProfile(
             UserName name,
+            Optional<Email> email,
+            Path profileImagePath,
+            Boolean removeProfileImage,
             User updater
     ) {
         
-        if(!this.isActive() && !updater.isAdmin())
+        if(!updater.isActive())
             return Result.fail(new UserIsNotActiveError());
         
-        this.name = name;
+        if(!updater.equals(this) && !updater.isAdmin())
+            return Result.fail(new UserIsNotAdminError());
+        
+        if(name != null)
+            this.name = name;
+        
+        if(email != null) {
+            email.ifPresentOrElse(
+                    newValue -> {
+                        if(!newValue.equals(this.email)) {
+                            this.email = newValue;
+                            unverifyEmail();
+                            modified();
+                        }
+                    },
+                    () -> removeEmail()
+            );
+        }
+        
+        if(profileImagePath != null) {
+            if(!profileImagePath.equals(this.imagePath)) {
+                this.imagePath = profileImagePath;
+                modified();
+            }
+        }
+        
+        if(removeProfileImage != null) {
+            if(removeProfileImage)
+                removeProfileImage();
+        }
         
         this.updaterId = updater.id;
         
@@ -305,8 +330,9 @@ public class User extends AggregateRoot {
     }
     
     public Result activateUser(User activator) {
-        if(!activator.isAdmin()) return Result.fail(new UserIsNotAdminError("Admin is not active"));
-        this.activateUser();
+        if(!activator.isAdmin())
+            return Result.fail(new UserIsNotAdminError("Admin is not active"));
+        activateUser();
         this.updaterId = activator.id;
         return Result.ok();
     }
@@ -331,15 +357,13 @@ public class User extends AggregateRoot {
     }
     
     public boolean isVerified() {
-        return
-                this.state.equals(UserState.ACTIVE) ||
-                this.state.equals(UserState.BLOCKED);
+        return this.state.equals(UserState.NOT_VERIFIED);
     }
     
     public Result requestUserVerification() {
 
         // active user can not request verification
-        if(this.isVerified())
+        if(isVerified())
             return Result.fail(new UserIsAlreadyVerifiedError());
 
         // previously requested verification code is not expired
@@ -354,25 +378,27 @@ public class User extends AggregateRoot {
     public Result verify(int code) {
         
         // user is already verified and active
-        if(this.isVerified())
+        if(isVerified())
             return Result.fail(new UserIsAlreadyVerifiedError());
         
-        if(this.verification == null)
+        if(verification == null)
             return Result.fail(new AccountVerificationRequestDoesNotExistError());
         
         // verification code is expired
-        if(this.verification.isExpired())
+        if(verification.isExpired())
             return Result.fail(new AccountVerificationCodeIsExpiredError());
         
         // match verification code
-        final Result matchAndExpireResult = this.verification.matchAndExpire(code);
+        final Result matchAndExpireResult = verification.matchAndExpire(code);
         if(matchAndExpireResult.isFailure) return matchAndExpireResult;
         
         // nullify verification object
         this.verification = null;
         
         // activate user
-        this.activateUser();
+        activateUser();
+        
+        modified();
         
         return Result.ok();
     }
@@ -396,10 +422,10 @@ public class User extends AggregateRoot {
         return Result.ok();
     }
     
-    public Result verifyEmail(URL link) {
+    public Result verifyEmail(UUID token) {
         
         // user is not active
-        if(!this.isActive())
+        if(!isActive())
             return Result.fail(new UserIsNotActiveError());
         
         // no email exists
@@ -419,7 +445,7 @@ public class User extends AggregateRoot {
             return Result.fail(new EmailVerificationLinkIsExpiredError());
         
         // email verification link does not match
-        if(!this.emailVerification.doesMatch(link))
+        if(!this.emailVerification.doesMatch(token))
             return Result.fail(new EmailVerificationLinkIsInvalidError());
         
         // verify email
@@ -427,6 +453,8 @@ public class User extends AggregateRoot {
         
         // nullify email verification
         this.emailVerification = null;
+        
+        modified();
         
         return Result.ok();
     }
@@ -437,16 +465,18 @@ public class User extends AggregateRoot {
     
     public Result changeEmail(Email email, User updater) {
         
-        if(!this.isActive() && !updater.isAdmin())
+        if(!isActive() && !updater.isAdmin())
             return Result.fail(new UserIsNotActiveError());
         
         // unverify previous email
-        this.unverifyEmail();
+        unverifyEmail();
         
         // set new email
         this.email = email;
         
         this.updaterId = updater.id;
+        
+        modified();
         
         return Result.ok();
     }
@@ -457,20 +487,21 @@ public class User extends AggregateRoot {
             return Result.fail(new UserIsNotActiveError());
         
         // unverify previous email
-        this.unverifyEmail();
+        unverifyEmail();
         
         // set email to null
         this.email = null;
         
         this.updaterId = updater.id;
         
+        modified();
+        
         return Result.ok();
         
     }
     
     public void removeEmail() {
-        
-        this.unverifyEmail();
+        unverifyEmail();
         this.email = null;
     }
     
@@ -478,25 +509,19 @@ public class User extends AggregateRoot {
         if(!this.isActive() && !updater.isAdmin())
             return Result.fail(new UserIsNotActiveError());
         this.imagePath = imagePath;
+        modified();
         return Result.ok();
     }
     
-    public Result removeProfileImage(User updater) {
-        
-        if(!this.isActive() && !updater.isAdmin())
-            return Result.fail(new UserIsNotActiveError());
-        
+    public void removeProfileImage() {
         this.imagePath = null;
-        
-        this.updaterId = updater.id;
-        
-        return Result.ok();
+        modified();
     }
     
     public Result requestPasswordReset() {
         
         // user is not active
-        if(!this.isActive())
+        if(!isActive())
             return Result.fail(new UserIsNotActiveError());
         
         // previous password reset request is not expired yet
@@ -513,7 +538,7 @@ public class User extends AggregateRoot {
     public Result resetPassword(Password newPassword, int passwordResetCode) {
         
         // user is not active
-        if(!this.isActive())
+        if(!isActive())
             return Result.fail(new UserIsNotActiveError());
         
         // no password reset request exists
@@ -535,25 +560,56 @@ public class User extends AggregateRoot {
         
         // nullify password reset verification
         this.passwordResetVerification = null;
+        
+        modified();
 
         return Result.ok();
     }
     
+    /**
+     * Change the password of the user's account.
+     * @param newPassword
+     * @param currentPassword
+     * @param updater
+     * @return 
+     */
     public Result changePassword(
             Password newPassword,
             Password currentPassword,
             User updater
     ) {
+        
+        // new password is required
         if(newPassword == null)
-            return Result.fail(new ValidationError("Password is required"));
+            return Result.fail(new ValidationError("New password is required"));
+
+        // updating user is required
         if(updater == null)
-            return Result.fail(new ValidationError("Updater user is required"));
-        if(!this.isActive() && !updater.isAdmin())
+            return Result.fail(new ValidationError("Updating user is required"));
+        
+        // updating user is not active
+        if(!updater.isActive())
             return Result.fail(new UserIsNotActiveError());
-        if(!this.password.equals(currentPassword))
-            return Result.fail(new PasswordIsIncorrectError());
+
+        // user is changing his/her password
+        if(updater.equals(this)) {
+            
+            // current password is incorrect
+            if(!currentPassword.equals(password))
+                return Result.fail(new PasswordIsIncorrectError());
+            
+        } else { // another user is changing this user's password
+            
+            // updating user is not an admin
+            if(!updater.isAdmin())
+                return Result.fail(new UserIsNotAdminError());
+            
+        }
+            
         this.password = newPassword;
         this.updaterId = updater.id;
+        modified();
+        
         return Result.ok();
     }
     
@@ -567,22 +623,29 @@ public class User extends AggregateRoot {
         if(updater == null)
             return Result.fail(new ValidationError("Updating user is required."));
         
+        // updating user is not active
+        if(!updater.isActive())
+            return Result.fail(new UserIsNotActiveError());
+        
         // updating user is not an admin
         if(!updater.isAdmin())
             return Result.fail(new AccessDeniedError("Only the admin can change user roles"));
         
         // only one admin can exist.
-        if(newRole.equals(updater.role))
+        if(newRole.equals(UserRole.ADMIN))
             return Result.fail(new OnlyOneAdminCanExistError());
         
         // change role
         this.role = newRole;
-        
+        this.updaterId = updater.getId();
+        modified();
+
         return Result.ok();
     }
     
     public void changeFCMToken(FCMToken fcmToken) {
         this.fcmToken = fcmToken;
+        modified();
     }
     
     @Override
