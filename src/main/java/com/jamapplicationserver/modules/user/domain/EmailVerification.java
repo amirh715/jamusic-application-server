@@ -5,12 +5,10 @@
  */
 package com.jamapplicationserver.modules.user.domain;
 
+import java.util.UUID;
+import java.time.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
-import java.time.Duration;
-import java.net.*;
-import java.util.UUID;
-import java.time.LocalDateTime;
 
 /**
  *
@@ -18,46 +16,35 @@ import java.time.LocalDateTime;
  */
 public class EmailVerification extends ValueObject {
     
-    public static final Duration LINK_VALID_DURATION = Duration.ofMinutes(10);
+    public static final Duration TOKEN_VALID_DURATION = Duration.ofMinutes(10);
 
-    private final URL link;
+    private final UUID token;
     private final DateTime issuedAt;
     
-    private EmailVerification(URL link) {
-        this.link = link;
+    private EmailVerification() {
+        this.token = UUID.randomUUID();
         this.issuedAt = DateTime.createNow();
     }
     
-    private EmailVerification(URL link, DateTime issuedAt) {
-        this.link = link;
+    private EmailVerification(UUID token, DateTime issuedAt) {
+        this.token = token;
         this.issuedAt = issuedAt;
     }
     
     public static EmailVerification create() {
-        try {
-            System.err.println("NO ERROR");
-            return new EmailVerification(generateLink());
-        } catch(MalformedURLException e) {
-            System.out.println("MALFOREMED");
-            return null;
-        }
+        return new EmailVerification();
     }
     
-    public static Result<EmailVerification> create(URL link, DateTime issuedAt) {
+    public static Result<EmailVerification> create(UUID token, DateTime issuedAt) {
         
-        final EmailVerification instance = new EmailVerification(link, issuedAt);
+        final EmailVerification instance = new EmailVerification(token, issuedAt);
         
         return Result.ok(instance);
             
     }
     
-    private static URL generateLink() throws MalformedURLException {
-        final URL link = new URL("https://api.jamusic.ir/v1/user/reset_link/" + UUID.randomUUID().toString());
-        return link;
-    }
-    
-    public URL getLink() {
-        return this.link;
+    public UUID getToken() {
+        return this.token;
     }
     
     public DateTime getIssuedAt() {
@@ -65,19 +52,17 @@ public class EmailVerification extends ValueObject {
     }
     
     public boolean isExpired() {
-        final LocalDateTime validTill = this.issuedAt.getValue().plus(LINK_VALID_DURATION);
+        final LocalDateTime validTill = issuedAt.getValue().plus(TOKEN_VALID_DURATION);
         return LocalDateTime.now().isAfter(validTill);
     }
     
-    public boolean doesMatch(URL providedLink) {
-        return this.link.equals(providedLink);
+    public boolean doesMatch(UUID providedToken) {
+        return token.equals(providedToken);
     }
     
     @Override
     public String getValue() {
-        return this.link.toString();
+        return this.token.toString();
     }
-    
-    
-    
+
 }
