@@ -77,7 +77,7 @@ public class UserModel extends EntityModel {
     @NotAudited
     private Set<ReportModel> reports = new HashSet<>();
 
-    @OneToMany(fetch=FetchType.LAZY, mappedBy="user")
+    @OneToMany(fetch=FetchType.LAZY, mappedBy="user", orphanRemoval=true)
     @NotAudited
     private Set<LoginAuditModel> logins = new HashSet<>();
     
@@ -240,6 +240,10 @@ public class UserModel extends EntityModel {
     
     public UserRoleEnum getRole() {
         return this.role;
+    }
+    
+    public boolean isAdmin() {
+        return this.role.equals(UserRoleEnum.ADMIN);
     }
     
     public void setRole(UserRoleEnum role) {
