@@ -5,12 +5,14 @@
  */
 package com.jamapplicationserver.modules.user.repository;
 
+import java.util.*;
+import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.core.domain.MobileNo;
 import com.jamapplicationserver.core.domain.Email;
-import java.util.Set;
-import java.net.URL;
 import com.jamapplicationserver.core.infra.IRepository;
 import com.jamapplicationserver.modules.user.domain.*;
+import com.jamapplicationserver.modules.user.repository.exceptions.*;
+
 /**
  *
  * @author amirhossein
@@ -20,6 +22,8 @@ public interface IUserRepository extends IRepository<User> {
     public Set<User> fetchByFilters(UsersFilters filters);
     public User fetchByMobile(MobileNo mobile);
     public User fetchByEmail(Email email);
-    public User fetchByEmailVerificationLink(URL link);
+    public User fetchByEmailVerificationToken(UUID token);
+    public void remove(User user, UniqueEntityId removerId) throws RemovingUserIsNotActiveException,
+            RemovingUserIsNotAdminException;
     
 }
