@@ -8,7 +8,7 @@ package com.jamapplicationserver.infra.Persistence.filesystem;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
-import com.jamapplicationserver.core.domain.Entity;
+import java.util.stream.*;
 
 /**
  *
@@ -28,6 +28,6 @@ public interface IFilePersistenceManager {
     
     Path buildPath(Class clazz, String extension);
     
-    List<File> walk(Path path);
+    Stream<File> walk(Path path);
     
 }
