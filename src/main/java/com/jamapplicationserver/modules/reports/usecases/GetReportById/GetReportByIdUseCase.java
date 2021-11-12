@@ -7,9 +7,8 @@ package com.jamapplicationserver.modules.reports.usecases.GetReportById;
 
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.modules.reports.domain.*;
+import com.jamapplicationserver.modules.reports.infra.services.*;
 import com.jamapplicationserver.modules.reports.domain.errors.*;
-import com.jamapplicationserver.modules.reports.repository.*;
 import com.jamapplicationserver.modules.reports.infra.DTOs.queries.ReportDetails;
 
 /**
@@ -18,10 +17,10 @@ import com.jamapplicationserver.modules.reports.infra.DTOs.queries.ReportDetails
  */
 public class GetReportByIdUseCase implements IUsecase<String, ReportDetails> {
     
-    private final IReportRepository repository;
+    private final IReportQueryService queryService;
     
-    private GetReportByIdUseCase(IReportRepository repository) {
-        this.repository = repository;
+    private GetReportByIdUseCase(IReportQueryService queryService) {
+        this.queryService = queryService;
     }
     
     @Override
@@ -35,8 +34,8 @@ public class GetReportByIdUseCase implements IUsecase<String, ReportDetails> {
             
             final UniqueEntityId id = idOrError.getValue();
             
-            final Report report =
-                    repository.fetchById(id);
+            final ReportDetails report =
+                    queryService.getReportById(id);
             if(report == null)
                 return Result.fail(new ReportDoesNotExistError());
             
@@ -56,6 +55,6 @@ public class GetReportByIdUseCase implements IUsecase<String, ReportDetails> {
     private static class GetReportByIdUseCaseHolder {
 
         private static final GetReportByIdUseCase INSTANCE =
-                new GetReportByIdUseCase(ReportRepository.getInstance());
+                new GetReportByIdUseCase(ReportQueryService.getInstance());
     }
 }
