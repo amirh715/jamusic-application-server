@@ -280,18 +280,12 @@ public class ReportRepository implements IReportRepository {
         
         if(filters != null) {
             
-            // statuses
-            if(filters.statuses != null && !filters.statuses.isEmpty()) {
-                
-                final Set<ReportStatusEnum> statuses = filters.statuses
-                        .stream()
-                        .map(status -> ReportStatusEnum.valueOf(status.getValue()))
-                        .collect(Collectors.toSet());
-                
+            // status
+            if(filters.status != null) {
+                final ReportStatusEnum status = ReportStatusEnum.valueOf(filters.status.toString());
                 predicates.add(
-                        root.get("status").in(statuses)
+                        cb.equal(root.get("status"), status)
                 );
-                
             }
             
             // reporterId
