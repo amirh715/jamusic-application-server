@@ -15,6 +15,7 @@ import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.modules.reports.repository.ReportFilters;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.reports.infra.DTOs.queries.*;
+import com.jamapplicationserver.modules.reports.domain.*;
 
 /**
  *
@@ -44,8 +45,17 @@ public class ReportQueryService implements IReportQueryService {
             if(filters != null) {
                 
                if(filters.status != null) {
-//                   Predicate predicate;
-//                   predicates.add(predicate);
+                   ReportStatusEnum status;
+                   if(filters.status.isArchived())
+                       status = ReportStatusEnum.ARCHIVED;
+                   else if(filters.status.isAssigned())
+                       status = ReportStatusEnum.ASSIGNED;
+                   else if(filters.status.isProcessed())
+                       status = ReportStatusEnum.PROCESSED;
+                   else
+                       status = ReportStatusEnum.PENDING_ASSIGNMENT;
+                   final Predicate predicate = builder.equal(root.get("status"), status);
+                   predicates.add(predicate);
                }
                
                if(filters.processorId != null) {
@@ -138,21 +148,21 @@ public class ReportQueryService implements IReportQueryService {
                    predicates.add(predicate);
                }
                
-//               if(filters.isTechnicalReport != null) {
-//                   final Predicate predicate =
-//                           filters.isTechnicalReport ?
-//                           builder.equal(root.get("type"), ReportTypeEnum.TECHNICAL) :
-//                           builder.notEqual(root.get("type"), ReportTypeEnum.TECHNICAL);
-//                   predicates.add(predicate);
-//               }
-//               
-//               if(filters != null) {
-//                   final Predicate predicate =
-//                           filters.isLibraryEntityReport ?
-//                           builder.isNotNull(root.get("reportedEntity")) :
-//                           builder.isNull(root.get("reportedEntity"));
-//                   predicates.add(predicate);
-//               }
+               if(filters.isTechnicalReport != null) {
+                   final Predicate predicate =
+                           filters.isTechnicalReport ?
+                           builder.equal(root.get("type"), ReportTypeEnum.TECHNICAL) :
+                           builder.notEqual(root.get("type"), ReportTypeEnum.TECHNICAL);
+                   predicates.add(predicate);
+               }
+               
+               if(filters.isLibraryEntityReport) {
+                   final Predicate predicate =
+                           filters.isLibraryEntityReport ?
+                           builder.isNotNull(root.get("reportedEntity")) :
+                           builder.isNull(root.get("reportedEntity"));
+                   predicates.add(predicate);
+               }
 
             }
             
