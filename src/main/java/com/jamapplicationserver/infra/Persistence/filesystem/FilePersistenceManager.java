@@ -6,6 +6,7 @@
 package com.jamapplicationserver.infra.Persistence.filesystem;
 
 import java.io.*;
+import java.util.stream.*;
 import java.nio.file.*;
 import java.util.*;
 
@@ -16,7 +17,7 @@ import java.util.*;
 public class FilePersistenceManager implements IFilePersistenceManager {
     
     private static boolean isFileStructureSetup = false;
-    private static final String BASE_PATH = "/home/dada/Desktop/JamFS";
+    public static final String BASE_PATH = "/home/dada/Desktop/JamFS/";
     
     private FilePersistenceManager() {
     }
@@ -26,37 +27,32 @@ public class FilePersistenceManager implements IFilePersistenceManager {
         
         setupFileStructure();
         
-        try (
-                final InputStream is = stream;
-                final OutputStream os = new FileOutputStream(path.toString());
-        ) {
-            is.transferTo(os);
+        try {
+
+            Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
+
+            return path;
         } catch(Exception e) {
             e.printStackTrace();
+            throw e;
         }
-        
-        final FileOutputStream outputStream = new FileOutputStream(path.toFile());
-        
-        stream.transferTo(outputStream);
-        outputStream.write(stream.readAllBytes());
-        
-        return path;
+
     }
     
     @Override
     public BufferedInputStream read(File file) throws IOException {
         
         try {
+
+            final InputStream is = new FileInputStream(file);
             
-            final FileInputStream fis = new FileInputStream(file);
+            return new BufferedInputStream(is);
             
-            final BufferedInputStream bis = new BufferedInputStream(fis);
-            
-            return bis;
-            
-        } catch(IOException e) {
-            e.printStackTrace();
+        } catch(FileNotFoundException e) {
             return null;
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw e;
         }
         
     }
@@ -73,16 +69,25 @@ public class FilePersistenceManager implements IFilePersistenceManager {
         
         final Path path = file.toPath();
         
-        Files.deleteIfExists(path);
+        Files.delete(path);
         
         return path;
     }
     
     @Override
-    public final List<File> walk(Path path) {
+    public final Stream<File> walk(Path path) {
         
-        
-        return List.of();
+        try {
+            
+            final Path basePath = Path.of(BASE_PATH);
+            return Files.walk(basePath, FileVisitOption.FOLLOW_LINKS)
+                    .filter(Files::isRegularFile)
+                    .map(p -> p.toFile());
+            
+        } catch(IOException e) {
+            return Stream.empty();
+        }
+
     }
     
     @Override
@@ -107,7 +112,7 @@ public class FilePersistenceManager implements IFilePersistenceManager {
         return Path.of(this.buildPath(clazz).toString().concat(".").concat(extension));
         
     }
-    
+
     private static void setupFileStructure() throws IOException {
         
         if(isFileStructureSetup) return;
