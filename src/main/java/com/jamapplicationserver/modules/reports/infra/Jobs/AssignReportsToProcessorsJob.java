@@ -28,7 +28,7 @@ public class AssignReportsToProcessorsJob implements Job {
         // pending assignments
         final ReportFilters pendingAssignmentReports =
                 new ReportFilters(
-                        Set.of(ReportStatus.PENDING_ASSIGNMENT)
+                        ReportStatus.PENDING_ASSIGNMENT
                 );
         
         // fetch reports
