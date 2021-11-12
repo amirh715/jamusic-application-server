@@ -9,22 +9,22 @@ import com.jamapplicationserver.core.logic.*;
 
 /**
  *
- * @author amirhossein
+ * @author dada
  */
-public class EmailVerificationLinkDoesNotExistError extends NotFoundError {
+public class FCMTokenIsRequiredError extends ClientErrorError {
     
     private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "Email verification link is not valid";
+    private static final String DEFAULT_MESSAGE = "";
     
-    public EmailVerificationLinkDoesNotExistError() {
+    public FCMTokenIsRequiredError() {
         super(DEFAULT_MESSAGE, CODE);
     }
     
-    public EmailVerificationLinkDoesNotExistError(String message) {
+    public FCMTokenIsRequiredError(String message) {
         super(message, CODE);
     }
     
-    public EmailVerificationLinkDoesNotExistError(String message, String description) {
+    public FCMTokenIsRequiredError(String message, String description) {
         super(message, CODE, description);
     }
     
