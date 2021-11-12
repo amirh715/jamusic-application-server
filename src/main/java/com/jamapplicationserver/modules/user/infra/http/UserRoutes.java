@@ -22,6 +22,8 @@ import com.jamapplicationserver.modules.user.usecases.ResetPassword.ResetPasswor
 import com.jamapplicationserver.modules.user.usecases.VerifyAccount.VerifyAccountController;
 import com.jamapplicationserver.modules.user.usecases.VerifyEmail.VerifyEmailController;
 import com.jamapplicationserver.modules.user.usecases.GetUserProfileImage.GetUserProfileImageController;
+import com.jamapplicationserver.modules.user.usecases.GetUserLoginAudits.GetUserLoginAuditsController;
+import com.jamapplicationserver.modules.user.usecases.GetAllLoginAudits.GetAllLoginAuditsController;
 
 /**
  *
@@ -53,6 +55,17 @@ public class UserRoutes implements RouteGroup {
         get(
                 UserPaths.GET_USER_BY_ID,
                 GetUserByIDController.getInstance()
+        );
+        
+        // get user login audits
+        get(
+                UserPaths.GET_LOGIN_AUDITS,
+                GetUserLoginAuditsController.getInstance()
+        );
+        
+        get(
+                UserPaths.GET_ALL_LOGINS,
+                GetAllLoginAuditsController.getInstance()
         );
         
         // edit user
@@ -92,7 +105,7 @@ public class UserRoutes implements RouteGroup {
         );
         
         // verify email
-        put(
+        get(
                 UserPaths.VERIFY_EMAIL,
                 VerifyEmailController.getInstance()
         );
