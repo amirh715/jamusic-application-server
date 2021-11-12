@@ -36,7 +36,7 @@ public class GetReportsByFiltersController extends BaseController {
             
             final GetReportsByFiltersRequestDTO dto =
                     new GetReportsByFiltersRequestDTO(
-                            fields.get("statuses").value(),
+                            fields.get("status").value(),
                             fields.get("reporterId").value(),
                             fields.get("processorId").value(),
                             fields.get("reportedEntityId").value(),
