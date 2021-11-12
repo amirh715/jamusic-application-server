@@ -304,6 +304,40 @@ public class UserQueryService implements IUserQueryService {
         
     }
     
+    @Override
+    public Set<LoginDetails> getAllLogins(Integer limit, Integer offset) {
+        
+        final EntityManager em = emfh.createEntityManager();
+        
+        try {
+            
+            final String query = "SELECT logins FROM LoginAuditModel logins ORDER BY logins.attemptedAt DESC";
+            
+            return em.createQuery(query, LoginAuditModel.class)
+                    .getResultStream()
+                    .map(login -> {
+                        return new LoginDetails(
+                                login.getUser().getId(),
+                                login.getUser().getName(),
+                                login.getUser().getMobile(),
+                                login.getIpAddress(),
+                                login.wasSuccessful(),
+                                login.getFailureReason(),
+                                login.getAttemptedAt(),
+                                login.getPlatform(),
+                                login.getOs()
+                        );
+                    })
+                    .collect(Collectors.toSet());
+            
+        } catch(Exception e) {
+            throw e;
+        } finally {
+            em.close();
+        }
+        
+    }
+    
     private static String toSearchPattern(String term) {
         return "%" + term + "%";
     }

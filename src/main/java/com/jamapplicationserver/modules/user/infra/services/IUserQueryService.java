@@ -22,6 +22,8 @@ public interface IUserQueryService {
     
     public Set<LoginDetails> getLoginsOfUser(UniqueEntityId id);
     
+    public Set<LoginDetails> getAllLogins(Integer limit, Integer offset);
+    
     public UsersSummary getUsersSummary();
     
 }
