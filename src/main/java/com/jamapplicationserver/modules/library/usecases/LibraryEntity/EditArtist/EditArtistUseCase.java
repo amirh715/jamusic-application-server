@@ -6,6 +6,7 @@
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.EditArtist;
 
 import java.util.*;
+import java.nio.file.Path;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.EditArtistRequestDTO;
@@ -104,6 +105,12 @@ public class EditArtistUseCase implements IUsecase<EditArtistRequestDTO, String>
             
             if(request.removeImage) {
                 artist.removeImage(request.subjectId);
+            }
+            
+            if(request.image != null) {
+                final Path path = persistence.buildPath(Artist.class);
+                artist.changeImage(path, request.subjectId);
+                persistence.write(request.image, path);
             }
             
             repository.save(artist);

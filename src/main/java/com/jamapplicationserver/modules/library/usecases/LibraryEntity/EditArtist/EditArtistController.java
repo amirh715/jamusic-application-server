@@ -33,10 +33,10 @@ public class EditArtistController extends BaseController {
         try {
             
             final Map<String, String> fields =
-                    MultipartFormDataUtil.toMap(this.req.raw());
+                    MultipartFormDataUtil.toMap(req.raw());
             
             final InputStream image =
-                    MultipartFormDataUtil.toInputStream(this.req.raw().getPart("image"));
+                    MultipartFormDataUtil.toInputStream(req.raw().getPart("image"));
             
             final EditArtistRequestDTO dto =
                     new EditArtistRequestDTO(
