@@ -44,9 +44,11 @@ public class LoginUseCase implements IUsecase<LoginRequestDTO, AuthToken> {
             
             final Result[] combinedProps = {
                 mobileOrError,
-                passwordOrError,
-                fcmTokenOrError
+                passwordOrError
             };
+            
+            if(request.FCMToken != null && fcmTokenOrError.isFailure)
+                return Result.fail(fcmTokenOrError.getError());
             
             final Result combinedPropsResult = Result.combine(combinedProps);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
