@@ -5,8 +5,6 @@
  */
 package com.jamapplicationserver.modules.reports.infra.DTOs.commands;
 
-import java.util.*;
-import com.google.gson.reflect.TypeToken;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.infra.*;
 

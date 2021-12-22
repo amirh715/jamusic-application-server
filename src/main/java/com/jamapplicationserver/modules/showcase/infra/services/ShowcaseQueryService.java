@@ -45,7 +45,9 @@ public class ShowcaseQueryService implements IShowcaseQueryService {
                                 showcase.getRoute(),
                                 showcase.getInteractionCount(),
                                 showcase.getCreatedAt(),
-                                showcase.getLastModifiedAt()
+                                showcase.getLastModifiedAt(),
+                                showcase.getCreator().getId(),
+                                showcase.getCreator().getName()
                         );
                     })
                     .collect(Collectors.toSet());
@@ -76,7 +78,9 @@ public class ShowcaseQueryService implements IShowcaseQueryService {
                     showcase.getRoute(),
                     showcase.getInteractionCount(),
                     showcase.getCreatedAt(),
-                    showcase.getLastModifiedAt()
+                    showcase.getLastModifiedAt(),
+                    showcase.getCreator().getId(),
+                    showcase.getCreator().getName()
             );
             
         } catch(Exception e) {

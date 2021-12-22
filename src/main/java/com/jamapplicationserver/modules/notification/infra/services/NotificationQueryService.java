@@ -159,14 +159,14 @@ public class NotificationQueryService implements INotificationQueryService {
                                 notif.getDeliveries()
                                         .stream()
                                         .count();
-                        final Set<RecipientIdAndTitle> recipients =
+                        final Set<RecipientIdAndName> recipients =
                                 notif.getDeliveries()
                                 .stream()
                                 .map(d -> {
                                     final UserModel recipient = d.getRecipient();
                                     final String recipientName =
                                             recipient.getName() + " (" + recipient.getMobile() + ")";
-                                    return new RecipientIdAndTitle(
+                                    return new RecipientIdAndName(
                                             recipient.getId().toString(),
                                             recipientName
                                     );

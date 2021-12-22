@@ -21,6 +21,7 @@ public class RequestPasswordResetController extends BaseController {
     
     private RequestPasswordResetController(IUsecase useCase) {
         this.useCase = useCase;
+        this.requireAuthClaims = false;
     }
     
     @Override

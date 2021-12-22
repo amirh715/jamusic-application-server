@@ -65,19 +65,19 @@ public class AudioStream extends FilterInputStream {
             if(formatOrError.isFailure) return Result.fail(formatOrError.getError());
             final MusicFileFormat format = formatOrError.getValue();
             
-            final Duration duration = getDuration(stream);
-            if(!duration.minus(MAX_ALLOWED_DURATION).isNegative())
-                return Result.fail(new AudioMaxAllowedDurationExceededError());
+//            final Duration duration = getDuration(stream);
+//            if(!duration.minus(MAX_ALLOWED_DURATION).isNegative())
+//                return Result.fail(new AudioMaxAllowedDurationExceededError());
             
-            final int size = getSize(stream);
-            if(size > MAX_ALLOWED_SIZE)
-                return Result.fail(new MaxAllowedAudioSizeExceededError());
+//            final int size = getSize(stream);
+//            if(size > MAX_ALLOWED_SIZE)
+//                return Result.fail(new MaxAllowedAudioSizeExceededError());
             
-            return Result.ok(new AudioStream(stream, size, duration, format));
+            return Result.ok(new AudioStream(stream, 0, Duration.ZERO, format));
             
-        } catch(UnsupportedAudioFileException e) {
-            e.printStackTrace();
-            return Result.fail(new AudioNotSupportedError());
+//        } catch(UnsupportedAudioFileException e) {
+//            e.printStackTrace();
+//            return Result.fail(new AudioNotSupportedError());
         } catch(IOException e) {
             e.printStackTrace();
             return Result.fail(new ValidationError(e.getMessage()));
@@ -114,8 +114,6 @@ public class AudioStream extends FilterInputStream {
                                 metadata.get("xmpDM:duration")
                         ) / 1000
                 );
-        
-        System.out.println("DURATION ++> " + duration);
         
         return Duration.ofSeconds(duration);
     }

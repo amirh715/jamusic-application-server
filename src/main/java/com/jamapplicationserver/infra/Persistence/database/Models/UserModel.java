@@ -81,7 +81,7 @@ public class UserModel extends EntityModel {
     @NotAudited
     private Set<LoginAuditModel> logins = new HashSet<>();
     
-    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(
             name="creator_id",
             referencedColumnName="id",
@@ -91,7 +91,7 @@ public class UserModel extends EntityModel {
     @Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
     private UserModel creator;
     
-    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToOne(cascade=CascadeType.MERGE, fetch=FetchType.LAZY)
     @Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
     @JoinColumn(
             name="updater_id",

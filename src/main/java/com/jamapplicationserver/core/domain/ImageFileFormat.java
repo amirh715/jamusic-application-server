@@ -19,7 +19,7 @@ public class ImageFileFormat extends ValueObject {
     private final String value;
     
     private ImageFileFormat(String value) {
-        this.value = value;
+        this.value = value.toLowerCase();
     }
     
     @Override

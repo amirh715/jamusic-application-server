@@ -6,6 +6,7 @@
 package com.jamapplicationserver.core.domain;
 
 import java.io.*;
+import java.util.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.TikaUtils;
 
@@ -48,14 +49,34 @@ public class ImageStream extends FilterInputStream {
             if(formatOrError.isFailure) return Result.fail(formatOrError.getError());
             final ImageFileFormat format = formatOrError.getValue();
             
-            final ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
-            stream.transferTo(byteArray);
-                
-            final long size = byteArray.size();
-            if(size > MAX_ALLOWED_SIZE)
-                return Result.fail(new ValidationError("Image size is over the limit"));
+//            final long size = byteArray.size();
+//            if(size > MAX_ALLOWED_SIZE)
+//                return Result.fail(new ValidationError("Image size is over the limit"));
             
-            return Result.ok(new ImageStream(stream, size, format));
+            return Result.ok(new ImageStream(stream, 0, format));
+            
+        } catch(IOException e) {
+            throw new GenericAppException(e);
+        }
+        
+    }
+    
+    public static final Result<Optional<ImageStream>> createNullableAndValidate(InputStream stream) throws GenericAppException {
+        
+        try {
+            
+            if(!tika.isImage(stream)) return Result.fail(new ValidationError("File must be an image"));
+            
+            final String subType = tika.getSubtype(stream);
+            final Result<ImageFileFormat> formatOrError = ImageFileFormat.create(subType);
+            if(formatOrError.isFailure) return Result.fail(formatOrError.getError());
+            final ImageFileFormat format = formatOrError.getValue();
+            
+//            final long size = byteArray.size();
+//            if(size > MAX_ALLOWED_SIZE)
+//                return Result.fail(new ValidationError("Image size is over the limit"));
+            
+            return Result.ok(Optional.of(new ImageStream(stream, 0, format)));
             
         } catch(IOException e) {
             throw new GenericAppException(e);

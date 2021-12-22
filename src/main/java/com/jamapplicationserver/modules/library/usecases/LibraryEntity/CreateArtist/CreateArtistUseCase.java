@@ -42,7 +42,7 @@ public class CreateArtistUseCase implements IUsecase<CreateArtistRequestDTO, Str
         
         try {
             
-            System.out.println("CreateArtistUseCas");            
+            System.out.println("CreateArtistUseCase");
             
             final Result<LibraryEntityType> typeOrError =
                     LibraryEntityType.create(request.type);
@@ -77,6 +77,7 @@ public class CreateArtistUseCase implements IUsecase<CreateArtistRequestDTO, Str
                 combinedProps.add(imageOrError);
 
             final Result combinedPropsResult = Result.combine(combinedProps);
+            if(combinedPropsResult.isFailure) System.out.println(combinedPropsResult.getError().message);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final Title title = titleOrError.getValue();

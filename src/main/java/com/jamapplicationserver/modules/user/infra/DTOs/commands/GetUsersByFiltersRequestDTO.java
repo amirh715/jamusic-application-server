@@ -5,8 +5,6 @@
  */
 package com.jamapplicationserver.modules.user.infra.DTOs.commands;
 
-import java.util.Optional;
-
 /**
  *
  * @author amirhossein

@@ -9,7 +9,7 @@ package com.jamapplicationserver.core.logic;
  *
  * @author amirhossein
  */
-public abstract class AuthError extends BusinessError {
+public abstract class AuthError extends ConflictError {
 
     private static final String DEFAULT_MESSAGE = "اجازه دسترسی وجود ندارد";
     

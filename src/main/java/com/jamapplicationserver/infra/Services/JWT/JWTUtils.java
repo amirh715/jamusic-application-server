@@ -44,8 +44,10 @@ public class JWTUtils {
     
     public static final DecodedJWT verifyAndDecode(String token) {
         try {
+            System.out.println("Token: " + token);
             return JWT.decode(token);
         } catch(JWTDecodeException e) {
+            e.printStackTrace();
             throw e;
         }
     }

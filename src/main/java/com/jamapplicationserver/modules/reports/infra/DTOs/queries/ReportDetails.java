@@ -20,6 +20,7 @@ public class ReportDetails implements IQueryResponseDTO {
     public String id;
     public String message;
     public String status;
+    public String type;
     public String reporterId;
     public String reporterName;
     public String reportedEntityId;
@@ -37,6 +38,7 @@ public class ReportDetails implements IQueryResponseDTO {
             UUID id,
             String message,
             ReportStatusEnum status,
+            String type,
             UUID reporterId,
             String reporterName,
             UUID reportedEntityId,
@@ -53,6 +55,7 @@ public class ReportDetails implements IQueryResponseDTO {
         this.id = id != null ? id.toString() : null;
         this.message = message;
         this.status = status != null ? status.toString() : null;
+        this.type = type;
         this.reporterId = reporterId != null ? reporterId.toString() : null;
         this.reporterName = reporterName;
         this.reportedEntityId = reportedEntityId != null ? reportedEntityId.toString() : null;

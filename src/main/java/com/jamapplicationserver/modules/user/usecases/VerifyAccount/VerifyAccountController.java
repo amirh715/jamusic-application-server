@@ -28,6 +28,8 @@ public class VerifyAccountController extends BaseController {
         
         try {
             
+            System.out.println("Code: " + fields.get("code"));
+            
             final VerifyAccountRequestDTO dto = new VerifyAccountRequestDTO(
                     fields.get("mobileNo"),
                     fields.get("code")
@@ -40,27 +42,29 @@ public class VerifyAccountController extends BaseController {
                 final BusinessError error = result.getError();
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 if(error instanceof ConflictError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 return;
             }
             
-            this.noContent();
+            noContent();
             
         } catch(Exception e) {
-            this.fail(e);
+            e.printStackTrace();
+            fail(e);
         }
         
     }
     
     private VerifyAccountController(IUsecase useCase) {
         this.useCase = useCase;
+        this.requireAuthClaims = false;
     }
     
     public static VerifyAccountController getInstance() {

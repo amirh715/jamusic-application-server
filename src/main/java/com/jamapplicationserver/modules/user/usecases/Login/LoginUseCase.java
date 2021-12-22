@@ -55,11 +55,12 @@ public class LoginUseCase implements IUsecase<LoginRequestDTO, AuthToken> {
             
             final MobileNo mobile = mobileOrError.getValue();
             final Password password = passwordOrError.getValue();
-            final FCMToken fcmToken = fcmTokenOrError.getValue();
+            final FCMToken fcmToken =
+                    request.FCMToken != null ? fcmTokenOrError.getValue() : null;
             
             final User user = repository.fetchByMobile(mobile);
-
-            if(user == null) return Result.fail(new UserMobileOrPasswordIsIncorrectError());
+            if(user == null)
+                return Result.fail(new UserMobileOrPasswordIsIncorrectError());
             
             // password does not match
             final boolean doesMatch = user.getPassword().equals(password);
@@ -92,12 +93,14 @@ public class LoginUseCase implements IUsecase<LoginRequestDTO, AuthToken> {
             // generate token
             final String token =
                     JWTUtils.generateToken(user.id, user.getRole(), request.device);
-            
-            // if current fcm token is different from the new one, replace it
-            final FCMToken previousFCMToken = user.getFCMToken();
-            if(previousFCMToken != null && !previousFCMToken.equals(fcmToken)) {
-                user.changeFCMToken(fcmToken);
-                repository.save(user);
+            if(request.FCMToken != null) {
+                            
+                // if current fcm token is different from the new one, replace it
+                final FCMToken previousFCMToken = user.getFCMToken();
+                if(previousFCMToken != null && !previousFCMToken.equals(fcmToken)) {
+                    user.changeFCMToken(fcmToken);
+                    repository.save(user);
+                }
             }
             
             loginResult = Result.ok(new AuthToken(token));

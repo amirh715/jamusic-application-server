@@ -38,10 +38,8 @@ public class RequestAccountVerificationCodeController extends BaseController {
                 
                 if(error instanceof ClientErrorError)
                     clientError(error);
-                
                 if(error instanceof ConflictError)
                     conflict(error);
-                
                 if(error instanceof NotFoundError)
                     notFound(error);
                 
@@ -51,6 +49,7 @@ public class RequestAccountVerificationCodeController extends BaseController {
             noContent();
             
         } catch(Exception e) {
+            e.printStackTrace();
             fail(e);
         }
         
@@ -58,6 +57,7 @@ public class RequestAccountVerificationCodeController extends BaseController {
     
     private RequestAccountVerificationCodeController(RequestAccountVerificationCodeUseCase useCase) {
         this.useCase = useCase;
+        this.requireAuthClaims = false;
     }
     
     public static RequestAccountVerificationCodeController getInstance() {

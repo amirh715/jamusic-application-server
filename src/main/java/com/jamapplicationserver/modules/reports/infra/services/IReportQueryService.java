@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.reports.infra.services;
 
 import java.util.*;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.reports.infra.DTOs.queries.*;
 import com.jamapplicationserver.modules.reports.repository.ReportFilters;
 
@@ -17,6 +17,8 @@ import com.jamapplicationserver.modules.reports.repository.ReportFilters;
 public interface IReportQueryService {
     
     public Set<ReportDetails> getReportsByFilters(ReportFilters filters);
+    
+    public Set<ReportDetails> getAllReports(UniqueEntityId subjectId, UserRole role);
     
     public ReportDetails getReportById(UniqueEntityId id);
     

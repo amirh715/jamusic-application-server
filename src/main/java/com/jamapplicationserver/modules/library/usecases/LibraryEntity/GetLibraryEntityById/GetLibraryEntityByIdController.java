@@ -8,6 +8,8 @@ package com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibra
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.GetLibraryEntityByIdRequestDTO;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
 
 /**
  *
@@ -15,7 +17,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class GetLibraryEntityByIdController extends BaseController {
     
-    private final IUsecase usecase;
+    private final IUsecase<GetLibraryEntityByIdRequestDTO, LibraryEntityDetails> usecase;
     
     private GetLibraryEntityByIdController(IUsecase usecase) {
         this.usecase = usecase;
@@ -26,10 +28,35 @@ public class GetLibraryEntityByIdController extends BaseController {
         
         try {
             
-            final Result result = usecase.execute("");
+            final String id = req.params(":id");
+            
+            final GetLibraryEntityByIdRequestDTO dto =
+                    new GetLibraryEntityByIdRequestDTO(
+                            id,
+                            subjectId,
+                            subjectRole
+                    );
+            
+            final Result<LibraryEntityDetails> result = usecase.execute(dto);
+            
+            if(result.isFailure) {
+                
+                final BusinessError error = result.getError();
+                
+                if(error instanceof NotFoundError)
+                    notFound(error);
+                if(error instanceof ConflictError)
+                    conflict(error);
+                if(error instanceof ClientErrorError)
+                    clientError(error);
+                
+                return;
+            }
+            
+            ok(result.getValue());
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

@@ -83,6 +83,8 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
             final FCMToken fcmToken = request.FCMToken != null ? FCMTokenOrError.getValue() : null;
             final UserRole role = request.role != null ? roleOrError.getValue() : null;
             
+            System.out.println("SUBJECT @@@@ " + request.subjectId);
+            
             final Result<User> userOrError = User.create(
                     name,
                     mobile,
@@ -137,6 +139,7 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
         } catch(OnlyOneAdminCanExistException e) {
             return Result.fail(new OnlyOneAdminCanExistError());
         } catch(Exception e) {
+            e.printStackTrace();
             throw new GenericAppException();
         }
         

@@ -78,7 +78,19 @@ public class UserDetails implements IQueryResponseDTO {
         switch(role) {
             case ADMIN: break;
             case LIBRARY_MANAGER:
-                return null;
+                this.state = null;
+                this.role = null;
+                this.createdAt = null;
+                this.lastModifiedAt = null;
+                this.creatorId = null;
+                this.creatorName = null;
+                this.updaterId = null;
+                this.updaterName = null;
+                this.totalLoginCount = null;
+                this.totalNotificationsCount = null;
+                this.totalPlayedTracksCount = null;
+                this.totalReportsCount = null;
+                break;
             case SUBSCRIBER:
                 this.state = null;
                 this.role = null;

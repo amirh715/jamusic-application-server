@@ -30,7 +30,7 @@ public class NotificationDetails implements IQueryResponseDTO {
     public String senderName;
     public LocalDateTime createdAt;
     public LocalDateTime lastModifiedAt;
-    public Set<RecipientIdAndTitle> recipients;
+    public Set<RecipientIdAndName> recipients;
     
     public NotificationDetails(
             UUID id,
@@ -46,7 +46,7 @@ public class NotificationDetails implements IQueryResponseDTO {
             String senderName,
             LocalDateTime createdAt,
             LocalDateTime lastModifiedAt,
-            Set<RecipientIdAndTitle> recipients
+            Set<RecipientIdAndName> recipients
     ) {
         this.id = id.toString();
         this.title = title;

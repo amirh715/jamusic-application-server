@@ -5,13 +5,14 @@
  */
 package com.jamapplicationserver.core.infra;
 
+import java.io.Serializable;
 import com.jamapplicationserver.core.domain.*;
 
 /**
  *
  * @author dada
  */
-public interface IQueryResponseDTO {
+public interface IQueryResponseDTO extends Serializable {
     
     /**
      * Filters response data transfer objects fields based on user role

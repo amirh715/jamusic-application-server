@@ -62,6 +62,17 @@ public class DeleteUnlinkedFilesJob implements Job {
                 validPaths.addAll(paths);
             }
             
+            // tracks audio paths
+            {
+                final String query = "SELECT t.audioPath FROM TrackModel t "
+                        + "WHERE t.audioPath IS NOT NULL";
+                final Set<String> paths =
+                        em.createQuery(query, String.class)
+                        .getResultStream()
+                        .collect(Collectors.toSet());
+                validPaths.addAll(paths);
+            }
+            
             // image paths of showcase images
             {
                 final String query = "SELECT s.imagePath FROM ShowcaseModel s "

@@ -61,7 +61,6 @@ public class LibraryQueryService implements ILibraryQueryService {
                 em.createQuery(query).getResultList();
             }
             
-            
             final CriteriaQuery<LibraryEntityModel> query = buildQuery(filters, em);
             
             return em.createQuery(query)
@@ -291,9 +290,7 @@ public class LibraryQueryService implements ILibraryQueryService {
             LibraryEntityFilters filters,
             EntityManager em
     ) {
-        
-        
-        
+
         final CriteriaBuilder builder = em.getCriteriaBuilder();
         final CriteriaQuery query = builder.createQuery(LibraryEntityModel.class);
         
@@ -369,16 +366,16 @@ public class LibraryQueryService implements ILibraryQueryService {
             }
             
             // entities containing these genre ids
-//            if(filters.genreIds != null) {
-//                final Set<UUID> ids =
-//                        filters.genreIds
-//                        .stream()
-//                        .map(id -> id.toValue())
-//                        .collect(Collectors.toSet());
-//                final Predicate predicate =
-//                        root
-//                predicates.add(predicate);
-//            }
+            if(filters.genreIds != null) {
+                final Set<UUID> ids =
+                        filters.genreIds
+                        .stream()
+                        .map(id -> id.toValue())
+                        .collect(Collectors.toSet());
+                final Predicate predicate =
+                        root.get("genres").get("id").in(ids);
+                predicates.add(predicate);
+            }
             
             // rate from to
             if(filters.rateFrom != null || filters.rateTo != null) {
@@ -475,6 +472,14 @@ public class LibraryQueryService implements ILibraryQueryService {
                 predicates.add(predicate);
             }
             
+            // artworks of artist
+            if(filters.artistId != null) {
+                final Root<ArtworkModel> artworksRoot =
+                        builder.treat(root, ArtworkModel.class);
+                final Predicate predicate = builder.equal(artworksRoot.get("artist").get("id"), filters.artistId.toValue());
+                predicates.add(predicate);
+            }
+            
             query.where(
                     builder.and(
                             predicates.toArray(new Predicate[predicates.size()])
@@ -485,9 +490,8 @@ public class LibraryQueryService implements ILibraryQueryService {
             root = query.from(LibraryEntityModel.class);
         }
         
-        root.fetch("genres", JoinType.LEFT);
-        
         query.select(root);
+        root.fetch("genres", JoinType.LEFT);
         
         return query;
     }

@@ -6,10 +6,10 @@
 package com.jamapplicationserver.modules.showcase.usecases.GetAllShowcases;
 
 import java.util.*;
-import com.jamapplicationserver.modules.showcase.domain.Showcase;
+import com.jamapplicationserver.modules.showcase.infra.DTOs.queries.ShowcaseDetails;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.showcase.repository.*;
+import com.jamapplicationserver.modules.showcase.infra.services.*;
 
 /**
  *
@@ -17,21 +17,17 @@ import com.jamapplicationserver.modules.showcase.repository.*;
  */
 public class GetAllShowcasesUseCase implements IUsecase {
     
-    private IShowcaseRepository repository;
+    private IShowcaseQueryService queryService;
     
-    private GetAllShowcasesUseCase(IShowcaseRepository repository) {
-        this.repository = repository;
+    private GetAllShowcasesUseCase(IShowcaseQueryService queryService) {
+        this.queryService = queryService;
     }
     
     @Override
     public Result execute(Object request) throws GenericAppException {
         
         try {
-            
-            final Set<Showcase> showcases =
-                    repository.fetchAll();
-            
-            return Result.ok(showcases);
+            return Result.ok(queryService.getAllShowcases());
         } catch(Exception e) {
             throw new GenericAppException(e);
         }
@@ -45,6 +41,6 @@ public class GetAllShowcasesUseCase implements IUsecase {
     private static class GetAllShowcasesUseCaseHolder {
 
         private static final GetAllShowcasesUseCase INSTANCE =
-                new GetAllShowcasesUseCase(ShowcaseRepository.getInstance());
+                new GetAllShowcasesUseCase(ShowcaseQueryService.getInstance());
     }
 }

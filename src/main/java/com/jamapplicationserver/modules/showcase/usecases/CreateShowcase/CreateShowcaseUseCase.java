@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.showcase.usecases.CreateShowcase;
 
+import java.nio.file.Path;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.domain.*;
@@ -35,17 +36,28 @@ public class CreateShowcaseUseCase implements IUsecase<CreateShowcaseRequestDTO,
         
         try {
 
+            final Result<ImageStream> imageOrError =
+                    ImageStream.createAndValidate(request.image);
+            if(imageOrError.isFailure) return imageOrError;
+            final ImageStream image =
+                    request.image != null ? imageOrError.getValue() : null;
+            final Path imagePath = persistence.buildPath(Showcase.class);
+            
             final Result<Showcase> showcaseOrError =
                     Showcase.create(
                             request.index != null ? Integer.decode(request.index) : null,
                             request.title,
                             request.description,
                             request.route,
+                            imagePath,
                             request.subjectId
                     );
             if(showcaseOrError.isFailure) return showcaseOrError;
-            
             final Showcase showcase = showcaseOrError.getValue();
+            
+            if(image != null) {
+                persistence.write(image, imagePath);
+            }
             
             repository.save(showcase);
             

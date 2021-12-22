@@ -60,6 +60,7 @@ public class GetLibraryEntityImageByIdController extends BaseController {
             sendFile(result.getValue());
             
         } catch(Exception e) {
+            e.printStackTrace();
             fail(e);
         }
         

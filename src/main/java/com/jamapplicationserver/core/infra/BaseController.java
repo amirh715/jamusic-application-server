@@ -37,25 +37,32 @@ public abstract class BaseController implements Route {
         this.req = req;
         this.res = res;
         
-        if(requireAuthClaims) {
-            final Result<UniqueEntityId> subjectIdOrError =
-                UniqueEntityId
-                    .createFromString(
-                            req.session().attribute("subjectId")
-                    );
-            if(subjectIdOrError.isFailure) {
-                fail("Subject id is invalid");
-                return res.body();
+        final String subjectIdString = req.session().attribute("subjectId");
+        final String subjectRoleString = req.session().attribute("subjectRole");
+        Result<UniqueEntityId> subjectIdOrError;
+        Result<UserRole> subjectRoleOrError;
+        
+        // subject id and role are not null. They must be valid.
+        if(subjectIdString != null && subjectRoleString != null) {
+            subjectIdOrError = UniqueEntityId.createFromString(subjectIdString);
+            subjectRoleOrError = UserRole.create(subjectRoleString);
+            
+            if(subjectIdOrError.isFailure || subjectRoleOrError.isFailure) {
+                fail("Subject id or role is invalid.");
+                System.out.println("Subject vars invalid");
+                return res;
             }
             this.subjectId = subjectIdOrError.getValue();
-
-            final Result<UserRole> subjectRoleOrError =
-                    UserRole.create(req.session().attribute("role"));
-            if(subjectRoleOrError.isFailure) {
-                fail("Subject role is invalid");
-                return res.body();
-            }
             this.subjectRole = subjectRoleOrError.getValue();
+
+        } else { // subject id and/or role are null.
+            
+            if(requireAuthClaims) {
+                fail("Subject id and role are required.");
+                System.out.println("Subject vars required");
+                return res;
+            }
+            
         }
         
         executeImpl();
@@ -132,7 +139,7 @@ public abstract class BaseController implements Route {
     
     // REDIRECT RESPONSES (3**)
     protected final void notModified() {
-        BaseController.jsonResponse(res, 301, null);
+        BaseController.jsonResponse(res, 304, null);
     }
     
     // FAILURE RESPONSES (4**)
@@ -190,13 +197,21 @@ public abstract class BaseController implements Route {
     }
     
     // CACHE CONTROL
-    protected final void cache(Duration freshDuration) {
-        
+    protected final void cache(Duration duration) {
+        res.header("Cache-Control", "max-age=" + duration.toSeconds());
     }
     
-    protected final String makeEtag(Object resource) {
-        
-        return "";
+    protected final ETag getEtag() {
+        final String etag = req.raw().getHeader("ETag");
+        return ETag.reconstitute(etag);
+    }
+    
+    protected final boolean hasETag() {
+        return req.raw().getHeader("ETag") != null;
+    }
+    
+    protected final void attachEtag(ETag etag) {
+        res.header("ETag", etag.getValue());
     }
     
     

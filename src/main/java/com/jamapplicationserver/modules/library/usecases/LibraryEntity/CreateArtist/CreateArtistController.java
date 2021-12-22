@@ -70,7 +70,8 @@ public class CreateArtistController extends BaseController {
             created();
             
         } catch(Exception e) {
-            this.fail(e);
+            e.printStackTrace();
+            fail(e);
         }
         
     }

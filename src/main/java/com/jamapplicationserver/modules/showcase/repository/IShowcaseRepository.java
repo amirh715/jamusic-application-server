@@ -23,7 +23,7 @@ public interface IShowcaseRepository {
     
     public boolean exists(UniqueEntityId id);
     
-    public void save(Showcase showcase);
+    public void save(Showcase showcase) throws Exception;
     
     public void remove(Showcase showcase);
     

@@ -12,18 +12,18 @@ import com.jamapplicationserver.core.domain.UserRole;
  *
  * @author dada
  */
-public class RecipientIdAndTitle implements IQueryResponseDTO {
+public class RecipientIdAndName implements IQueryResponseDTO {
     
     public String id;
     public String name;
     
-    public RecipientIdAndTitle(String id, String name) {
+    public RecipientIdAndName(String id, String name) {
         this.id = id;
         this.name = name;
     }
     
     @Override
-    public RecipientIdAndTitle filter(UserRole role) {
+    public RecipientIdAndName filter(UserRole role) {
         
         
         return this;

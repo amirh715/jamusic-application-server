@@ -10,12 +10,14 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.infra.services.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
+import com.jamapplicationserver.modules.library.infra.DTOs.commands.GetLibraryEntityByIdRequestDTO;
+import com.jamapplicationserver.modules.library.domain.core.errors.*;
 
 /**
  *
  * @author dada
  */
-public class GetLibraryEntityByIdUseCase implements IUsecase<String, LibraryEntityDetails> {
+public class GetLibraryEntityByIdUseCase implements IUsecase<GetLibraryEntityByIdRequestDTO, LibraryEntityDetails> {
     
     private final ILibraryQueryService queryService;
     
@@ -24,15 +26,19 @@ public class GetLibraryEntityByIdUseCase implements IUsecase<String, LibraryEnti
     }
     
     @Override
-    public Result<LibraryEntityDetails> execute(String idString) throws GenericAppException {
+    public Result<LibraryEntityDetails> execute(GetLibraryEntityByIdRequestDTO request) throws GenericAppException {
         
         try {
             
-            final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(idString);
+            final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);
             if(idOrError.isFailure) return Result.fail(idOrError.getError());
             
             final UniqueEntityId id = idOrError.getValue();
-            return Result.ok(queryService.getLibraryEntityById(id));
+            final LibraryEntityDetails entity = queryService.getLibraryEntityById(id);
+            if(entity == null)
+                return Result.fail(new LibraryEntityDoesNotExistError());
+            
+            return Result.ok(entity);
             
         } catch(Exception e) {
             throw new GenericAppException(e);

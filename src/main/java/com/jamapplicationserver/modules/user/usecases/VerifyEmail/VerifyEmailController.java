@@ -19,6 +19,7 @@ public class VerifyEmailController extends BaseController {
     
     private VerifyEmailController(IUsecase useCase) {
         this.useCase = useCase;
+        this.requireAuthClaims = false;
     }
     
     @Override

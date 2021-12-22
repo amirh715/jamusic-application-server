@@ -46,13 +46,18 @@ public class GetLibraryEntityImageByIdUseCase implements IUsecase<String, InputS
                     repository.fetchById(id).getSingleResult();
             if(entity == null) return Result.fail(new LibraryEntityDoesNotExistError());
             
-            final File file = entity.getImagePath().toFile();
+            File file;
+            if(entity.hasImage())
+                file = entity.getImagePath().toFile();
+            else
+                return Result.fail(new LibraryEntityDoesNotHaveAnImage());
             
             final InputStream stream = persistence.read(file);
             if(stream == null) return Result.fail(new LibraryEntityDoesNotHaveAnImage());
             
             return Result.ok(stream);
         } catch(Exception e) {
+            e.printStackTrace();
             throw new GenericAppException(e);
         }
         

@@ -24,6 +24,8 @@ public class ShowcaseDetails implements IQueryResponseDTO {
     public String interactionCount;
     public String createdAt;
     public String lastModifiedAt;
+    public UUID creatorId;
+    public String creatorName;
     
     public ShowcaseDetails(
             UUID id,
@@ -33,7 +35,9 @@ public class ShowcaseDetails implements IQueryResponseDTO {
             String route,
             long interactionCount,
             LocalDateTime createdAt,
-            LocalDateTime lastModifiedAt
+            LocalDateTime lastModifiedAt,
+            UUID creatorId,
+            String creatorName
     ) {
         this.id = id.toString();
         this.index = Integer.toString(index);
@@ -43,6 +47,8 @@ public class ShowcaseDetails implements IQueryResponseDTO {
         this.interactionCount = Long.toString(interactionCount);
         this.createdAt = createdAt.toString();
         this.lastModifiedAt = lastModifiedAt.toString();
+        this.creatorId = creatorId;
+        this.creatorName = creatorName;
     }
     
     @Override

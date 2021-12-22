@@ -202,13 +202,14 @@ public class Album extends Artwork {
         
         if(description != null) combinedProps.add(descriptionOrError);
         if(flagNote != null) combinedProps.add(flagOrError);
-        if(tags != null) combinedProps.add(tagListOrError);
+        if(tags != null && !tags.isEmpty()) combinedProps.add(tagListOrError);
         if(genres != null) combinedProps.add(genreListOrError);
         if(recordLabel != null) combinedProps.add(recordLabelOrError);
         if(producer != null) combinedProps.add(producerOrError);
         if(releaseDate != null) combinedProps.add(releaseDateOrError);
         
         final Result combinedPropsResult = Result.combine(combinedProps);
+//        System.out.println(combinedPropsResult.getError().message);
         if(combinedPropsResult.isFailure) return combinedPropsResult;
         
         Album instance = new Album(
@@ -217,7 +218,7 @@ public class Album extends Artwork {
                 description != null ? descriptionOrError.getValue() : null,
                 published,
                 flagNote != null ? flagOrError.getValue() : null,
-                tags != null ? tagListOrError.getValue() : null,
+                tags != null && !tags.isEmpty() ? tagListOrError.getValue() : null,
                 genres != null ? genreListOrError.getValue() : null,
                 imagePath != null ? Path.of(imagePath) : null,
                 Duration.ofSeconds(duration),

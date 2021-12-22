@@ -7,6 +7,7 @@ package com.jamapplicationserver.modules.showcase.domain;
 
 import java.util.*;
 import java.time.*;
+import java.nio.file.Path;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 
@@ -28,8 +29,8 @@ public class Showcase extends Entity {
     private final String description;
     private final String route;
     private long interactionCount;
-    private String imagePath;
-    private UniqueEntityId creatorId;
+    private final String imagePath;
+    private final UniqueEntityId creatorId;
     
     // creation constructor
     private Showcase(
@@ -37,6 +38,7 @@ public class Showcase extends Entity {
             String title,
             String description,
             String route,
+            String imagePath,
             UniqueEntityId creatorId
     ) {
         super();
@@ -45,6 +47,7 @@ public class Showcase extends Entity {
         this.description = description;
         this.route = route;
         this.interactionCount = 0;
+        this.imagePath = imagePath;
         this.creatorId = creatorId;
     }
     
@@ -108,6 +111,7 @@ public class Showcase extends Entity {
             String title,
             String description,
             String route,
+            Path imagePath,
             UniqueEntityId creatorId
     ) {
         
@@ -127,9 +131,10 @@ public class Showcase extends Entity {
                 description.length() < MIN_DESCRIPTION_LENGTH
         ) return Result.fail(new ValidationError("Description length error"));
         
-        if(creatorId == null) return Result.fail(new ValidationError("Creator is reqiured"));
+        if(creatorId == null)
+            return Result.fail(new ValidationError("Creator is reqiured"));
         
-        return Result.ok(new Showcase(index, title, description, route, creatorId));
+        return Result.ok(new Showcase(index, title, description, route, imagePath.toString(), creatorId));
     }
     
     public static final Result<Showcase> reconstitute(

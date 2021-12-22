@@ -10,7 +10,7 @@ import java.util.stream.*;
 import java.time.*;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.modules.reports.repository.ReportFilters;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
@@ -156,7 +156,7 @@ public class ReportQueryService implements IReportQueryService {
                    predicates.add(predicate);
                }
                
-               if(filters.isLibraryEntityReport) {
+               if(filters.isLibraryEntityReport != null) {
                    final Predicate predicate =
                            filters.isLibraryEntityReport ?
                            builder.isNotNull(root.get("reportedEntity")) :
@@ -179,6 +179,7 @@ public class ReportQueryService implements IReportQueryService {
                                 report.getId(),
                                 report.getMessage(),
                                 report.getStatus(),
+                                report.getType().toString(),
                                 report.getReporter().getId(),
                                 report.getReporter().getName(),
                                 report.getReportedEntity() != null ?
@@ -208,6 +209,86 @@ public class ReportQueryService implements IReportQueryService {
     }
     
     @Override
+    public Set<ReportDetails> getAllReports(UniqueEntityId subjectId, UserRole role) {
+        
+        final EntityManager em = emfh.createEntityManager();
+        
+        try {
+
+            String query;
+            Set<ReportDetails> results;
+            if(role.isAdmin()) {
+                query = "SELECT r FROM ReportModel r ORDER BY status desc";
+                results = em.createQuery(query, ReportModel.class)
+                        .getResultStream()
+                        .map(report -> {
+                            return new ReportDetails(
+                                report.getId(),
+                                report.getMessage(),
+                                report.getStatus(),
+                                report.getType().toString(),
+                                report.getReporter().getId(),
+                                report.getReporter().getName(),
+                                report.getReportedEntity() != null ?
+                                        report.getReportedEntity().getId() : null,
+                                report.getReportedEntity() != null ?
+                                        report.getReportedEntity().getTitle() : null,
+                                report.isAssigned() ?
+                                        report.getProcessor().getId() : null,
+                                report.isAssigned() ?
+                                        report.getProcessor().getName() : null,
+                                report.getProcessorNote(),
+                                report.getAssignedAt(),
+                                report.getProcessedAt(),
+                                report.getArchivedAt(),
+                                report.getCreatedAt(),
+                                report.getLastModifiedAt()
+                            );
+                        })
+                        .collect(Collectors.toSet());
+            } else {
+                query = "SELECT r FROM ReportModel r WHERE r.processor.id = ?1";
+                results = em.createQuery(query, ReportModel.class)
+                        .setParameter(1, subjectId.toValue())
+                        .getResultStream()
+                        .map(report -> {
+                            return new ReportDetails(
+                                report.getId(),
+                                report.getMessage(),
+                                report.getStatus(),
+                                report.getType().toString(),
+                                report.getReporter().getId(),
+                                report.getReporter().getName(),
+                                report.getReportedEntity() != null ?
+                                        report.getReportedEntity().getId() : null,
+                                report.getReportedEntity() != null ?
+                                        report.getReportedEntity().getTitle() : null,
+                                report.isAssigned() ?
+                                        report.getProcessor().getId() : null,
+                                report.isAssigned() ?
+                                        report.getProcessor().getName() : null,
+                                report.getProcessorNote(),
+                                report.getAssignedAt(),
+                                report.getProcessedAt(),
+                                report.getArchivedAt(),
+                                report.getCreatedAt(),
+                                report.getLastModifiedAt()
+                            );
+                        })
+                        .collect(Collectors.toSet());
+            }
+            
+            return results;
+            
+        } catch(Exception e) {
+            throw e;
+        } finally {
+            em.close();
+        }
+        
+    }
+    
+    @Override
     public ReportDetails getReportById(UniqueEntityId id) {
         
         final EntityManager em = emfh.createEntityManager();
@@ -220,6 +301,7 @@ public class ReportQueryService implements IReportQueryService {
                     report.getId(),
                     report.getMessage(),
                     report.getStatus(),
+                    report.getType().toString(),
                     report.getReporter().getId(),
                     report.getReporter().getName(),
                     report.isLibraryEntityReport() ?
@@ -268,6 +350,7 @@ public class ReportQueryService implements IReportQueryService {
                                 report.getId(),
                                 report.getMessage(),
                                 report.getStatus(),
+                                report.getType().toString(),
                                 report.getReporter().getId(),
                                 report.getReporter().getName(),
                                 report.isLibraryEntityReport() ?

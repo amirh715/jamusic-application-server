@@ -73,6 +73,7 @@ public class LoginController extends BaseController {
             ok(result.getValue());
             
         } catch(Exception e) {
+            e.printStackTrace();
             fail(e);
         }
         

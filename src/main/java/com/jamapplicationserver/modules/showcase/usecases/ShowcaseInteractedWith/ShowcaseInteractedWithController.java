@@ -28,20 +28,20 @@ public class ShowcaseInteractedWithController extends BaseController {
         
         try {
             
-            final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
+            final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
 
-            final Result result = this.usecase.execute(fields.get("id"));
+            final Result result = usecase.execute(fields.get("id"));
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 return;
             }
@@ -49,7 +49,7 @@ public class ShowcaseInteractedWithController extends BaseController {
             noContent();
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }

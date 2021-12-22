@@ -183,7 +183,9 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
                             request.isLibraryEntityReport
                     );
             
-            final Set<ReportDetails> reports = queryService.getReportsByFilters(filters);
+//            final Set<ReportDetails> reports = queryService.getReportsByFilters(filters);
+            final Set<ReportDetails> reports =
+                    queryService.getAllReports(request.subjectId, request.subjectRole);
             
             return Result.ok(reports);
         } catch(Exception e) {

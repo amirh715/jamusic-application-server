@@ -48,8 +48,7 @@ public class ResetPasswordUseCase implements IUsecase<ResetPasswordRequestDTO, S
             final MobileNo mobile = mobileOrError.getValue();
             final Password newPassword = newPasswordOrError.getValue();
             
-            final User user = this.repository.fetchByMobile(mobile);
-            
+            final User user = repository.fetchByMobile(mobile);
             if(user == null) return Result.fail(new UserDoesNotExistError());
             
             final Result result = user.resetPassword(newPassword, resetCode);
@@ -61,6 +60,7 @@ public class ResetPasswordUseCase implements IUsecase<ResetPasswordRequestDTO, S
             return Result.ok();
             
         } catch(Exception e) {
+            e.printStackTrace();
             throw new GenericAppException(e);
         }
         

@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.*;
 public class UserIsNotVerifiedError extends ConflictError {
     
     private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "";
+    private static final String DEFAULT_MESSAGE = "حساب کاربری تایید نشده است";
     
     public UserIsNotVerifiedError() {
         super(DEFAULT_MESSAGE, CODE);

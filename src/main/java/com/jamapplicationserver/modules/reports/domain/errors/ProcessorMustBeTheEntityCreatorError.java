@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ProcessorMustBeTheEntityCreatorError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "";
+    private static final String DEFAULT_MESSAGE = "پردازش کننده گزارش های مرتبط با هنرمندان و آثار باید ایجادکننده آنها باشند.";
     private static final int CODE = 111;
     
     public ProcessorMustBeTheEntityCreatorError() {

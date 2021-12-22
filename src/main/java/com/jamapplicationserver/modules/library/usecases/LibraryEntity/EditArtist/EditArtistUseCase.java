@@ -56,6 +56,8 @@ public class EditArtistUseCase implements IUsecase<EditArtistRequestDTO, String>
                     fetchAndCreateGenreList(request.genreIds);
             final Result<Optional<InstagramId>> instagramIdOrError =
                     InstagramId.createNullable(request.instagramId);
+            final Result<ImageStream> imageOrError =
+                    ImageStream.createAndValidate(request.image);
             
             if(request.title != null)
                 combinedProps.add(titleOrError);
@@ -69,6 +71,8 @@ public class EditArtistUseCase implements IUsecase<EditArtistRequestDTO, String>
                 combinedProps.add(genresOrError);
             if(request.instagramId != null)
                 combinedProps.add(instagramIdOrError);
+            if(request.image != null)
+                combinedProps.add(imageOrError);
             
             final Result combinedPropsResult = Result.combine(combinedProps);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
@@ -93,6 +97,9 @@ public class EditArtistUseCase implements IUsecase<EditArtistRequestDTO, String>
             final Optional<InstagramId> instagramId =
                     request.instagramId != null ? instagramIdOrError.getValue()
                     : null;
+            final ImageStream image =
+                    request.image != null ? imageOrError.getValue()
+                    : null;
 
             final Artist artist =
                     repository.fetchArtistById(id)
@@ -103,14 +110,14 @@ public class EditArtistUseCase implements IUsecase<EditArtistRequestDTO, String>
             final Result result = artist.edit(title, description, tags, genres, flag, instagramId, request.subjectId);
             if(result.isFailure) return result;
             
-            if(request.removeImage) {
-                artist.removeImage(request.subjectId);
+            if(image != null) {
+                final Path imagePath = persistence.buildPath(Artist.class);
+                artist.changeImage(imagePath, request.subjectId);
+                persistence.write(image, imagePath);
             }
             
-            if(request.image != null) {
-                final Path path = persistence.buildPath(Artist.class);
-                artist.changeImage(path, request.subjectId);
-                persistence.write(request.image, path);
+            if(request.removeImage) {
+                artist.removeImage(request.subjectId);
             }
             
             repository.save(artist);

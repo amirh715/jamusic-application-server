@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ProcessorMustProcessReportsAssignedToHerError extends ClientErrorError {
     
-    private static final String DEFAULT_MESSAGE = "";
+    private static final String DEFAULT_MESSAGE = "تنها پردازش کننده تعیین شده می تواند گزارش را پردازش کند.";
     private static final int CODE = 111;
     
     public ProcessorMustProcessReportsAssignedToHerError() {

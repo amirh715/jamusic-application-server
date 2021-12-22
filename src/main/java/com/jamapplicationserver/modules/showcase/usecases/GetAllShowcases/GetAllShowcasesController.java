@@ -47,7 +47,8 @@ public class GetAllShowcasesController extends BaseController {
             ok(result.getValue());
             
         } catch(Exception e) {
-            this.fail(e);
+            e.printStackTrace();
+            fail(e);
         }
         
     }

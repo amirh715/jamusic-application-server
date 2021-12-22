@@ -357,7 +357,7 @@ public class User extends AggregateRoot {
     }
     
     public boolean isVerified() {
-        return this.state.equals(UserState.NOT_VERIFIED);
+        return !this.state.equals(UserState.NOT_VERIFIED);
     }
     
     public Result requestUserVerification() {

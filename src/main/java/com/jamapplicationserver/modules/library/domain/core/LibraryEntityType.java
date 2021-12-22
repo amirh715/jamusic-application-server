@@ -53,18 +53,18 @@ public enum LibraryEntityType {
         
         try {
             
-            if(value == null) return Result.fail(new ValidationError("Library entity type is required 1"));
+            if(value == null) return Result.fail(new ValidationError("Library entity type is required"));
             
             final LibraryEntityType type =
                     LibraryEntityType.valueOf(LibraryEntityType.class, value.toUpperCase());
             
-            if(type == null) return Result.fail(new ValidationError("Library entity type is invalid 2"));
+            if(type == null) return Result.fail(new ValidationError("Library entity type is invalid"));
             
             return Result.ok(type);
             
         } catch(IllegalArgumentException e) {
             e.printStackTrace();
-            return Result.fail(new ValidationError("Library entity type is invalid 3"));
+            return Result.fail(new ValidationError("Library entity type is invalid"));
         }
         
     }

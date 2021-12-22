@@ -68,7 +68,7 @@ public abstract class LibraryEntityDetails implements IQueryResponseDTO {
         
         Set<GenreIdAndTitle> genres = null;
         if(entity.getGenres() != null && !entity.getGenres().isEmpty()) {
-            entity.getGenres()
+            genres = entity.getGenres()
                     .stream()
                     .map(genre -> GenreIdAndTitle.create(genre))
                     .collect(Collectors.toSet());

@@ -5,10 +5,10 @@
  */
 package com.jamapplicationserver.modules.showcase.repository;
 
-import com.jamapplicationserver.infra.Persistence.database.Models.ShowcaseModel;
-import com.jamapplicationserver.infra.Persistence.database.Models.UserModel;
 import java.util.*;
+import java.util.stream.*;
 import javax.persistence.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.showcase.domain.Showcase;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
@@ -32,12 +32,13 @@ public class ShowcaseRepository implements IShowcaseRepository {
         final EntityManager em = emfh.createEntityManager();
         
         try {
-            
-            final List<ShowcaseModel> results =
-                    em.createQuery("SELECT showcase FROM ShowcaseModel showcase")
-                    .getResultList();
-            
-            return null;
+
+            return
+                    em.createQuery("SELECT showcase FROM ShowcaseModel showcase", ShowcaseModel.class)
+                    .getResultStream()
+                    .map(showcase -> ShowcaseMapper.toDomain(showcase))
+                    .collect(Collectors.toSet());
+
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
@@ -82,6 +83,8 @@ public class ShowcaseRepository implements IShowcaseRepository {
                     .getSingleResult();
             
             return ShowcaseMapper.toDomain(result);
+        } catch(NoResultException e) {
+            return null;
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
@@ -92,7 +95,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
     }
     
     @Override
-    public final void save(Showcase entity) {
+    public final void save(Showcase entity) throws Exception {
         
         final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
@@ -129,6 +132,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
         } catch(Exception e) {
             e.printStackTrace();
             tnx.rollback();
+            throw e;
         } finally {
             em.close();
         }
@@ -145,7 +149,8 @@ public class ShowcaseRepository implements IShowcaseRepository {
             
             tnx.begin();
             
-            final ShowcaseModel model = ShowcaseMapper.toPersistence(entity);
+            final ShowcaseModel model =
+                    em.find(ShowcaseModel.class, entity.getId().toValue());
             
             em.remove(model);
             

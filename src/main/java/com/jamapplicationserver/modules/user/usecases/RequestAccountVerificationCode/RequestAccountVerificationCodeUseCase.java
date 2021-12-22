@@ -26,13 +26,14 @@ public class RequestAccountVerificationCodeUseCase implements IUsecase<String, S
 
         try {
             
+            System.out.println("Mobile: " + mobileNoString);
+            
             final Result<MobileNo> mobileNoOrError = MobileNo.create(mobileNoString);
             if(mobileNoOrError.isFailure)
                 return mobileNoOrError;
             final MobileNo mobileNo = mobileNoOrError.getValue();
             
             final User user = repository.fetchByMobile(mobileNo);
-            
             if(user == null) return Result.fail(new UserDoesNotExistError());
         
             final Result result = user.requestUserVerification();

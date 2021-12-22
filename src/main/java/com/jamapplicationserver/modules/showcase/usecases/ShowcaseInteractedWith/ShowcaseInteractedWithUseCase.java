@@ -9,6 +9,7 @@ import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.showcase.repository.*;
 import com.jamapplicationserver.modules.showcase.domain.Showcase;
+import com.jamapplicationserver.modules.showcase.domain.errors.*;
 
 /**
  *
@@ -32,11 +33,12 @@ public class ShowcaseInteractedWithUseCase implements IUsecase<String, String> {
             
             final UniqueEntityId id = idOrError.getValue();
             
-            final Showcase showcase = this.repository.fetchById(id);
+            final Showcase showcase = repository.fetchById(id);
+            if(showcase == null) return Result.fail(new ShowcaseDoesNotExistError());
             
             showcase.interactedWith();
             
-            this.repository.save(showcase);
+            repository.save(showcase);
             
             return Result.ok();
         } catch(Exception e) {
