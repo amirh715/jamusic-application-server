@@ -13,12 +13,19 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class EmailIsAlreadyVerifiedError extends ConflictError {
     
-    private static final String MESSAGE = "";
+    private static final String DEFAULT_MESSAGE = "ایمیل تایید شده است";
     private static final int CODE = 111;
-    private static final String DESCRIPTION = "";
     
     public EmailIsAlreadyVerifiedError() {
-        super(MESSAGE, CODE, DESCRIPTION);
+        super(DEFAULT_MESSAGE, CODE);
+    }
+    
+    public EmailIsAlreadyVerifiedError(String message) {
+        super(message, CODE);
+    }
+    
+    public EmailIsAlreadyVerifiedError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }
