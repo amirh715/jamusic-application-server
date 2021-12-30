@@ -20,7 +20,7 @@ public interface IUserQueryService {
     
     public UserDetails getUserById(UniqueEntityId id);
     
-    public Set<LoginDetails> getLoginsOfUser(UniqueEntityId id);
+    public Set<LoginDetails> getLoginsOfUser(UniqueEntityId id, Integer limit, Integer offset);
     
     public Set<LoginDetails> getAllLogins(Integer limit, Integer offset);
     
