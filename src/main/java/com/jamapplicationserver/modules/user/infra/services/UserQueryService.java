@@ -271,21 +271,24 @@ public class UserQueryService implements IUserQueryService {
     }
     
     @Override
-    public Set<LoginDetails> getLoginsOfUser(UniqueEntityId id) {
+    public Set<LoginDetails> getLoginsOfUser(UniqueEntityId id, Integer limit, Integer offset) {
         
         final EntityManager em = emfh.createEntityManager();
         
         try {
+
+            if(limit == null) limit = 30;
+            if(offset == null) offset = 0;
             
-            final UserModel user = em.find(UserModel.class, id.toValue());
-            if(user == null) return null;
-            
-            return user.getLogins()
-                    .stream()
+            return em.createQuery("SELECT l FROM LoginAuditModel l WHERE l.user.id = ?1 ORDER BY l.attemptedAt DESC", LoginAuditModel.class)
+                    .setParameter(1, id.toValue())
+                    .setMaxResults(limit)
+                    .setFirstResult(offset)
+                    .getResultStream()
                     .map(login -> new LoginDetails(
-                            user.getId(),
-                            user.getName(),
-                            user.getMobile(),
+                            login.getUser().getId(),
+                            login.getUser().getName(),
+                            login.getUser().getMobile(),
                             login.getIpAddress(),
                             login.wasSuccessful(),
                             login.getFailureReason(),
@@ -311,9 +314,14 @@ public class UserQueryService implements IUserQueryService {
         
         try {
             
+            if(limit == null) limit = 50;
+            if(offset == null) offset = 0;
+            
             final String query = "SELECT logins FROM LoginAuditModel logins ORDER BY logins.attemptedAt DESC";
             
             return em.createQuery(query, LoginAuditModel.class)
+                    .setMaxResults(limit)
+                    .setFirstResult(offset)
                     .getResultStream()
                     .map(login -> {
                         return new LoginDetails(
