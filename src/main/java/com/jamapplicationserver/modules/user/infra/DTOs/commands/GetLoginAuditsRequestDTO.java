@@ -15,14 +15,20 @@ import com.jamapplicationserver.core.domain.*;
 public class GetLoginAuditsRequestDTO extends DTOWithAuthClaims {
     
     public final String id;
+    public final Integer limit;
+    public final Integer offset;
     
     public GetLoginAuditsRequestDTO(
             String id,
+            Integer limit,
+            Integer offset,
             UniqueEntityId subjectId,
             UserRole subjectRole
     ) {
         super(subjectId, subjectRole);
         this.id = id;
+        this.limit = limit;
+        this.offset = offset;
     }
     
 }
