@@ -50,7 +50,7 @@ public class SendScheduledNotificationsJob implements Job {
             }
             
         } catch(Exception e) {
-            // LOG
+            System.out.println(e);
         } finally {
             
         }

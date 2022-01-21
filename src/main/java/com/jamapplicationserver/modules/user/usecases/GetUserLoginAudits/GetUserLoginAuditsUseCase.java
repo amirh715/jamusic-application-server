@@ -35,7 +35,7 @@ public class GetUserLoginAuditsUseCase implements IUsecase<GetLoginAuditsRequest
             
             final UniqueEntityId id = idOrError.getValue();
             
-            final Set<LoginDetails> logins = queryService.getLoginsOfUser(id);
+            final Set<LoginDetails> logins = queryService.getLoginsOfUser(id, request.limit, request.offset);
             if(logins == null) return Result.fail(new UserDoesNotExistError());
             
             return Result.ok(logins);

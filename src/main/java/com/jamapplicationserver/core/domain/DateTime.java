@@ -12,6 +12,7 @@ import com.github.eloyzone.jalalicalendar.*;
 import com.jamapplicationserver.utils.PersianDigitsMapper;
 import java.lang.Math;
 import java.util.TimeZone;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -43,9 +44,10 @@ public class DateTime extends ValueObject<LocalDateTime> {
         if(value == null) return Result.fail(new ValidationError("Datetime is required"));
         try {
             final DateTime instance =
-                    DateTime.create(LocalDateTime.parse(value)).getValue();
+                    DateTime.create(LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME)).getValue();
             return Result.ok(instance);
         } catch(DateTimeParseException e) {
+            System.out.println(e);
             return Result.fail(new ValidationError("Invalid datetime"));
         }
         

@@ -18,6 +18,8 @@ public class ReportMapper {
     
     public static final Report toDomain(ReportModel model) {
         
+        System.out.println("toDomain");
+        
         final Reporter reporter = toReporter(model.getReporter());
         
         ReportedEntity reportedEntity = null;
@@ -64,6 +66,7 @@ public class ReportMapper {
     }
     
     public static Reporter toReporter(UserModel model) {
+        System.out.println("toReporter");
         final UniqueEntityId id =
                 UniqueEntityId.createFromUUID(model.getId()).getValue();
         final MobileNo mobile =
@@ -88,6 +91,7 @@ public class ReportMapper {
     }
     
     public static ReportedEntity toReportedEntity(LibraryEntityModel model) {
+        System.out.println("toReportedEntity");
         final UniqueEntityId id =
                 UniqueEntityId.createFromUUID(model.getId()).getValue();
         final ReportedEntityTitle title =
@@ -117,6 +121,7 @@ public class ReportMapper {
     }
     
     public static Processor toProcessor(UserModel model) {
+        System.out.println("toProcessor");
         final UniqueEntityId id =
                 UniqueEntityId.createFromUUID(model.getId()).getValue();
         final MobileNo mobile =

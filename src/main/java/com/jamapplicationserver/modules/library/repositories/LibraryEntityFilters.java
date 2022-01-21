@@ -39,6 +39,9 @@ public class LibraryEntityFilters {
     public DateTime lastModifiedAtFrom;
     public DateTime lastModifiedAtTill;
     
+    public Integer limit;
+    public Integer offset;
+    
     public LibraryEntityFilters(
             LibraryEntityType type,
             String searchTerm,
@@ -60,7 +63,9 @@ public class LibraryEntityFilters {
             DateTime createdAtFrom,
             DateTime createdAtTill,
             DateTime lastModifiedAtFrom,
-            DateTime lastModifiedAtTill
+            DateTime lastModifiedAtTill,
+            Integer limit,
+            Integer offset
     ) {
         this.type = type;
         this.searchTerm = searchTerm;
@@ -83,6 +88,8 @@ public class LibraryEntityFilters {
         this.createdAtTill = createdAtTill;
         this.lastModifiedAtFrom = lastModifiedAtFrom;
         this.lastModifiedAtTill = lastModifiedAtTill;
+        this.limit = limit == null ? 30 : limit;
+        this.offset = offset == null ? 0 : offset;
     }
     
     public LibraryEntityFilters() {

@@ -7,11 +7,13 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.util.*;
 import java.io.Serializable;
+import javax.persistence.Embeddable;
 
 /**
  *
  * @author dada
  */
+@Embeddable
 public class NotificationDeliveryId implements Serializable {
 
     private final UUID notification_id;

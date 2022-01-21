@@ -8,47 +8,38 @@ package com.jamapplicationserver.infra.Persistence.database.Models;
 import java.util.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import javax.persistence.*;
 
 /**
  *
- * @author amirhossein
+ * @author dada
  */
 public class PlayedId implements Serializable {
 
-    public UUID playedTrack;
-    
-    public UUID player;
+    private UserModel player;
 
-    public LocalDateTime playedAt;
+    private TrackModel playedTrack;
+
+    private LocalDateTime playedAt;
     
-    PlayedId() {
+    public PlayedId() {
         
     }
     
-    PlayedId(
-            UUID playedTrack,
-            UUID player,
-            LocalDateTime playedAt
-    ) {
-        this.playedTrack = playedTrack;
-        this.player = player;
-        this.playedAt = playedAt;
-    }
-
-    public UUID getPlayedTrackId() {
-        return this.playedTrack;
-    }
-
-    public void setPlayedTrackId(UUID playedTrack) {
-        this.playedTrack = playedTrack;
-    }
-
-    public UUID getPlayerId() {
+    public UserModel getPlayer() {
         return this.player;
     }
-
-    public void setPlayerId(UUID player) {
+    
+    public void setPlayer(UserModel player) {
         this.player = player;
+    }
+    
+    public TrackModel getPlayedTrack() {
+        return this.playedTrack;
+    }
+    
+    public void setPlayedTrack(TrackModel playedTrack) {
+        this.playedTrack = playedTrack;
     }
     
     public LocalDateTime getPlayedAt() {
@@ -61,18 +52,21 @@ public class PlayedId implements Serializable {
     
     @Override
     public int hashCode() {
+        System.out.println("### PlayedId::hashCode ####");
         return Objects.hash(player, playedTrack, playedAt);
     }
     
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof PlayedId)) return false;
-        final PlayedId pk = (PlayedId) obj;
-        return
-                pk.player.equals(this.player) &&
-                pk.playedTrack.equals(this.playedTrack) &&
-                pk.playedAt.equals(this.playedAt);
+        System.out.println("### PlayedId::equals ####");
+        if(obj == this)
+            return true;
+        if(!(obj instanceof PlayedId))
+            return false;
+        final PlayedId p = (PlayedId) obj;
+        return Objects.equals(p.player, player) &&
+                Objects.equals(p.playedTrack, playedTrack) &&
+                Objects.equals(p.playedAt, playedAt);
     }
-     
+    
 }

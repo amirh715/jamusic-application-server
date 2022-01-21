@@ -5,9 +5,9 @@
  */
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
-import java.util.*;
 import java.time.*;
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.*;
 import org.hibernate.envers.*;
 
@@ -21,50 +21,46 @@ import org.hibernate.envers.*;
 @Audited
 public class PlayedModel implements Serializable {
     
-    @Id
     @ManyToOne(optional=false)
     @JoinColumn(name="played_track_id", referencedColumnName="id", updatable=false)
-    private TrackModel playedTrack;
-    
     @Id
-    @ManyToOne(optional=false)
+    private TrackModel playedTrack;
+
+    @ManyToOne(optional=false, cascade=CascadeType.ALL)
     @JoinColumn(name="player_id", referencedColumnName="id", updatable=false)
+    @Id
     private UserModel player;
-    
+
     @Id
     @Column(name="played_at", updatable=false)
     private LocalDateTime playedAt;
     
     public PlayedModel() {
-        
-    }
-    
-    public PlayedModel(
-            TrackModel playedTrack,
-            UserModel player,
-            LocalDateTime playedAt
-    ) {
-        this.player = player;
-        this.playedTrack = playedTrack;
-        this.playedAt = playedAt;
-    }
-    
-    public void setId(PlayedId id) {
-        playedTrack.setId(id.playedTrack);
-        player.setId(id.player);
-        playedAt = id.playedAt;
+
     }
     
     public UserModel getPlayer() {
         return this.player;
     }
     
+    public void setPlayer(UserModel player) {
+        this.player = player;
+    }
+    
     public TrackModel getPlayedTrack() {
         return this.playedTrack;
     }
     
+    public void setPlayedTrack(TrackModel playedTrack) {
+        this.playedTrack = playedTrack;
+    }
+    
     public LocalDateTime getPlayedAt() {
         return this.playedAt;
+    }
+    
+    public void setPlayedAt(LocalDateTime playedAt) {
+        this.playedAt = playedAt;
     }
     
     @Override
@@ -74,13 +70,14 @@ public class PlayedModel implements Serializable {
     
     @Override
     public boolean equals(Object obj) {
-        if(obj == this) return true;
-        if(!(obj instanceof PlayedModel)) return false;
-        final PlayedModel pm = (PlayedModel) obj;
-        return
-                pm.getPlayer().equals(this.player) &&
-                pm.getPlayedTrack().equals(this.playedTrack) &&
-                pm.getPlayedAt().equals(this.playedAt);
+        if(obj == this)
+            return true;
+        if(!(obj instanceof PlayedModel))
+            return false;
+        final PlayedModel p = (PlayedModel) obj;
+        return Objects.equals(p.player.id, player.id) &&
+                Objects.equals(p.playedTrack.id, playedTrack.id) &&
+                Objects.equals(p.playedAt, playedAt);
     }
-    
+
 }

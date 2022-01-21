@@ -7,7 +7,7 @@ package com.jamapplicationserver.modules.library.domain.core;
 
 import java.util.*;
 import java.time.*;
-import java.time.format.DateTimeParseException;
+import java.time.format.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 
@@ -18,7 +18,7 @@ import com.jamapplicationserver.core.logic.*;
 public class ReleaseDate extends ValueObject<YearMonth> {
     
     private static final YearMonth MIN_VALUE = YearMonth.of(1500, 1);
-    private static final YearMonth MAX_VALUE = YearMonth.now().plusMonths(1);
+    private static final YearMonth MAX_VALUE = YearMonth.now().plusMonths(12);
     
     private final YearMonth value;
     
@@ -61,7 +61,7 @@ public class ReleaseDate extends ValueObject<YearMonth> {
         if(value == null) return Result.fail(new ValidationError("Release date is required"));
         
         try {
-            final YearMonth yearMonth = YearMonth.parse(value);
+            final YearMonth yearMonth = YearMonth.parse(value, DateTimeFormatter.ISO_DATE_TIME);
             if(
                     yearMonth.isBefore(MIN_VALUE) ||
                     yearMonth.isAfter(MAX_VALUE)
@@ -69,6 +69,7 @@ public class ReleaseDate extends ValueObject<YearMonth> {
 
             return Result.ok(new ReleaseDate(yearMonth));
         } catch(DateTimeParseException e) {
+            System.out.println(e);
             return Result.fail(new ValidationError("Release date is invalid"));
         }
     }

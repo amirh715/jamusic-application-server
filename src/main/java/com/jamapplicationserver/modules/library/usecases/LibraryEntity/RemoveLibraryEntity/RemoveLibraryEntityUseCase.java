@@ -45,6 +45,10 @@ public class RemoveLibraryEntityUseCase implements IUsecase<RemoveLibraryEntityR
                             .includeUnpublished(request.subjectRole)
                             .getSingleResult();
             if(entity == null) return Result.fail(new LibraryEntityDoesNotExistError());
+            
+            // #### DOMAIN LOGIC LEAK ####
+            if(!request.subjectRole.isAdmin())
+                return Result.fail(new LibraryEntityCannotBeRemovedByAnyoneOtherThanTheAdmin());
 
             repository.remove(entity);
             

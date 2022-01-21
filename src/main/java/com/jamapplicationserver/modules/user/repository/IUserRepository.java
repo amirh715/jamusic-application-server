@@ -24,6 +24,6 @@ public interface IUserRepository extends IRepository<User> {
     public User fetchByEmail(Email email);
     public User fetchByEmailVerificationToken(UUID token);
     public void remove(User user, UniqueEntityId removerId) throws RemovingUserIsNotActiveException,
-            RemovingUserIsNotAdminException;
+            RemovingUserIsNotAdminException, RemovingUserDoesNotExistException;
     
 }

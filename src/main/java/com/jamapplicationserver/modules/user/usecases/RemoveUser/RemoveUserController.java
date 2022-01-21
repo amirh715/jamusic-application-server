@@ -60,7 +60,8 @@ public class RemoveUserController extends BaseController {
             noContent();
             
         } catch(Exception e) {
-            fail(e.getMessage());
+            System.out.println(e);
+            fail(e);
         }
         
     }

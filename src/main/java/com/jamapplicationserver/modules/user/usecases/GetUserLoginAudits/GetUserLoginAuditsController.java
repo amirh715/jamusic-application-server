@@ -32,6 +32,8 @@ public class GetUserLoginAuditsController extends BaseController {
             final GetLoginAuditsRequestDTO dto =
                     new GetLoginAuditsRequestDTO(
                             req.params(":id"),
+                            req.queryMap("limit").integerValue(),
+                            req.queryMap("offset").integerValue(),
                             subjectId,
                             subjectRole
                     );

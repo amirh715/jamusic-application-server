@@ -8,6 +8,7 @@ package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 import java.util.*;
 import java.util.stream.*;
 import com.jamapplicationserver.core.domain.UserRole;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -33,10 +34,17 @@ public class AlbumDetails extends ArtworkDetails {
             String producer,
             String releaseDate,
             LibraryEntityIdAndTitle artist,
-            Set<LibraryEntitySummary> tracks
+            Set<LibraryEntitySummary> tracks,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
+            String creatorId,
+            String creatorName,
+            String updaterId,
+            String updaterName
     ) {
         super(
                 id,
+                "A",
                 title,
                 description,
                 published,
@@ -50,7 +58,13 @@ public class AlbumDetails extends ArtworkDetails {
                 recordLabel,
                 producer,
                 releaseDate,
-                artist
+                artist,
+                createdAt,
+                lastModifiedAt,
+                creatorId,
+                creatorName,
+                updaterId,
+                updaterName
         );
         this.tracks = tracks;
         

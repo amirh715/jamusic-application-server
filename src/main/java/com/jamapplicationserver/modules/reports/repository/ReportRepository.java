@@ -199,6 +199,8 @@ public class ReportRepository implements IReportRepository {
         final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
         
+        System.out.println("Repository::save 1");
+        
         ReportModel model;
         
         try {
@@ -208,10 +210,14 @@ public class ReportRepository implements IReportRepository {
             tnx.begin();
             
             model = ReportMapper.toPersistence(entity);
+            
+            System.out.println("Repository::save 2");
 
             final UserModel reporter =
                     em.getReference(UserModel.class, entity.getReporter().getId().toValue());
             model.setReporter(reporter);
+            
+            System.out.println("Repository::save 3");
             
             if(entity.getReportedEntity() != null) {
                 
@@ -221,15 +227,23 @@ public class ReportRepository implements IReportRepository {
                 
             }
             
+            System.out.println("Repository::save 4");
+            
             if(exists) { // update existing entity
+                
+                System.out.println("Repository::save 5");
                 
                 final UserModel processor =
                     em.getReference(UserModel.class, entity.getProcessor().getId().toValue());
-                model.setProcessor(processor);
+                    model.setProcessor(processor);
                 
                 em.merge(model);
                 
+            System.out.println("Repository::save 6.0");
+                
             } else { // insert new entity
+                
+                System.out.println("Repository::save 6.1");
                 
                 em.persist(model);
                 

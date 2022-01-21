@@ -27,6 +27,8 @@ public abstract class BaseController implements Route {
     protected UniqueEntityId subjectId;
     protected UserRole subjectRole;
     
+    private ArrayList<String> cacheControlDirectives = new ArrayList<>();
+    
     protected abstract void executeImpl();
     
     protected static final ISerializer serializer = Serializer.getInstance();
@@ -101,6 +103,13 @@ public abstract class BaseController implements Route {
         }
         
     }
+    
+    protected static Response htmlResponse(Response res, int code, String html) {
+        res.body(html);
+        res.type("text/html; charset=UTF-8");
+        res.status(code);
+        return res;
+    }
 
     // SUCCESS RESPONSES (2**)
     protected <T extends IQueryResponseDTO> void ok(T dto) {
@@ -115,6 +124,10 @@ public abstract class BaseController implements Route {
                         .stream()
                         .map(item -> item.filter(subjectRole))
                         .collect(Collectors.toSet()));
+    }
+    
+    protected void sendHtml(String html, int code) {
+        BaseController.htmlResponse(res, code, html);
     }
     
     protected void sendFile(InputStream stream) {
@@ -197,10 +210,52 @@ public abstract class BaseController implements Route {
     }
     
     // CACHE CONTROL
-    protected final void cache(Duration duration) {
-        res.header("Cache-Control", "max-age=" + duration.toSeconds());
+    protected final BaseController cache(Duration duration) {
+        addCacheControlDirective("max-age=" + duration.toSeconds());
+        return this;
     }
     
+    /**
+     * Response can only be stored in private caches.
+     * @return BaseController
+     */
+    protected final BaseController privateCache() {
+        addCacheControlDirective("private");
+        return this;
+    }
+        
+    /**
+     * Indicates that the response won't be updated while it's fresh.
+     * @return BaseController
+     */
+    protected final BaseController immutable() {
+        addCacheControlDirective("immutable");
+        return this;
+    }
+    
+    /**
+     * Indicates that the cache could reuse a stale response while it re-validates
+     * it to a cache.
+     * @param duration
+     * @return BaseController
+     */
+    protected final BaseController staleWhileRevalidate(Duration duration) {
+        addCacheControlDirective("stale-while-revalidate=" + duration.toSeconds());
+        return this;
+    }
+    
+    /**
+     * Indicates that the cache can reuse a stale response when a origin server
+     * responds with an error.
+     * @param duration
+     * @return BaseController
+     */
+    protected final BaseController staleIfError(Duration duration) {
+        addCacheControlDirective("stale-if-error=" + duration.toSeconds());
+        return this;
+    }
+    
+    // VERSIONING
     protected final ETag getEtag() {
         final String etag = req.raw().getHeader("ETag");
         return ETag.reconstitute(etag);
@@ -212,6 +267,11 @@ public abstract class BaseController implements Route {
     
     protected final void attachEtag(ETag etag) {
         res.header("ETag", etag.getValue());
+    }
+    
+    private void addCacheControlDirective(String directive) {
+        cacheControlDirectives.add(directive);
+        res.header("Cache-Control", cacheControlDirectives.stream().collect(Collectors.joining(",")));
     }
     
     

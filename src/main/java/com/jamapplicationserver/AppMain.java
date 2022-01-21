@@ -5,6 +5,8 @@
  */
 package com.jamapplicationserver;
 
+import java.util.*;
+import java.util.stream.*;
 import static spark.Spark.*;
 import javax.servlet.*;
 import com.jamapplicationserver.infra.Jobs.DeleteUnlinkedFilesJob;
@@ -18,8 +20,12 @@ import com.jamapplicationserver.infra.Services.JobManager;
 import com.jamapplicationserver.infra.Services.JWT.JWTUtils;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jamapplicationserver.core.domain.events.*;
+import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.library.domain.core.subscribers.*;
 import com.jamapplicationserver.modules.notification.infra.Jobs.SendScheduledNotificationsJob;
+import com.jamapplicationserver.modules.library.infra.Jobs.*;
+import com.jamapplicationserver.infra.Persistence.database.Models.*;
+import com.jamapplicationserver.modules.notification.infra.services.NotificationService;
 
 
 /**
@@ -39,13 +45,15 @@ public class AppMain {
         before("/*", (req, res) -> req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp")));
         
         before((req, res) -> {
+            System.out.println("FUCK");
             res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT,HEAD");
             res.header("Access-Control-Allow-Origin", "http://localhost:8080");
-            res.header("Access-Control-Allow-Headers", "x-client-version, Authorization");
+            res.header("Access-Control-Allow-Headers", "Authorization");
         });
         
 
         options("/*", (request, response) -> {
+            System.out.println("FUCK MEEEEEE");
             String accessControlRequestHeaders = request
                     .headers("Access-Control-Request-Headers");
             if (accessControlRequestHeaders != null) {
@@ -62,13 +70,15 @@ public class AppMain {
 
             return "OK";
         });
-
+        
 //      SET UP JOB SCHEDUELER
         final JobManager jobManager = JobManager.getInstance();
         jobManager
-                .addJob(DeleteUnlinkedFilesJob.class, jobManager.getEveryXMinutesTrigger(1))
+//                .addJob(DeleteUnlinkedFilesJob.class, jobManager.getEveryXMinutesTrigger(1))
                 .addJob(SendScheduledNotificationsJob.class, jobManager.getEveryXMinutesTrigger(1))
-                .addJob(AssignReportsToProcessorsJob.class, jobManager.getEveryXMinutesTrigger(1))
+//                .addJob(AssignReportsToProcessorsJob.class, jobManager.getEveryXMinutesTrigger(1))
+//                .addJob(UpdateTotalPlayedCountJob.class, jobManager.getEveryXMinutesTrigger(1))
+//                .addJob(UpdateRateJob.class, jobManager.getEveryXMinutesTrigger(1))
                 .startScheduler();
         
         // REGISTER DOMAIN EVENT HANDLERS

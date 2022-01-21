@@ -43,7 +43,7 @@ public class ReportModel extends EntityModel {
     @Column(name="last_modified_at", nullable=false)
     private LocalDateTime lastModifiedAt;
     
-    @ManyToOne(optional=true)
+    @ManyToOne(optional=true, fetch=FetchType.LAZY)
     @JoinColumn(name="reported_entity_id")
     private LibraryEntityModel reportedEntity;
     
@@ -51,11 +51,11 @@ public class ReportModel extends EntityModel {
     @Column(name="type")
     private ReportTypeEnum type;
     
-    @ManyToOne(optional=false)
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="reporter_id")
     private UserModel reporter;
     
-    @ManyToOne(optional=true)
+    @ManyToOne(optional=true, fetch=FetchType.LAZY)
     @JoinColumn(name="processor_id")
     private UserModel processor;
 

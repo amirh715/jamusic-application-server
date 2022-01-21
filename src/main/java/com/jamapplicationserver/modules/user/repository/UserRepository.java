@@ -326,7 +326,8 @@ public class UserRepository implements IUserRepository {
     @Override
     public void remove(User user, UniqueEntityId removerId)
             throws RemovingUserIsNotActiveException,
-            RemovingUserIsNotAdminException {
+            RemovingUserIsNotAdminException,
+            RemovingUserDoesNotExistException {
         
         final EntityManager em = emfh.createEntityManager();
         final EntityTransaction tnx = em.getTransaction();
@@ -334,6 +335,8 @@ public class UserRepository implements IUserRepository {
         try {
             
             tnx.begin();
+            
+            System.out.println("Remover id: " + removerId.toValue().toString());
             
             final UserModel model = em.find(UserModel.class, user.getId().toValue());
             
@@ -343,6 +346,9 @@ public class UserRepository implements IUserRepository {
             } else {
                 updater = em.find(UserModel.class, removerId.toValue());
             }
+            
+            if(updater == null)
+                throw new RemovingUserDoesNotExistException();
             
             if(!updater.isActive())
                 throw new RemovingUserIsNotActiveException();

@@ -7,12 +7,14 @@ package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.time.*;
 import com.jamapplicationserver.infra.Persistence.database.Models.BandModel;
 import com.jamapplicationserver.infra.Persistence.database.Models.AlbumModel;
 import com.jamapplicationserver.infra.Persistence.database.Models.SingerModel;
 import com.jamapplicationserver.infra.Persistence.database.Models.LibraryEntityModel;
 import com.jamapplicationserver.infra.Persistence.database.Models.TrackModel;
 import com.jamapplicationserver.core.infra.IQueryResponseDTO;
+
 /**
  *
  * @author dada
@@ -20,6 +22,7 @@ import com.jamapplicationserver.core.infra.IQueryResponseDTO;
 public abstract class LibraryEntityDetails implements IQueryResponseDTO {
     
     public String id;
+    public String type;
     public String title;
     public String description;
     public Boolean published;
@@ -30,9 +33,16 @@ public abstract class LibraryEntityDetails implements IQueryResponseDTO {
     public String flagNote;
     public String totalPlayedCount;
     public String duration;
+    public LocalDateTime createdAt;
+    public LocalDateTime lastModifiedAt;
+    public String creatorId;
+    public String creatorName;
+    public String updaterId;
+    public String updaterName;
     
     public LibraryEntityDetails(
             String id,
+            String type,
             String title,
             String description,
             boolean published,
@@ -42,9 +52,16 @@ public abstract class LibraryEntityDetails implements IQueryResponseDTO {
             double rate,
             String flagNote,
             long totalPlayedCount,
-            long duration
+            long duration,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
+            String creatorId,
+            String creatorName,
+            String updaterId,
+            String updaterName
     ) {
         this.id = id;
+        this.type = type;
         this.title = title;
         this.description = description;
         this.published = published;
@@ -55,6 +72,12 @@ public abstract class LibraryEntityDetails implements IQueryResponseDTO {
         this.flagNote = flagNote;
         this.totalPlayedCount = Long.toString(totalPlayedCount);
         this.duration = Long.toString(duration);
+        this.createdAt = createdAt;
+        this.lastModifiedAt = lastModifiedAt;
+        this.creatorId = creatorId;
+        this.creatorName = creatorName;
+        this.updaterId = updaterId;
+        this.updaterName = updaterName;
     }
     
     /**
@@ -89,11 +112,16 @@ public abstract class LibraryEntityDetails implements IQueryResponseDTO {
                             entity.getTotalPlayedCount(),
                             entity.getDuration(),
                             ((BandModel) entity).getInstagramId(),
-                            
                             ((BandModel) entity).getMembers()
                                 .stream()
                                 .map(member -> LibraryEntityIdAndTitle.create(member))
-                                .collect(Collectors.toSet())
+                                .collect(Collectors.toSet()),
+                            entity.getCreatedAt(),
+                            entity.getLastModifiedAt(),
+                            entity.getCreator().getId().toString(),
+                            entity.getCreator().getName(),
+                            entity.getUpdater().getId().toString(),
+                            entity.getUpdater().getName()
                     );
         }
         
@@ -115,7 +143,13 @@ public abstract class LibraryEntityDetails implements IQueryResponseDTO {
                             ((SingerModel) entity).getBands()
                                 .stream()
                                 .map(band -> LibraryEntityIdAndTitle.create(band))
-                                .collect(Collectors.toSet())
+                                .collect(Collectors.toSet()),
+                            entity.getCreatedAt(),
+                            entity.getLastModifiedAt(),
+                            entity.getCreator().getId().toString(),
+                            entity.getCreator().getName(),
+                            entity.getUpdater().getId().toString(),
+                            entity.getUpdater().getName()
                     );
         }
         
@@ -141,7 +175,13 @@ public abstract class LibraryEntityDetails implements IQueryResponseDTO {
                             ((AlbumModel) entity).getTracks()
                                 .stream()
                                 .map(track -> LibraryEntitySummary.create(track))
-                                .collect(Collectors.toSet())
+                                .collect(Collectors.toSet()),
+                            entity.getCreatedAt(),
+                            entity.getLastModifiedAt(),
+                            entity.getCreator().getId().toString(),
+                            entity.getCreator().getName(),
+                            entity.getUpdater().getId().toString(),
+                            entity.getUpdater().getName()
                     );
         }
         
@@ -174,7 +214,13 @@ public abstract class LibraryEntityDetails implements IQueryResponseDTO {
                             ((TrackModel) entity).getArtist() != null ?
                             LibraryEntityIdAndTitle.create(
                                     ((TrackModel) entity).getArtist()
-                            ) : null
+                            ) : null,
+                            entity.getCreatedAt(),
+                            entity.getLastModifiedAt(),
+                            entity.getCreator().getId().toString(),
+                            entity.getCreator().getName(),
+                            entity.getUpdater().getId().toString(),
+                            entity.getUpdater().getName()
                     );
         }
         

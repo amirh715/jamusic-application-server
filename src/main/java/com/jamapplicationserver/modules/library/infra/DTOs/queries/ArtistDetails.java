@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -17,6 +18,7 @@ public abstract class ArtistDetails extends LibraryEntityDetails {
     
     protected ArtistDetails(
             String id,
+            String type,
             String title,
             String description,
             boolean published,
@@ -27,10 +29,17 @@ public abstract class ArtistDetails extends LibraryEntityDetails {
             String flagNote,
             long totalPlayedCount,
             long duration,
-            String instagramId
+            String instagramId,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
+            String creatorId,
+            String creatorName,
+            String updaterId,
+            String updaterName
     ) {
         super(
                 id,
+                type,
                 title,
                 description,
                 published,
@@ -40,7 +49,13 @@ public abstract class ArtistDetails extends LibraryEntityDetails {
                 rate,
                 flagNote,
                 totalPlayedCount,
-                duration
+                duration,
+                createdAt,
+                lastModifiedAt,
+                creatorId,
+                creatorName,
+                updaterId,
+                updaterName
         );
         this.instagramId = instagramId;
     }

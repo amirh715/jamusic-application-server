@@ -27,6 +27,8 @@ public class GetLibraryEntityImageByIdController extends BaseController {
     @Override
     public void executeImpl() {
         
+        System.out.println("$$$$$$$$$$ " + "GetLibraryEntityImageByIdController" + "$$$$$$$$$$");
+        
         try {
             
             final Map<String, String> fields = req.params();
@@ -50,12 +52,13 @@ public class GetLibraryEntityImageByIdController extends BaseController {
             }
             
             cache(Duration.ofMinutes(5));
+            privateCache();
 //            final ETag etag = ETag.create(result.getValue());
 //            if(etag.same(getEtag())) {
 //                notModified();
 //                return;
 //            }
-            
+//            
 //            attachEtag(etag);
             sendFile(result.getValue());
             

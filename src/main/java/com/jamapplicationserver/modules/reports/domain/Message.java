@@ -35,7 +35,7 @@ public class Message extends ValueObject<String> {
         if(
                 value.length() > MAX_LENGTH ||
                 value.length() < MIN_LENGTH
-        ) return Result.fail(new ValidationError("Report title is invalid"));
+        ) return Result.fail(new ValidationError("Report message is invalid"));
         
         return Result.ok(new Message(value));
     }

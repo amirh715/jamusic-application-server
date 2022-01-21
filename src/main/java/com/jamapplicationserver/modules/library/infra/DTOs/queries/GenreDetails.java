@@ -22,8 +22,8 @@ public class GenreDetails implements IQueryResponseDTO {
     public String id;
     public String title;
     public String titleInPersian;
-    public String createdAt;
-    public String lastModifiedAt;
+    public LocalDateTime createdAt;
+    public LocalDateTime lastModifiedAt;
     public String creatorName;
     public String creatorId;
     public String updaterName;
@@ -45,8 +45,8 @@ public class GenreDetails implements IQueryResponseDTO {
         this.id = id;
         this.title = title;
         this.titleInPersian = titleInPersian;
-        this.createdAt = DateTime.createWithoutValidation(createdAt).toJalali();
-        this.lastModifiedAt = DateTime.createWithoutValidation(lastModifiedAt).toJalali();
+        this.createdAt = DateTime.createWithoutValidation(createdAt).getValue();
+        this.lastModifiedAt = DateTime.createWithoutValidation(lastModifiedAt).getValue();
         this.creatorName = creatorName;
         this.creatorId = creatorId;
         this.updaterName = updaterName;

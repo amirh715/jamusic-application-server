@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.notification.infra.services;
 
+import java.util.Map;
 import com.jamapplicationserver.modules.notification.domain.*;
 
 /**
@@ -35,5 +36,12 @@ public interface INotificationService {
      * @return 
      */
     boolean isDeliveredToRecipient(Notification notification, Recipient recipient);
+    
+    /**
+     * 
+     * @param notification
+     * @return Map
+     */
+    Map<Recipient, Boolean> getAllDeliveriesOfNotification(Notification notification);
     
 }

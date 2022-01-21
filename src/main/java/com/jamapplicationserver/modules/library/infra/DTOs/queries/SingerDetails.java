@@ -7,6 +7,7 @@ package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.*;
 import com.jamapplicationserver.core.domain.UserRole;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -29,10 +30,17 @@ public class SingerDetails extends ArtistDetails {
             long totalPlayedCount,
             long duration,
             String instagramId,
-            Set<LibraryEntityIdAndTitle> bands
+            Set<LibraryEntityIdAndTitle> bands,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
+            String creatorId,
+            String creatorName,
+            String updaterId,
+            String updaterName
     ) {
         super(
                 id,
+                "S",
                 title,
                 description,
                 published,
@@ -43,7 +51,13 @@ public class SingerDetails extends ArtistDetails {
                 flagNote,
                 totalPlayedCount,
                 duration,
-                instagramId
+                instagramId,
+                createdAt,
+                lastModifiedAt,
+                creatorId,
+                creatorName,
+                updaterId,
+                updaterName
         );
         this.bands = bands;
     }

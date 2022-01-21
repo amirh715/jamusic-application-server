@@ -11,6 +11,7 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.user.domain.User;
+import java.io.InputStream;
 
 /**
  *
@@ -25,21 +26,27 @@ public class CreateUserController extends BaseController {
         
         System.out.println("CreateUserController");
         
-        final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
-        final CreateUserRequestDTO dto =
-                new CreateUserRequestDTO(
-                        fields.get("name"),
-                        fields.get("mobile"),
-                        fields.get("password"),
-                        fields.get("email"),
-                        fields.get("role"),
-                        fields.get("FCM"),
-                        fields.get("sendVerificationCode"),
-                        subjectId,
-                        subjectRole
-                );
-        
         try {
+            
+            final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
+            final InputStream profileImage = MultipartFormDataUtil
+                    .toInputStream(
+                            req.raw().getPart("profileImage") != null ?
+                            req.raw().getPart("profileImage") : null
+                    );
+            final CreateUserRequestDTO dto =
+                    new CreateUserRequestDTO(
+                            fields.get("name"),
+                            fields.get("mobile"),
+                            fields.get("password"),
+                            fields.get("email"),
+                            fields.get("role"),
+                            fields.get("FCM"),
+                            fields.get("sendVerificationCode"),
+                            profileImage,
+                            subjectId,
+                            subjectRole
+                    );
             
             final Result<User> result = useCase.execute(dto);
 

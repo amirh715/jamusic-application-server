@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.user.usecases.CreateUser;
 
+import java.io.InputStream;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.infra.*;
 
@@ -20,6 +21,7 @@ public class CreateUserRequestDTO extends DTOWithAuthClaims {
     public final String email;
     public final String role;
     public final String FCMToken;
+    public final InputStream image;
     
     public final Boolean sendVerificationCode;
 
@@ -31,6 +33,7 @@ public class CreateUserRequestDTO extends DTOWithAuthClaims {
             String role,
             String FCMToken,
             String sendVerificationCode,
+            InputStream image,
             UniqueEntityId creatorId,
             UserRole creatorRole
     ) {
@@ -41,6 +44,7 @@ public class CreateUserRequestDTO extends DTOWithAuthClaims {
         this.email = email;
         this.role = role;
         this.FCMToken = FCMToken;
+        this.image = image;
         this.sendVerificationCode =
                 Boolean.parseBoolean(sendVerificationCode);
     }

@@ -150,7 +150,9 @@ public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEn
                     createdAtFrom,
                     createdAtTill,
                     lastModifiedAtFrom,
-                    lastModifiedAtTill
+                    lastModifiedAtTill,
+                    request.limit,
+                    request.offset
             );
             
             final Set<LibraryEntityDetails> entities =

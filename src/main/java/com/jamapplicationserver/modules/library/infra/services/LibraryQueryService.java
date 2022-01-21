@@ -64,8 +64,9 @@ public class LibraryQueryService implements ILibraryQueryService {
             final CriteriaQuery<LibraryEntityModel> query = buildQuery(filters, em);
             
             return em.createQuery(query)
-                    .getResultList()
-                    .stream()
+                    .setMaxResults(filters.limit)
+                    .setFirstResult(filters.offset)
+                    .getResultStream()
                     .map(entity -> LibraryEntityDetails.create(entity))
                     .collect(Collectors.toSet());
             
@@ -87,8 +88,7 @@ public class LibraryQueryService implements ILibraryQueryService {
             final CriteriaQuery<LibraryEntityModel> query = buildQuery(filters, em);
             
             return em.createQuery(query)
-                    .getResultList()
-                    .stream()
+                    .getResultStream()
                     .map(entity -> LibraryEntitySummary.create(entity))
                     .collect(Collectors.toSet());
             
@@ -321,7 +321,8 @@ public class LibraryQueryService implements ILibraryQueryService {
             }
 
             root = query.from(entityType);
-
+            query.select(root);
+            
             // search term
             if(filters.searchTerm != null) {
                 final String searchTerm = filters.searchTerm;
@@ -372,8 +373,9 @@ public class LibraryQueryService implements ILibraryQueryService {
                         .stream()
                         .map(id -> id.toValue())
                         .collect(Collectors.toSet());
+                final Join<GenreModel, LibraryEntityModel> genresRoot = root.join("genres", JoinType.LEFT);
                 final Predicate predicate =
-                        root.get("genres").get("id").in(ids);
+                        genresRoot.get("id").in(ids);
                 predicates.add(predicate);
             }
             
@@ -486,12 +488,7 @@ public class LibraryQueryService implements ILibraryQueryService {
                     )
             );
             
-        } else {
-            root = query.from(LibraryEntityModel.class);
         }
-        
-        query.select(root);
-        root.fetch("genres", JoinType.LEFT);
         
         return query;
     }

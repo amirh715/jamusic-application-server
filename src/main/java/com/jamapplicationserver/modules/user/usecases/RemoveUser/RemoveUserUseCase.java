@@ -55,6 +55,8 @@ public class RemoveUserUseCase implements IUsecase<RemoveUserRequestDTO, Object>
             return Result.fail(new UserIsNotAdminError(e.getMessage()));
         } catch(RemovingUserIsNotActiveException e) {
             return Result.fail(new UserIsNotActiveError(e.getMessage()));
+        } catch(RemovingUserDoesNotExistException e) {
+            return Result.fail(new UserDoesNotExistError());
         } catch(Exception e) {
             throw new GenericAppException(e);
         }

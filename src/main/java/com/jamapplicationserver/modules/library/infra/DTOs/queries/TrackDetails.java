@@ -7,6 +7,7 @@ package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.Set;
 import com.jamapplicationserver.core.domain.UserRole;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -40,10 +41,17 @@ public class TrackDetails extends ArtworkDetails {
             String recordLabel,
             String producer,
             String releaseDate,
-            LibraryEntityIdAndTitle artist
+            LibraryEntityIdAndTitle artist,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
+            String creatorId,
+            String creatorName,
+            String updaterId,
+            String updaterName
     ) {
         super(
                 id,
+                "T",
                 title,
                 description,
                 published,
@@ -57,7 +65,13 @@ public class TrackDetails extends ArtworkDetails {
                 recordLabel,
                 releaseDate,
                 producer,
-                artist
+                artist,
+                createdAt,
+                lastModifiedAt,
+                creatorId,
+                creatorName,
+                updaterId,
+                updaterName
         );
         this.audioPath = audioPath;
         this.audioSize = audioSize;

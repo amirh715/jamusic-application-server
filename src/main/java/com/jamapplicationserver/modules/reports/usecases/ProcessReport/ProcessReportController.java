@@ -27,6 +27,8 @@ public class ProcessReportController extends BaseController {
     @Override
     public void executeImpl() {
         
+        System.out.println("ProcessReportController");
+        
         try {
             
             final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
@@ -45,6 +47,8 @@ public class ProcessReportController extends BaseController {
                 
                 final BusinessError error = result.getError();
                 
+                System.out.println(error.message);
+                
                 if(error instanceof NotFoundError)
                     notFound(error);
                 if(error instanceof ConflictError)
@@ -58,6 +62,8 @@ public class ProcessReportController extends BaseController {
             noContent();
             
         } catch(Exception e) {
+            System.out.println("############ ERROR ############");
+            System.out.println(e);
             fail(e);
         }
         

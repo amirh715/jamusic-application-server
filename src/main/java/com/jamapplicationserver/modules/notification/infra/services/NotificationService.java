@@ -5,6 +5,11 @@
  */
 package com.jamapplicationserver.modules.notification.infra.services;
 
+import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+import java.util.stream.*;
+import com.jamapplicationserver.modules.notification.infra.services.SmtpAuthenticator;
 import com.jamapplicationserver.modules.notification.domain.*;
 import com.jamapplicationserver.modules.notification.infra.services.exceptions.*;
 
@@ -42,6 +47,9 @@ public class NotificationService implements INotificationService {
             switch (type) {
                 case FCM:
                     break;
+                case EMAIL:
+                    sendEmail(notification);
+                    break;
                 case SMS:
                     break;
                 default:
@@ -50,7 +58,7 @@ public class NotificationService implements INotificationService {
             
             notification.markAsSent();
             
-        } catch(NotificationCannotBeSentException e) {
+        } catch(Exception e) {
             throw new NotificationCannotBeSentException(e);
         }
         
@@ -88,7 +96,7 @@ public class NotificationService implements INotificationService {
         try {
             
             if(notification.isDelivered(recipient))
-                return true;
+                return false;
             
             // call third-party service and check
             
@@ -101,15 +109,60 @@ public class NotificationService implements INotificationService {
         
     }
     
-    private void getFCMClient() {
+    @Override
+    public Map<Recipient, Boolean> getAllDeliveriesOfNotification(Notification notification) {
+        
+        return Map.of();
+    }
+    
+    private void sendFCM() {
         
     }
     
-    private void getEmailClient() {
+    private void sendEmail(Notification notification) throws NotificationCannotBeSentException {
+        
+        System.out.println("send");
+        
+        try {
+        
+            final Properties props = new Properties();
+            props.put("mail.smtp.host", "mail.jamusicapp.ir");
+            
+            final SmtpAuthenticator authenticator = new SmtpAuthenticator();
+            
+            final Session session = Session.getDefaultInstance(props, authenticator);
+            final javax.mail.Message message = new MimeMessage(session);
+            
+            final InternetAddress from = new InternetAddress("mail@jamusicapp.ir");
+            message.setFrom(from);
+            
+            final String subject = notification.getTitle().getValue();
+            message.setSubject(subject);
+            
+            final String bodyMessage = notification.getMessage().getValue();
+            final MimeBodyPart mimeBodyPart = new MimeBodyPart();
+            mimeBodyPart.setContent(bodyMessage, "text/html; charset=utf-8");
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(mimeBodyPart);
+            message.setContent(multipart);
+            
+            final Address[] recipients = new InternetAddress[notification.getRecipients().size()];
+            for(int i = 0; i < notification.getRecipients().size(); i++) {
+                final Address recipient = new InternetAddress("dada@jamusicapp.ir");
+                recipients[i] = recipient;
+            }
+            message.setRecipients(javax.mail.Message.RecipientType.TO, recipients);
+            
+            Transport.send(message);
+        
+        } catch(Exception e) {
+            throw new NotificationCannotBeSentException(e);
+        }
+        
         
     }
     
-    private void getSMSClient() {
+    private void sendSMS() {
         
     }
     

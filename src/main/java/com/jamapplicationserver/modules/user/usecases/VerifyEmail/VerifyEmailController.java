@@ -36,20 +36,21 @@ public class VerifyEmailController extends BaseController {
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
+                final String html = "<h1 style=\"text-align: center;\"><span style=\"direction: rtl\">" + error.message + "</span></h1>";
                 
                 if(error instanceof ConflictError)
-                    conflict(error);
+                    sendHtml(html, 409);
                 
                 if(error instanceof NotFoundError)
-                    notFound(error);
+                    sendHtml(html, 404);
                 
                 if(error instanceof ClientErrorError)
-                    clientError(error);
+                    sendHtml(html, 400);
                 
                 return;
             }
             
-            noContent();
+            sendHtml("<h1 style=\"text-align: center;\"><span style=\"direction: rtl\">ایمیل شما تایید شد.</span></h1>", 200);
                     
         } catch(Exception e) {
             e.printStackTrace();

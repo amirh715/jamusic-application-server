@@ -28,11 +28,11 @@ public class ReportDetails implements IQueryResponseDTO {
     public String processorId;
     public String processorName;
     public String processorNote;
-    public String assignedAt;
-    public String processedAt;
-    public String archivedAt;
-    public String createdAt;
-    public String lastModifiedAt;
+    public LocalDateTime assignedAt;
+    public LocalDateTime processedAt;
+    public LocalDateTime archivedAt;
+    public LocalDateTime createdAt;
+    public LocalDateTime lastModifiedAt;
     
     public ReportDetails(
             UUID id,
@@ -63,11 +63,11 @@ public class ReportDetails implements IQueryResponseDTO {
         this.processorId = processorId != null ? processorId.toString() : null;
         this.processorName = processorName;
         this.processorNote = processorNote;
-        this.assignedAt = assignedAt != null ? assignedAt.toString() : null;
-        this.processedAt = processedAt != null ? processedAt.toString() : null;
-        this.archivedAt = archivedAt != null ? archivedAt.toString() : null;
-        this.createdAt = createdAt != null ? createdAt.toString() : null;
-        this.lastModifiedAt = lastModifiedAt != null ? lastModifiedAt.toString() : null;
+        this.assignedAt = assignedAt;
+        this.processedAt = processedAt;
+        this.archivedAt = archivedAt;
+        this.createdAt = createdAt;
+        this.lastModifiedAt = lastModifiedAt;
     }
     
     @Override

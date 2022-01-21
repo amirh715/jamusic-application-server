@@ -8,7 +8,6 @@ package com.jamapplicationserver.core.infra;
 import java.time.*;
 import java.lang.reflect.Type;
 import com.google.gson.*;
-import com.jamapplicationserver.core.domain.DateTime;
 
 /**
  *
@@ -18,7 +17,7 @@ public class LocalDateTimeSerializer implements JsonSerializer<LocalDateTime> {
     
     @Override
     public JsonElement serialize(LocalDateTime localDateTime, Type type, JsonSerializationContext context) {
-        return new JsonPrimitive(DateTime.createWithoutValidation(localDateTime).toJalali());
+        return new JsonPrimitive(localDateTime.toString());
     }
     
 }

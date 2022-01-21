@@ -6,13 +6,11 @@
 package com.jamapplicationserver.modules.user.usecases.CreateUser;
 
 import java.util.*;
+import java.nio.file.Path;
 import org.hibernate.exception.ConstraintViolationException;
-import com.jamapplicationserver.core.domain.UserRole;
-import com.jamapplicationserver.core.domain.FCMToken;
-import com.jamapplicationserver.core.domain.MobileNo;
-import com.jamapplicationserver.core.domain.Email;
+import com.jamapplicationserver.infra.Persistence.filesystem.*;
+import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
-import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.exceptions.*;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
@@ -26,9 +24,14 @@ import com.jamapplicationserver.modules.user.repository.IUserRepository;
 public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String> {
     
     private final IUserRepository repository;
+    private final IFilePersistenceManager persistence;
     
-    private CreateUserUseCase(IUserRepository repository) {
+    private CreateUserUseCase(
+            IUserRepository repository,
+            IFilePersistenceManager persistence
+    ) {
         this.repository = repository;
+        this.persistence = persistence;
     }
     
     @Override
@@ -56,6 +59,9 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
             final Result<FCMToken> FCMTokenOrError =
                     FCMToken.create(request.FCMToken);
             
+            final Result<ImageStream> imageOrError =
+                    ImageStream.createAndValidate(request.image);
+            
             final List<Result> combinedProps = new ArrayList<>();
             
             combinedProps.add(nameOrError);
@@ -71,6 +77,9 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
             if(request.FCMToken != null)
                 combinedProps.add(FCMTokenOrError);
             
+            if(request.image != null)
+                combinedProps.add(imageOrError);
+            
             final Result combinedPropsResult = Result.combine(combinedProps);
             
             if(combinedPropsResult.isFailure)
@@ -82,8 +91,7 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
             final Email email = request.email != null ? emailOrError.getValue() : null;
             final FCMToken fcmToken = request.FCMToken != null ? FCMTokenOrError.getValue() : null;
             final UserRole role = request.role != null ? roleOrError.getValue() : null;
-            
-            System.out.println("SUBJECT @@@@ " + request.subjectId);
+            final ImageStream image = request.image != null ? imageOrError.getValue() : null;
             
             final Result<User> userOrError = User.create(
                     name,
@@ -112,6 +120,15 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
                 if(roleChangeResult.isFailure) return roleChangeResult;
             }
             // ##
+            
+            // save profile image
+            if(image != null) {
+                final User updater = repository.fetchById(request.subjectId);
+                final Path imagePath = persistence.buildPath(User.class);
+                persistence.write(image, imagePath);
+                final Result r = user.changeProfileImage(imagePath, updater);
+                if(r.isFailure) return r;
+            }
 
             // save user to database
             repository.save(user);
@@ -152,6 +169,9 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
     private static class CreateUserUseCaseHolder {
 
         private static final CreateUserUseCase INSTANCE =
-                new CreateUserUseCase(UserRepository.getInstance());
+                new CreateUserUseCase(
+                        UserRepository.getInstance(),
+                        FilePersistenceManager.getInstance()
+                );
     }
 }

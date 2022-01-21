@@ -37,6 +37,8 @@ public class GetLibraryEntitiesByFiltersRequestDTO extends DTOWithAuthClaims {
     public final String createdAtTill;
     public final String lastModifiedAtFrom;
     public final String lastModifiedAtTill;
+    public final Integer limit;
+    public final Integer offset;
     
     public GetLibraryEntitiesByFiltersRequestDTO(
             String type,
@@ -61,7 +63,9 @@ public class GetLibraryEntitiesByFiltersRequestDTO extends DTOWithAuthClaims {
             String lastModifiedAtFrom,
             String lastModifiedAtTill,
             UniqueEntityId accessorId,
-            UserRole accessorRole
+            UserRole accessorRole,
+            Integer limit,
+            Integer offset
     ) {
         
         super(accessorId, accessorRole);
@@ -89,6 +93,8 @@ public class GetLibraryEntitiesByFiltersRequestDTO extends DTOWithAuthClaims {
         this.createdAtTill = createdAtTill;
         this.lastModifiedAtFrom = lastModifiedAtFrom;
         this.lastModifiedAtTill = lastModifiedAtTill;
+        this.limit = limit;
+        this.offset = offset;
 
     }
     

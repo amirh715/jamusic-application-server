@@ -18,6 +18,8 @@ public class UpdateTotalPlayedCountJob implements Job {
     @Override
     public void execute(JobExecutionContext context) {
         
+        System.out.println("Job: UpdateTotalPlayedCountJob");
+        
         final EntityManager em =
                 EntityManagerFactoryHelper.getInstance()
                 .createEntityManager();
@@ -51,11 +53,13 @@ public class UpdateTotalPlayedCountJob implements Job {
                         "UPDATE jamschema.library_entities albums "
                         + "SET total_played_count = subQuery.total_played_count "
                         + "FROM "
-                        + "(SELECT albums.id album_id, albums.title album_title, tracks.title track_title, COUNT(pt.played_track_id) total_played_count "
-                        + "FROM jamschema.library_entities albums, jamschema.library_entities tracks, jamschema.played_tracks pt "
-                        + "WHERE tracks.album_id = albums.id "
-                        + "AND tracks.id = pt.played_track_id "
-                        + "GROUP BY (albums.id, tracks.title)) subQuery "
+                        + "("
+                        + "SELECT SUM(album_tracks.total_played_count) total_played_count, "
+                        + "album_tracks.album_id album_id "
+                        + "FROM jamschema.library_entities album_tracks "
+                        + "WHERE album_tracks.album_id IS NOT NULL "
+                        + "GROUP BY (album_tracks.album_id)"
+                        + ") subQuery "
                         + "WHERE albums.id = subQuery.album_id";
                 em.createNativeQuery(query)
                         .executeUpdate();

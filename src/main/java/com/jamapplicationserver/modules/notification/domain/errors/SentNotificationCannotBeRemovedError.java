@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.*;
 public class SentNotificationCannotBeRemovedError extends ConflictError {
     
     private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "";
+    private static final String DEFAULT_MESSAGE = "نوتیفیکشن ارسال شده نمی تواند حذف شود.";
     
     public SentNotificationCannotBeRemovedError() {
         super(DEFAULT_MESSAGE, CODE);

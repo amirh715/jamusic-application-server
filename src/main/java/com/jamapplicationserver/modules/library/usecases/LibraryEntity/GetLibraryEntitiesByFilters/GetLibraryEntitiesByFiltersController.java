@@ -58,7 +58,9 @@ public class GetLibraryEntitiesByFiltersController extends BaseController {
                             fields.get("lastModifiedAtFrom").value(),
                             fields.get("lastModifiedAtTill").value(),
                             subjectId,
-                            subjectRole
+                            subjectRole,
+                            fields.get("limit").integerValue(),
+                            fields.get("offset").integerValue()
                     );
                         
             final Result<Set<LibraryEntityDetails>> result = usecase.execute(dto);

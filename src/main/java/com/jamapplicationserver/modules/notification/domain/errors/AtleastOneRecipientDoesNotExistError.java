@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.*;
 public class AtleastOneRecipientDoesNotExistError extends ConflictError {
     
     private static final int CODE = 101;
-    private static final String DEFAULT_MESSAGE = "Atleastianoo";
+    private static final String DEFAULT_MESSAGE = "دسته کم یک مخاطب وجود ندارد.";
     
     public AtleastOneRecipientDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

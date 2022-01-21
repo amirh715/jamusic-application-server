@@ -62,10 +62,10 @@ public class UserModel extends EntityModel {
     @Column(name="last_modified_at", nullable=false)
     private LocalDateTime lastModifiedAt;
     
-    @OneToMany(mappedBy="player", orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="player", orphanRemoval=true, cascade=CascadeType.ALL)
     private Set<PlayedModel> playedTracks = new HashSet<PlayedModel>();
     
-    @OneToMany(mappedBy="recipient", fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="recipient", fetch=FetchType.LAZY, orphanRemoval=true)
     @NotAudited
     private Set<NotificationDeliveryModel> notifications = new HashSet<>();
     
@@ -330,11 +330,10 @@ public class UserModel extends EntityModel {
     
     public void addPlayedTrack(TrackModel track, LocalDateTime playedAt) {
         final PlayedModel playedTrack =
-                new PlayedModel(
-                        track,
-                        this,
-                        playedAt
-                );
+                new PlayedModel();
+        playedTrack.setPlayedTrack(track);
+        playedTrack.setPlayer(this);
+        playedTrack.setPlayedAt(playedAt);
         this.playedTracks.add(playedTrack);
     }
     

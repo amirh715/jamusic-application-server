@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class NotificationIsAlreadySentError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "";
+    private static final String DEFAULT_MESSAGE = "نوتیفیکیشن ارسال شده است.";
     private static final int CODE = 111;
     
     public NotificationIsAlreadySentError() {

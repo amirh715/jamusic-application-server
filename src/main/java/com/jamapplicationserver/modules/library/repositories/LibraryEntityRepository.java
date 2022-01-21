@@ -292,6 +292,10 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             final LibraryEntityModel model =
                     em.find(LibraryEntityModel.class, entity.id.toValue());
             
+            if(!model.getReports().isEmpty()) {
+                model.getReports().forEach(report -> em.remove(report));
+            }
+            
             if(entity instanceof Band) {
                 
                 ((BandModel) model).getTracks()
@@ -831,12 +835,14 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                         ((ArtistModel) model).addTrack(track);
                         track.setArtist((ArtistModel) model);
                     });
-            ((Artist) entity).getAlbumsIds()
+            if(((Artist) entity).getAlbumsIds() != null) {
+                ((Artist) entity).getAlbumsIds()
                     .forEach(albumId -> {
                         final AlbumModel album = em.getReference(AlbumModel.class, albumId.toValue());
                         ((ArtistModel) model).addAlbum(album);
                         album.setArtist((ArtistModel) model);
                     });
+            }
         }
         
         if(entity instanceof Artwork) {

@@ -117,9 +117,7 @@ public class PlayerRepository implements IPlayerRepository {
             
             final UserModel model = toPersistence(player, em);
             
-            System.out.println("Save: playlists size: " + model.getPlaylists().size());
-            
-            em.merge(model);
+//            em.merge(model);
             
             tnx.commit();
             
@@ -197,20 +195,27 @@ public class PlayerRepository implements IPlayerRepository {
     }
     
     private UserModel toPersistence(Player entity, EntityManager em) {
-        
+
         final UserModel model = em.getReference(UserModel.class, entity.getId().toValue());
-        
-        entity.getPlayedTracks()
+
+        final Set<PlayedModel> newPlayedTracks = entity.getPlayedTracks()
                 .stream()
                 .map(playedTrack -> {
-                            return new PlayedModel(
-                                    em.getReference(TrackModel.class, playedTrack.getPlayedTrackId()),
-                                    model,
-                                    playedTrack.getPlayedAt().getValue()
-                            );
+                    final UserModel player = model;
+                    final TrackModel track = em.getReference(TrackModel.class, playedTrack.getPlayedTrackId().toValue());
+                    final LocalDateTime playedAt = playedTrack.getPlayedAt().getValue();
+                    final PlayedModel pt = new PlayedModel();
+                    pt.setPlayer(player);
+                    pt.setPlayedTrack(track);
+                    pt.setPlayedAt(playedAt);
+                    return pt;
                 })
-                .forEach(pt -> model.addPlayedTrack(pt));
-        
+                .filter(playedTrack -> !(model.getPlayedTracks().contains(playedTrack)))
+                .collect(Collectors.toSet());
+        newPlayedTracks.forEach(pt -> {
+            model.addPlayedTrack(pt);
+        });
+
         final Set<PlaylistModel> playlists =
                 entity.getPlaylists()
                 .stream()

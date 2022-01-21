@@ -83,6 +83,10 @@ public class EditUserUseCase implements IUsecase<EditUserRequestDTO, String> {
             if(!user.getId().equals(request.subjectId)) {
                 updater = repository.fetchById(request.subjectId);
                 if(updater == null) return Result.fail(new UpdaterUserDoesNotExistError());
+                if(role != null) {
+                    final Result roleChangeResult = user.changeRole(role, updater);
+                    if(roleChangeResult.isFailure) return Result.fail(new UserIsNotAdminError());
+                }
             } else {
                 updater = user;
             }

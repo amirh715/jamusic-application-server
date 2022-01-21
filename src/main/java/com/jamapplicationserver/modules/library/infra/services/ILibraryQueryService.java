@@ -21,9 +21,7 @@ import com.jamapplicationserver.modules.library.repositories.LibraryEntityFilter
 public interface ILibraryQueryService {
     
     Set<LibraryEntityDetails> getLibraryEntitiesByFilters(LibraryEntityFilters filters);
-    
-//    Set<LibraryEntityDetaisl> getLibraryEntitiesByFilters(LibraryEntityFilters filters, AccessorRole role);
-    
+        
     Set<LibraryEntitySummary> getLibraryEntitiesSummaryByFilters(LibraryEntityFilters filters);
     
     LibraryEntityDetails getLibraryEntityById(UniqueEntityId id);

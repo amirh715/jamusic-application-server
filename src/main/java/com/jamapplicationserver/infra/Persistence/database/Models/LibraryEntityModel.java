@@ -81,6 +81,9 @@ public abstract class LibraryEntityModel extends EntityModel {
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     private UserModel updater;
     
+    @OneToMany(orphanRemoval=true, mappedBy="reportedEntity")
+    private Set<ReportModel> reports = new HashSet<>();
+    
     @Column(name="artworks_inherited_tags")
     private String artworksInheritedTags;
     
@@ -223,6 +226,10 @@ public abstract class LibraryEntityModel extends EntityModel {
     
     protected void setGenres(Set<GenreModel> genres) {
         this.genres = genres;
+    }
+    
+    public Set<ReportModel> getReports() {
+        return this.reports;
     }
     
     public UserModel getCreator() {

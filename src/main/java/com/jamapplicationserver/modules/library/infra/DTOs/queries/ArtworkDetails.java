@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -20,6 +21,7 @@ public abstract class ArtworkDetails extends LibraryEntityDetails {
     
     public ArtworkDetails(
             String id,
+            String type,
             String title,
             String description,
             boolean published,
@@ -33,10 +35,17 @@ public abstract class ArtworkDetails extends LibraryEntityDetails {
             String recordLabel,
             String producer,
             String releaseDate,
-            LibraryEntityIdAndTitle artist
+            LibraryEntityIdAndTitle artist,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
+            String creatorId,
+            String creatorName,
+            String updaterId,
+            String updaterName
     ) {
         super(
                 id,
+                type,
                 title,
                 description,
                 published,
@@ -46,7 +55,13 @@ public abstract class ArtworkDetails extends LibraryEntityDetails {
                 rate,
                 flagNote,
                 totalPlayedCount,
-                duration
+                duration,
+                createdAt,
+                lastModifiedAt,
+                creatorId,
+                creatorName,
+                updaterId,
+                updaterName
         );
         this.recordLabel = recordLabel;
         this.producer = producer;

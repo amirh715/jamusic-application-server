@@ -8,8 +8,6 @@ package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 import java.util.*;
 import java.time.*;
 import com.jamapplicationserver.core.domain.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.PlaylistModel;
-import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.core.infra.IQueryResponseDTO;
 
 /**
