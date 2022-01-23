@@ -478,7 +478,7 @@ public abstract class Notification extends AggregateRoot {
                         new FCMNotification(
                                 idOrError.getValue(),
                                 titleOrError.getValue(),
-                                messageOrError.getValue(),
+                                message != null ? messageOrError.getValue() : null,
                                 routeURL,
                                 senderTypeOrError.getValue(),
                                 scheduledOnOrError.getValue(),
@@ -493,12 +493,11 @@ public abstract class Notification extends AggregateRoot {
                 
             break;
             case EMAIL:
-                
                 instance =
                         new EmailNotification(
                                 idOrError.getValue(),
                                 titleOrError.getValue(),
-                                messageOrError.getValue(),
+                                message != null ? messageOrError.getValue() : null,
                                 routeURL,
                                 senderTypeOrError.getValue(),
                                 scheduledOnOrError.getValue(),
