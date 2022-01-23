@@ -8,8 +8,10 @@ package com.jamapplicationserver.modules.notification.infra.services;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
+import java.io.*;
+import java.net.*;
 import java.util.stream.*;
-import com.jamapplicationserver.modules.notification.infra.services.SmtpAuthenticator;
+import com.google.gson.*;
 import com.jamapplicationserver.modules.notification.domain.*;
 import com.jamapplicationserver.modules.notification.infra.services.exceptions.*;
 
@@ -51,6 +53,7 @@ public class NotificationService implements INotificationService {
                     sendEmail(notification);
                     break;
                 case SMS:
+                    sendSMS(notification);
                     break;
                 default:
                     break;
@@ -139,7 +142,7 @@ public class NotificationService implements INotificationService {
             final String subject = notification.getTitle().getValue();
             message.setSubject(subject);
             
-            final String bodyMessage = notification.getMessage().getValue();
+            final String bodyMessage = notification.getMessage() != null ? notification.getMessage().getValue() : "";
             final MimeBodyPart mimeBodyPart = new MimeBodyPart();
             mimeBodyPart.setContent(bodyMessage, "text/html; charset=utf-8");
             Multipart multipart = new MimeMultipart();
@@ -156,14 +159,70 @@ public class NotificationService implements INotificationService {
             Transport.send(message);
         
         } catch(Exception e) {
+            e.printStackTrace();
             throw new NotificationCannotBeSentException(e);
         }
         
         
     }
     
-    private void sendSMS() {
-        
+    private void sendSMS(Notification notification) throws NotificationCannotBeSentException {
+        final Gson gson = new Gson();
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL("https://console.melipayamak.com/api/send/advanced/84fe9126365244368709a1422f281926");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json; utf-8");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setDoOutput(true); conn.setDoInput(true);
+            final List<String> recipients =
+                    notification
+                    .getRecipients()
+                    .stream()
+                    .map(recipient -> recipient.getMobile())
+                    .collect(Collectors.toList());
+            final JsonObject json = new JsonObject();
+            json.addProperty("from", "50004001974163");
+            json.addProperty("to", gson.toJson(recipients));
+            json.addProperty("text", notification.getMessage() != null ? notification.getMessage().getValue() : "");
+            
+            final String stringified =
+                    json
+                    .toString()
+                    .replaceAll("\"\\[", "[").replaceAll("]\"","]")
+                    .replaceAll("\\\\", "");
+            
+            DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
+            byte[] paramsAsByte = stringified.getBytes("utf-8");
+            dos.write(paramsAsByte, 0, paramsAsByte.length);
+            dos.flush(); dos.close();
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String output;
+            while((output = br.readLine()) != null) {
+              sb.append(output);
+            }
+
+            conn.disconnect();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println(e.getLocalizedMessage());
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            StringBuilder sb = new StringBuilder();
+            String output = null;
+            while(true) {
+              try {
+                if ((output = br.readLine()) == null) break;
+              } catch (IOException ex) {
+                ex.printStackTrace();
+              }
+              sb.append(output);
+            }
+            throw new NotificationCannotBeSentException(sb.toString());
+        }
     }
     
     public static NotificationService getInstance() {
