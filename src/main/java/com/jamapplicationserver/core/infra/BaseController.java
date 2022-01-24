@@ -13,6 +13,7 @@ import java.util.stream.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.TikaUtils;
 import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.infra.Services.AuthService.AuthService;
 
 /**
  *
@@ -44,27 +45,36 @@ public abstract class BaseController implements Route {
         Result<UniqueEntityId> subjectIdOrError;
         Result<UserRole> subjectRoleOrError;
         
-        // subject id and role are not null. They must be valid.
-        if(subjectIdString != null && subjectRoleString != null) {
-            subjectIdOrError = UniqueEntityId.createFromString(subjectIdString);
-            subjectRoleOrError = UserRole.create(subjectRoleString);
-            
-            if(subjectIdOrError.isFailure || subjectRoleOrError.isFailure) {
-                fail("Subject id or role is invalid.");
-                System.out.println("Subject vars invalid");
-                return res;
-            }
-            this.subjectId = subjectIdOrError.getValue();
-            this.subjectRole = subjectRoleOrError.getValue();
+        // access to this controller is restricted
+        if(requireAuthClaims) {
+            // subject id and role are not null. They must be valid.
+            if(subjectIdString != null && subjectRoleString != null) {
+                subjectIdOrError = UniqueEntityId.createFromString(subjectIdString);
+                subjectRoleOrError = UserRole.create(subjectRoleString);
 
-        } else { // subject id and/or role are null.
-            
-            if(requireAuthClaims) {
+                if(subjectIdOrError.isFailure || subjectRoleOrError.isFailure) {
+                    fail("Subject id or role is invalid.");
+                    return res;
+                }
+                this.subjectId = subjectIdOrError.getValue();
+                this.subjectRole = subjectRoleOrError.getValue();
+                
+                // check if access is allowed to this controller
+                final AuthService authService = AuthService.getInstance();
+                System.out.println("Subject Role: " + subjectRole.getValue());
+                System.out.println("Use case name: " + this.getClass().getSimpleName());
+                final AccessControlPolicy acp = new AccessControlPolicy(this.getClass().getSimpleName(), subjectRole.getValue());
+                if(!authService.canAccess(acp)) {
+                    unauthorized(new AccessDeniedError());
+                    return res;
+                } 
+
+            } else { // subject id and/or role are null.
+
                 fail("Subject id and role are required.");
-                System.out.println("Subject vars required");
                 return res;
+
             }
-            
         }
         
         executeImpl();
@@ -252,6 +262,15 @@ public abstract class BaseController implements Route {
      */
     protected final BaseController staleIfError(Duration duration) {
         addCacheControlDirective("stale-if-error=" + duration.toSeconds());
+        return this;
+    }
+    
+    /**
+     * Do not store (cache) anywhere.
+     * @return BaseController
+     */
+    protected final BaseController noStore() {
+        addCacheControlDirective("no-store");
         return this;
     }
     
