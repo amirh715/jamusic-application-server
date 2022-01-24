@@ -23,7 +23,7 @@ public class ShowcaseModel implements Serializable {
     @Column(name="id")
     private UUID id;
     
-    @Column(name="index")
+    @Column(name="index", unique=true)
     private int index;
     
     @Column(name="title", unique=true, nullable=true)
@@ -38,11 +38,8 @@ public class ShowcaseModel implements Serializable {
     @Column(name="route", nullable=true)
     private String route;
     
-    @Column(name="created_at", nullable=false)
+    @Column(name="created_at", nullable=false, updatable=false)
     private LocalDateTime createdAt;
-    
-    @Column(name="last_modified_at", nullable=false)
-    private LocalDateTime lastModifiedAt;
     
     @Column(name="interaction_count", nullable=false)
     private long interactionCount;
@@ -106,15 +103,7 @@ public class ShowcaseModel implements Serializable {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-    
-    public LocalDateTime getLastModifiedAt() {
-        return this.lastModifiedAt;
-    }
-    
-    public void setLastModifiedAt(LocalDateTime lastModifiedAt) {
-        this.lastModifiedAt = lastModifiedAt;
-    }
-    
+
     public long getInteractionCount() {
         return this.interactionCount;
     }
