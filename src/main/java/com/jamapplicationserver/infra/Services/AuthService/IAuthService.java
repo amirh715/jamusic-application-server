@@ -5,12 +5,14 @@
  */
 package com.jamapplicationserver.infra.Services.AuthService;
 
+import com.jamapplicationserver.core.infra.AccessControlPolicy;
+
 /**
  *
  * @author amirhossein
  */
 public interface IAuthService {
     
-    boolean canAccess();
+    boolean canAccess(AccessControlPolicy acp);
     
 }

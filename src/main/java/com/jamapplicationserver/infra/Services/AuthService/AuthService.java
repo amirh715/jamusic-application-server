@@ -5,21 +5,24 @@
  */
 package com.jamapplicationserver.infra.Services.AuthService;
 
+import org.casbin.jcasbin.main.Enforcer;
+import com.jamapplicationserver.core.infra.*;
+
 /**
  *
  * @author amirhossein
  */
 public class AuthService implements IAuthService {
     
-    private AuthService() {
-    }
+    private Enforcer enforcer;
     
-    // 1. verify and decode token.
-    // 2. control access to resources.
+    private AuthService() {
+        this.enforcer = new Enforcer("src/main/resources/jCasbin/model.conf", "src/main/resources/jCasbin/policy.csv");
+    }
+
     @Override
-    public boolean canAccess() {
-        
-        return false;
+    public boolean canAccess(AccessControlPolicy acp) {
+        return enforcer.enforce(acp.accessorRole, acp.controllerName);
     }
     
     public static AuthService getInstance() {
