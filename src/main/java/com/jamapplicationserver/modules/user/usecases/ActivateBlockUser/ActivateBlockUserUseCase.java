@@ -51,7 +51,7 @@ public class ActivateBlockUserUseCase implements IUsecase<ActivateBlockUserReque
             
             final User updater = repository.fetchById(request.subjectId);
             
-            if(user == null) return Result.fail(new UserDoesNotExistError("Admin is not active"));
+            if(user == null) return Result.fail(new UserDoesNotExistError());
             
             if(updater == null) return Result.fail(new UpdaterUserDoesNotExistError());
             

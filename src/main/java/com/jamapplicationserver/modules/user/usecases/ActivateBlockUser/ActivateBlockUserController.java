@@ -5,7 +5,7 @@
  */
 package com.jamapplicationserver.modules.user.usecases.ActivateBlockUser;
 
-import com.jamapplicationserver.core.infra.BaseController;
+import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import java.util.*;
@@ -39,31 +39,31 @@ public class ActivateBlockUserController extends BaseController {
         
         try {
             
-            final Result result = this.useCase.execute(dto);
+            final Result result = useCase.execute(dto);
             
             if(result.isFailure) {
                 
                 final BusinessError error = result.getError();
                 
                 if(error instanceof NotFoundError)
-                    this.notFound(error);
+                    notFound(error);
                 
                 if(error instanceof ConflictError)
-                    this.conflict(error);
+                    conflict(error);
                 
                 if(error instanceof ClientErrorError)
-                    this.clientError(error);
+                    clientError(error);
                 
                 if(error instanceof ForbiddenError)
-                    this.forbidden(error);
+                    forbidden(error);
                 
                 return;
             }
             
-            this.noContent();
+            noContent();
             
         } catch(Exception e) {
-            this.fail(e);
+            fail(e);
         }
         
     }
