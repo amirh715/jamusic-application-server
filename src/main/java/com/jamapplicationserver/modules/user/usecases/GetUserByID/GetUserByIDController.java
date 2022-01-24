@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.user.usecases.GetUserByID;
 
+import java.time.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.*;
@@ -29,7 +30,7 @@ public class GetUserByIDController extends BaseController {
         
         try {
             
-            final Result<UserDetails> result = useCase.execute(this.req.params(":id"));
+            final Result<UserDetails> result = useCase.execute(req.params(":id"));
             
             if(result.isFailure) {
                 
@@ -43,6 +44,11 @@ public class GetUserByIDController extends BaseController {
                     clientError(error);
                 
                 return;            
+            }
+            
+            if(subjectRole.isSubscriber()) {
+                privateCache();
+                cache(Duration.ofMinutes(10));
             }
             
             ok(result.getValue());

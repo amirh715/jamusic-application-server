@@ -74,7 +74,9 @@ public class GetUsersByFiltersUseCase implements IUsecase<GetUsersByFiltersReque
                         request.state != null ? stateOrError.getValue() : null,
                         request.role != null ? roleOrError.getValue() : null,
                         null,
-                        null
+                        null,
+                        request.limit,
+                        request.offset
 //                        request.creatorId != null ? creatorIdOrError.getValue() : null,
 //                        request.updaterId != null ? updaterIdOrError.getValue() : null
                 );

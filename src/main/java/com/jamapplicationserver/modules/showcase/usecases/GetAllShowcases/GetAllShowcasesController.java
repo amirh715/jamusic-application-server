@@ -6,6 +6,7 @@
 package com.jamapplicationserver.modules.showcase.usecases.GetAllShowcases;
 
 import java.util.*;
+import java.time.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
@@ -44,6 +45,10 @@ public class GetAllShowcasesController extends BaseController {
                 return;
             }
             
+            if(subjectRole.isSubscriber()) {
+                publicCache();
+                cache(Duration.ofMinutes(30));
+            }
             ok(result.getValue());
             
         } catch(Exception e) {

@@ -44,7 +44,9 @@ public class GetUsersByFiltersController extends BaseController {
                         queryParams.get("state").value(),
                         queryParams.get("role").value(),
                         queryParams.get("creatorId").value(),
-                        queryParams.get("updaterId").value()
+                        queryParams.get("updaterId").value(),
+                        queryParams.get("limit").value(),
+                        queryParams.get("offset").value()
                 );
         
         try {
@@ -65,6 +67,7 @@ public class GetUsersByFiltersController extends BaseController {
                 return;
             }
             
+            noStore();
             ok(result.getValue());
             
         } catch(Exception e) {

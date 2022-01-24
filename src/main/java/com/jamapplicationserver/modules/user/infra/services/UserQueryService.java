@@ -38,9 +38,7 @@ public class UserQueryService implements IUserQueryService {
             final CriteriaBuilder builder = em.getCriteriaBuilder();
             final CriteriaQuery<UserModel> query = builder.createQuery(UserModel.class);
             final Root<UserModel> root = query.from(UserModel.class);
-            
-            
-            
+
             final Set<Predicate> predicates = new HashSet<>();
             
             if(filters != null) {
@@ -124,9 +122,9 @@ public class UserQueryService implements IUserQueryService {
             );
 
             return em.createQuery(query)
-//                    .setFirstResult(filters != null ? filters.offset : 0)
+                    .setFirstResult(filters != null ? filters.offset : 0)
                     .setFirstResult(0)
-//                    .setMaxResults(filters != null ? filters.limit : 50)
+                    .setMaxResults(filters != null ? filters.limit : 50)
                     .setMaxResults(50)
                     .getResultStream()
                     .map(user -> {

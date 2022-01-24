@@ -35,6 +35,8 @@ public class CreateShowcaseUseCase implements IUsecase<CreateShowcaseRequestDTO,
     public Result execute(CreateShowcaseRequestDTO request) throws GenericAppException {
         
         try {
+            
+            System.out.println("CreateShowcaseUseCase");
 
             final Result<ImageStream> imageOrError =
                     ImageStream.createAndValidate(request.image);

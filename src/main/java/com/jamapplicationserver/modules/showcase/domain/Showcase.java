@@ -146,7 +146,6 @@ public class Showcase extends Entity {
             String imagePath,
             long interactionCount,
             LocalDateTime createdAt,
-            LocalDateTime lastModifiedAt,
             UUID creatorId
     ) {
         
@@ -155,10 +154,7 @@ public class Showcase extends Entity {
         
         final Result<DateTime> createdAtOrError = DateTime.create(createdAt);
         if(createdAtOrError.isFailure) return Result.fail(createdAtOrError.getError());
-        
-        final Result<DateTime> lastModifiedAtOrError = DateTime.create(lastModifiedAt);
-        if(lastModifiedAtOrError.isFailure) return Result.fail(lastModifiedAtOrError.getError());
-        
+
         final Result<UniqueEntityId> creatorIdOrError = UniqueEntityId.createFromUUID(creatorId);
         if(creatorIdOrError.isFailure) return Result.fail(creatorIdOrError.getError());
         
@@ -172,7 +168,7 @@ public class Showcase extends Entity {
                         imagePath,
                         interactionCount,
                         createdAtOrError.getValue(),
-                        lastModifiedAtOrError.getValue(),
+                        DateTime.createNow(),
                         creatorIdOrError.getValue()
                 )
         );

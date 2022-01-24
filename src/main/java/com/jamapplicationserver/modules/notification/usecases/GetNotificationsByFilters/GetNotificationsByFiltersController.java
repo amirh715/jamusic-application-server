@@ -65,6 +65,7 @@ public class GetNotificationsByFiltersController extends BaseController {
                 return;
             }
             
+            noStore();
             ok(result.getValue());
             
         } catch(Exception e) {

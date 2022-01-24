@@ -47,7 +47,7 @@ public class CreateShowcaseController extends BaseController {
                             subjectRole
                     );
             
-            final Result result = this.usecase.execute(dto);
+            final Result result = usecase.execute(dto);
             
             if(result.isFailure) {
                 

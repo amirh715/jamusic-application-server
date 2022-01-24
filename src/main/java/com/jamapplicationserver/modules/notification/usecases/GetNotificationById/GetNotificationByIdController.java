@@ -44,6 +44,7 @@ public class GetNotificationByIdController extends BaseController {
                 return;
             }
             
+            noStore();
             ok(result.getValue());
             
         } catch(Exception e) {

@@ -26,7 +26,6 @@ public class ShowcaseMapper {
                         model.getImagePath(),
                         model.getInteractionCount(),
                         model.getCreatedAt(),
-                        model.getLastModifiedAt(),
                         model.getCreator().getId()
                 )
                 .getValue();
@@ -47,7 +46,6 @@ public class ShowcaseMapper {
         model.setRoute(entity.getRoute());
         model.setInteractionCount(entity.getInteractionCount());
         model.setCreatedAt(entity.getCreatedAt().getValue());
-        model.setLastModifiedAt(entity.getLastModifiedAt().getValue());
         
         return model;
     }

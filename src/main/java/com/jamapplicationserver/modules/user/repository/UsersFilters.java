@@ -44,7 +44,9 @@ public class UsersFilters {
            UserState state,
            UserRole role,
            UUID creatorId,
-           UUID updaterId
+           UUID updaterId,
+           String limit,
+           String offset
     ) {
         this.searchTerm = searchTerm;
         this.createdAtFrom = createdAtFrom != null ? createdAtFrom.getValue() : null;
@@ -57,6 +59,8 @@ public class UsersFilters {
         this.role = role != null ? UserRoleEnum.valueOf(role.getValue()) : null;
         this.creatorId = creatorId;
         this.updaterId = updaterId;
+        this.limit = limit != null ? Integer.parseInt(limit) : 30;
+        this.offset = offset != null ? Integer.parseInt(offset) : 0;
     }
     
     public UsersFilters() {
