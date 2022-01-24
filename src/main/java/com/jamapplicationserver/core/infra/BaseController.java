@@ -233,6 +233,11 @@ public abstract class BaseController implements Route {
         addCacheControlDirective("private");
         return this;
     }
+    
+    protected final BaseController publicCache() {
+        addCacheControlDirective("public");
+        return this;
+    }
         
     /**
      * Indicates that the response won't be updated while it's fresh.
@@ -289,6 +294,7 @@ public abstract class BaseController implements Route {
     }
     
     private void addCacheControlDirective(String directive) {
+        if(cacheControlDirectives.contains(directive)) return;
         cacheControlDirectives.add(directive);
         res.header("Cache-Control", cacheControlDirectives.stream().collect(Collectors.joining(",")));
     }
