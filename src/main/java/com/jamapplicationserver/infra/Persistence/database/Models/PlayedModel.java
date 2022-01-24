@@ -6,6 +6,7 @@
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.*;
@@ -60,7 +61,7 @@ public class PlayedModel implements Serializable {
     }
     
     public void setPlayedAt(LocalDateTime playedAt) {
-        this.playedAt = playedAt;
+        this.playedAt = playedAt.truncatedTo(ChronoUnit.SECONDS);
     }
     
     @Override
