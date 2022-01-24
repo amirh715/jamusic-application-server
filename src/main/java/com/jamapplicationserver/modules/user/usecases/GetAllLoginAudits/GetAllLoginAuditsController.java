@@ -56,12 +56,7 @@ public class GetAllLoginAuditsController extends BaseController {
                 return;
             }
             
-            if(hasETag()) {
-                final ETag calculatedEtag = ETag.create(result.getValue());
-                if(calculatedEtag.same(getEtag())) notModified();
-                return;
-            }
-            
+            noStore();
             ok(result.getValue());
             
         } catch(Exception e) {
