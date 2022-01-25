@@ -12,6 +12,8 @@ import java.io.*;
 import java.net.*;
 import java.util.stream.*;
 import com.google.gson.*;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.jamapplicationserver.modules.notification.domain.*;
 import com.jamapplicationserver.modules.notification.infra.services.exceptions.*;
 
@@ -48,6 +50,7 @@ public class NotificationService implements INotificationService {
             final NotifType type = notification.getType();
             switch (type) {
                 case FCM:
+                    sendFCM(notification);
                     break;
                 case EMAIL:
                     sendEmail(notification);
@@ -118,8 +121,38 @@ public class NotificationService implements INotificationService {
         return Map.of();
     }
     
-    private void sendFCM() {
-        
+    private void sendFCM(Notification notification) throws NotificationCannotBeSentException {
+        try {
+            
+            List<String> registrationTokens =
+                    notification
+                    .getRecipients()
+                    .stream()
+                    .map(n -> n.getFCMToken())
+                    .collect(Collectors.toList());
+            
+            final List<com.google.firebase.messaging.Message> messages =
+                    registrationTokens
+                    .stream()
+                    .map(token -> {
+                        return com.google.firebase.messaging.Message.builder()
+                        .setNotification(
+                                com.google.firebase.messaging.Notification.builder()
+                                .setTitle(notification.getTitle().getValue())
+                                .setBody(notification.getMessage().getValue())
+                                .build()
+                        )
+                        .setToken(token)
+                        .build();
+                    })
+                    .collect(Collectors.toList());
+            
+            FirebaseMessaging.getInstance().sendAll(messages);
+            
+        } catch(FirebaseMessagingException e) {
+            e.printStackTrace();
+            throw new NotificationCannotBeSentException(e);
+        }
     }
     
     private void sendEmail(Notification notification) throws NotificationCannotBeSentException {
