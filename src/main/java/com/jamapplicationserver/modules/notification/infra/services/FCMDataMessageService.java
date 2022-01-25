@@ -6,6 +6,7 @@
 package com.jamapplicationserver.modules.notification.infra.services;
 
 import java.util.*;
+import com.google.firebase.messaging.*;
 
 /**
  *
@@ -17,7 +18,22 @@ public class FCMDataMessageService implements IFCMDataMessageService {
     }
     
     @Override
-    public void send(Set<String> fcmTokens) {
+    public void send(Map<String, String>data, Set<String> fcmTokens) {
+        
+        try {
+            
+            final MulticastMessage message =
+                    MulticastMessage
+                    .builder()
+                    .putAllData(data)
+                    .addAllTokens(fcmTokens)
+                    .build();
+            
+            FirebaseMessaging.getInstance().sendMulticast(message);
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         
     }
     

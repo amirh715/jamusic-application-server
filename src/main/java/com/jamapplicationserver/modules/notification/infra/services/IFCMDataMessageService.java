@@ -13,6 +13,6 @@ import java.util.*;
  */
 public interface IFCMDataMessageService {
     
-    public void send(Set<String> fcmTokens);
+    public void send(Map<String, String>data, Set<String> fcmTokens);
     
 }
