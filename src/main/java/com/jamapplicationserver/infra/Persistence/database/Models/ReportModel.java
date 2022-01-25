@@ -80,7 +80,7 @@ public class ReportModel extends EntityModel {
     }
     
     public boolean isAssigned() {
-        return this.status.equals(ReportStatusEnum.ASSIGNED);
+        return this.status.equals(ReportStatusEnum.ASSIGNED) || isProcessed();
     }
     
     public boolean isProcessed() {
