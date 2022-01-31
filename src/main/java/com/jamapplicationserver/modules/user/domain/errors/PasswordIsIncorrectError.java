@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
 public class PasswordIsIncorrectError extends ConflictError {
     
     private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "Password is incorrect";
+    private static final String DEFAULT_MESSAGE = "رمز درست نیست";
     
     public PasswordIsIncorrectError() {
         super(DEFAULT_MESSAGE, CODE);

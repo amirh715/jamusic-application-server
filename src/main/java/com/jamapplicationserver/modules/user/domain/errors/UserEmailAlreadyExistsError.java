@@ -6,7 +6,6 @@
 package com.jamapplicationserver.modules.user.domain.errors;
 
 import com.jamapplicationserver.core.logic.ConflictError;
-import com.jamapplicationserver.core.domain.Email;
 
 /**
  *
@@ -15,13 +14,18 @@ import com.jamapplicationserver.core.domain.Email;
 public class UserEmailAlreadyExistsError extends ConflictError {
     
     private static final int CODE = 203;
+    private static final String DEFAULT_MESSAGE = "این ایمیل در سیستم وجود دارد. لطفا از ایمیل دیگری استفاده کنید";
     
     public UserEmailAlreadyExistsError() {
-        super("User email address already exists in the database.", CODE);
+        super(DEFAULT_MESSAGE, CODE);
     }
     
-    public UserEmailAlreadyExistsError(Email email) {
-        super("User email address '" + email.getValue() + "' already exists in the database.", CODE);
+    public UserEmailAlreadyExistsError(String message) {
+        super(message, CODE);
+    }
+    
+    public UserEmailAlreadyExistsError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }

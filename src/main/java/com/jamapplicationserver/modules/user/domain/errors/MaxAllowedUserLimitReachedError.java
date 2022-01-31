@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
 public class MaxAllowedUserLimitReachedError extends ConflictError {
     
     private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "سقف تعداد کاربران";
+    private static final String DEFAULT_MESSAGE = "سقف تعداد کاربران پر شده است";
     
     public MaxAllowedUserLimitReachedError() {
         super(DEFAULT_MESSAGE, CODE);

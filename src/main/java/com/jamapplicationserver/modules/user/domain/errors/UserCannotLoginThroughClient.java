@@ -9,23 +9,24 @@ import com.jamapplicationserver.core.logic.ClientErrorError;
 
 /**
  *
- * @author amirhossein
+ * @author dada
  */
-public class PasswordResetCodeIsNotExpiredError extends ClientErrorError {
+public class UserCannotLoginThroughClient extends ClientErrorError {
     
-    private static final String DEFAULT_MESSAGE = "کد بازنشانی رمز هر دو دقیقه یکبار ارسال می شود. لطفا منتظر باشید";
     private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "امکان ورود از طریق این نرم افزار برای شما وجود ندارد";
     
-    public PasswordResetCodeIsNotExpiredError() {
+    public UserCannotLoginThroughClient() {
         super(DEFAULT_MESSAGE, CODE);
     }
     
-    public PasswordResetCodeIsNotExpiredError(String message) {
+    public UserCannotLoginThroughClient(String message) {
         super(message, CODE);
     }
     
-    public PasswordResetCodeIsNotExpiredError(String message, String description) {
+    public UserCannotLoginThroughClient(String message, String description) {
         super(message, CODE, description);
     }
+    
     
 }

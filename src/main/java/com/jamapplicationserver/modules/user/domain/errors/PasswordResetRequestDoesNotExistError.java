@@ -13,12 +13,19 @@ import com.jamapplicationserver.core.logic.ClientErrorError;
  */
 public class PasswordResetRequestDoesNotExistError extends ClientErrorError {
     
-    private static final String MESSAGE = "Password reset code is not requested";
+    private static final String DEFAULT_MESSAGE = "کد بازنشانی رمز اکانت درخواست نشده است. لطفا ابتدا درخواست بدهید";
     private static final int CODE = 111;
-    private static final String DESCRIPTION = "";
     
     public PasswordResetRequestDoesNotExistError() {
-        super(MESSAGE, CODE, DESCRIPTION);
+        super(DEFAULT_MESSAGE, CODE);
+    }
+    
+    public PasswordResetRequestDoesNotExistError(String message) {
+        super(message, CODE);
+    }
+        
+    public PasswordResetRequestDoesNotExistError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }

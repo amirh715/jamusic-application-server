@@ -14,9 +14,18 @@ import com.jamapplicationserver.core.logic.ConflictError;
 public class EmailVerificationLinkIsNotExpiredError extends ConflictError {
 
     private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "لینک تایید ایمیل هر ۱۰ دقیقه یکبار ارسال می شود. لطفا منتظر باشید";
     
     public EmailVerificationLinkIsNotExpiredError() {
-        super("", CODE);
+        super(DEFAULT_MESSAGE, CODE);
+    }
+    
+    public EmailVerificationLinkIsNotExpiredError(String message) {
+        super(message, CODE);
+    }
+        
+    public EmailVerificationLinkIsNotExpiredError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }

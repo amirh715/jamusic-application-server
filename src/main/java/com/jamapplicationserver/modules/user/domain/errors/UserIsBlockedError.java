@@ -14,9 +14,18 @@ import com.jamapplicationserver.core.logic.ConflictError;
 public class UserIsBlockedError extends ConflictError {
     
     private static final int CODE = 213;
+    private static final String DEFAULT_MESSAGE = "اکانت شما مسدود است";
     
     public UserIsBlockedError() {
-        super("This account is blocked", CODE);
+        super(DEFAULT_MESSAGE, CODE);
+    }
+    
+    public UserIsBlockedError(String message) {
+        super(message, CODE);
+    }
+        
+    public UserIsBlockedError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }

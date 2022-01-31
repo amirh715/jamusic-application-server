@@ -13,12 +13,19 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class AccountVerificationIsNotExpiredError extends ConflictError {
     
-    private static final String MESSAGE = "User verification code is not expired";
     private static final int CODE = 111;
-    private static final String DESCRIPTION = "";
+    private static final String DEFAULT_MESSAGE = "کد تایید اکانت هر دو دقیقه یکبار ارسال می شود. لطفا منتظر باشید";
     
     public AccountVerificationIsNotExpiredError() {
-        super(MESSAGE, CODE, DESCRIPTION);
+        super(DEFAULT_MESSAGE, CODE);
+    }
+    
+    public AccountVerificationIsNotExpiredError(String message) {
+        super(message, CODE);
+    }
+        
+    public AccountVerificationIsNotExpiredError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }

@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.NotFoundError;
 public class UserProfileImageDoesNotExistError extends NotFoundError {
     
     private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "No profile image exists";
+    private static final String DEFAULT_MESSAGE = "پروفایل عکس ندارد";
     
     public UserProfileImageDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

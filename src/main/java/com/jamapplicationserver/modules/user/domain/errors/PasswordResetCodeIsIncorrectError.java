@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
 public class PasswordResetCodeIsIncorrectError extends ConflictError {
     
     private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "Password reset code is incorrect";
+    private static final String DEFAULT_MESSAGE = "کد بازنشانی رمز اکانت درست نیست";
     
     public PasswordResetCodeIsIncorrectError() {
         super(DEFAULT_MESSAGE, CODE);

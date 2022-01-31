@@ -13,12 +13,19 @@ import com.jamapplicationserver.core.logic.BusinessError;
  */
 public class EmailVerificationLinkIsInvalidError extends BusinessError {
     
-    private static final String MESSAGE = "";
     private static final int CODE = 111;
-    private static final String DESCRIPTION = "";
+    private static final String DEFAULT_MESSAGE = "لینک تایید ایمیل درست نیست";
     
     public EmailVerificationLinkIsInvalidError() {
-        super(MESSAGE, CODE, DESCRIPTION);
+        super(DEFAULT_MESSAGE, CODE);
+    }
+    
+    public EmailVerificationLinkIsInvalidError(String message) {
+        super(message, CODE);
+    }
+        
+    public EmailVerificationLinkIsInvalidError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }

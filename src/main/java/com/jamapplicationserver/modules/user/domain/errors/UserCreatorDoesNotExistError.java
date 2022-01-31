@@ -13,14 +13,20 @@ import com.jamapplicationserver.core.logic.BusinessError;
  */
 public class UserCreatorDoesNotExistError extends BusinessError {
     
-    public static final int CODE = 204;
+    private static final int CODE = 204;
+    private static final String DEFAULT_MESSAGE = "کاربر ایجاد کننده وجود ندارد";
     
     public UserCreatorDoesNotExistError() {
-        super("User creating the new user does not exist.", CODE);
+        super(DEFAULT_MESSAGE, CODE);
     }
     
     public UserCreatorDoesNotExistError(String message) {
         super(message, CODE);
+    }
+    
+    
+    public UserCreatorDoesNotExistError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }

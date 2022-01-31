@@ -16,7 +16,7 @@ public class OnlyOneAdminCanExistError extends ConflictError {
     private static final int CODE = 205;
     
     public OnlyOneAdminCanExistError() {
-        super("Only one admin user can exist", CODE);
+        super("تنها یک مدیر سیستم می تواند وجود داشته باشد", CODE);
     }
     
 }

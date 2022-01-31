@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
 public class UserIsNotActiveError extends ConflictError {
 
     private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "User is not active";
+    private static final String DEFAULT_MESSAGE = "اکانت شما فعال نیست";
     
     public UserIsNotActiveError() {
         super(DEFAULT_MESSAGE, CODE);

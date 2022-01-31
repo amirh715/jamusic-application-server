@@ -14,9 +14,18 @@ import com.jamapplicationserver.core.logic.ConflictError;
 public class AccountVerificationCodeIsExpiredError extends ConflictError {
 
     private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "کد تایید اکانت شما منقضی شده است. لطفا دوباره درخواست بدهید";
     
     public AccountVerificationCodeIsExpiredError() {
-        super("Verification code is expired", CODE);
+        super(DEFAULT_MESSAGE, CODE);
+    }
+    
+    public AccountVerificationCodeIsExpiredError(String message) {
+        super(message, CODE);
+    }
+        
+    public AccountVerificationCodeIsExpiredError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }

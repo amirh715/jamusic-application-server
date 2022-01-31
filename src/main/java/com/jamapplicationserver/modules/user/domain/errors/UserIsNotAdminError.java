@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.ForbiddenError;
 public class UserIsNotAdminError extends ForbiddenError {
     
     private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "User is not an admin";
+    private static final String DEFAULT_MESSAGE = "کاربر مدیر سیستم نیست";
     
     public UserIsNotAdminError() {
         super(DEFAULT_MESSAGE, CODE);

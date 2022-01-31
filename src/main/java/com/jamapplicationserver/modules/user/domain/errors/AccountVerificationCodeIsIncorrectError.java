@@ -14,9 +14,18 @@ import com.jamapplicationserver.core.logic.ConflictError;
 public class AccountVerificationCodeIsIncorrectError extends ConflictError {
     
     private static final int CODE = 221;
+    private static final String DEFAULT_MESSAGE = "کد تایید اکانت درست نیست";
     
     public AccountVerificationCodeIsIncorrectError() {
-        super("Verification code is incorrect", CODE);
+        super(DEFAULT_MESSAGE, CODE);
+    }
+    
+    public AccountVerificationCodeIsIncorrectError(String message) {
+        super(message, CODE);
+    }
+        
+    public AccountVerificationCodeIsIncorrectError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }

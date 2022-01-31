@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
 public class AccountVerificationRequestDoesNotExistError extends ConflictError {
     
     private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "Account verification request does not exist";
+    private static final String DEFAULT_MESSAGE = "درخواست تایید اکانت نکرده اید";
     
     public AccountVerificationRequestDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

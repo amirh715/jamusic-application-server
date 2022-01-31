@@ -15,13 +15,18 @@ import com.jamapplicationserver.core.domain.UniqueEntityId;
 public class CreatorUserDoesNotExistError extends NotFoundError {
     
     private static final int CODE = 203;
-    
-    public CreatorUserDoesNotExistError(UniqueEntityId id) {
-        super("Creator user with id " + id.toString() + " does not exist", CODE);
-    }
+    private static final String DEFAULT_MESSAGE = "کاربر ایجادکننده وجود ندارد";
     
     public CreatorUserDoesNotExistError() {
-        super("Creator user does not exist", CODE);
+        super(DEFAULT_MESSAGE, CODE);
     }
     
+    public CreatorUserDoesNotExistError(String message) {
+        super(message, CODE);
+    }
+    
+    public CreatorUserDoesNotExistError(String message, String description) {
+        super(message, CODE, description);
+    }
+        
 }

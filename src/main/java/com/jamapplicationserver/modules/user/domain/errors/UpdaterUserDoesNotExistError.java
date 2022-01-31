@@ -6,7 +6,6 @@
 package com.jamapplicationserver.modules.user.domain.errors;
 
 import com.jamapplicationserver.core.logic.NotFoundError;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
 
 /**
  *
@@ -15,7 +14,7 @@ import com.jamapplicationserver.core.domain.UniqueEntityId;
 public class UpdaterUserDoesNotExistError extends NotFoundError {
     
     private static final int CODE = 204;
-    private static final String DEFAULT_MESSAGE = "Updater user does not exist";
+    private static final String DEFAULT_MESSAGE = "کاربری که این رکورد را بروز می کند وجود ندارد";
     
     public UpdaterUserDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

@@ -6,7 +6,6 @@
 package com.jamapplicationserver.modules.user.domain.errors;
 
 import com.jamapplicationserver.core.logic.ConflictError;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
 
 /**
  *
@@ -15,13 +14,18 @@ import com.jamapplicationserver.core.domain.UniqueEntityId;
 public class UserAlreadyExistsError extends ConflictError {
     
     private static final int CODE = 202;
-    
-    public UserAlreadyExistsError(UniqueEntityId id) {
-        super("User with id " + id.toString() + " already exists.", CODE);
-    }
+    private static final String DEFAULT_MESSAGE = "اکانتی با این شماره موبایل وجود دارد. لطفا از شماره موبایل دیگری استفاده کنید";
     
     public UserAlreadyExistsError() {
-        super("User already exists in the database.", CODE);
+        super(DEFAULT_MESSAGE, CODE);
+    }
+    
+    public UserAlreadyExistsError(String message) {
+        super(message, CODE);
+    }
+        
+    public UserAlreadyExistsError(String message, String description) {
+        super(message, CODE, description);
     }
     
 }
