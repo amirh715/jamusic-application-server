@@ -24,6 +24,7 @@ import com.jamapplicationserver.modules.user.usecases.VerifyEmail.VerifyEmailCon
 import com.jamapplicationserver.modules.user.usecases.GetUserProfileImage.GetUserProfileImageController;
 import com.jamapplicationserver.modules.user.usecases.GetUserLoginAudits.GetUserLoginAuditsController;
 import com.jamapplicationserver.modules.user.usecases.GetAllLoginAudits.GetAllLoginAuditsController;
+import com.jamapplicationserver.modules.user.usecases.UpdateFCMToken.UpdateFCMTokenController;
 
 /**
  *
@@ -69,8 +70,7 @@ public class UserRoutes implements RouteGroup {
         );
         
         // edit user
-        put(
-                UserPaths.EDIT_USER,
+        put(UserPaths.EDIT_USER,
                 EditUserController.getInstance()
         );
         
@@ -131,6 +131,12 @@ public class UserRoutes implements RouteGroup {
         post(
                 UserPaths.LOGIN,
                 LoginController.getInstance()
+        );
+        
+        // update fcm token
+        post(
+                UserPaths.UPDATE_FCM_TOKEN,
+                UpdateFCMTokenController.getInstance()
         );
         
         // remove user

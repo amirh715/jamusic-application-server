@@ -38,4 +38,6 @@ public class UserPaths {
     
     public final static String LOGIN = "/login";
     
+    public final static String UPDATE_FCM_TOKEN = "/update-fcm-token";
+    
 }
