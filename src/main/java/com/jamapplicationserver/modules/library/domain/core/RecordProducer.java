@@ -36,7 +36,7 @@ public class RecordProducer extends ValueObject {
         if(
                 value.length() > MAX_LENGTH ||
                 value.length() < MIN_LENGTH
-        ) return Result.fail(new ValidationError(""));
+        ) return Result.fail(new ValidationError("مقدار تهیه کننده باید بین ۱ تا ۵۰ کاراکتر باشد"));
         
         return Result.ok(new RecordProducer(value));
     }
