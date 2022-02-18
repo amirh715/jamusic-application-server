@@ -15,14 +15,14 @@ public class UserPaths {
     
     public final static String GET_ALL_USERS_BY_FILTERS = "/";
     public final static String GET_USER_BY_ID = "/:id";
-    public final static String GET_MY_PROFILE_INFO = "/";
+    public final static String GET_MY_PROFILE_INFO = "/myprofile/";
     
     public final static String EDIT_USER = "/";
     
     public final static String ACTIVATE_BLOCK_USER = "/activate-block";
     
     public final static String GET_PROFILE_IMAGE = "/image/:id";
-    public final static String GET_MY_PROFILE_IMAGE = "/image/";
+    public final static String GET_MY_PROFILE_IMAGE = "/myprofile-image/";
     public final static String GET_LOGIN_AUDITS = "/logins/:id";
     public final static String GET_ALL_LOGINS = "/logins/";
     

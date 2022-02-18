@@ -54,16 +54,16 @@ public class UserRoutes implements RouteGroup {
                 GetUsersByFiltersController.getInstance()
         );
         
-        // get user by id
-        get(
-                UserPaths.GET_USER_BY_ID,
-                GetUserByIDController.getInstance()
-        );
-        
         // get my profile info
         get(
                 UserPaths.GET_MY_PROFILE_INFO,
                 GetMyProfileInfoController.getInstance()
+        );
+        
+        // get user by id
+        get(
+                UserPaths.GET_USER_BY_ID,
+                GetUserByIDController.getInstance()
         );
         
         // get user login audits
@@ -88,16 +88,16 @@ public class UserRoutes implements RouteGroup {
                 ActivateBlockUserController.getInstance()
         );
         
-        // get profile image
-        get(
-                UserPaths.GET_PROFILE_IMAGE,
-                GetUserProfileImageController.getInstance()
-        );
-
         // get my profile image
         get(
                 UserPaths.GET_MY_PROFILE_IMAGE,
                 GetMyProfileImageController.getInstance()
+        );
+        
+        // get profile image
+        get(
+                UserPaths.GET_PROFILE_IMAGE,
+                GetUserProfileImageController.getInstance()
         );
         
         // request account verification
