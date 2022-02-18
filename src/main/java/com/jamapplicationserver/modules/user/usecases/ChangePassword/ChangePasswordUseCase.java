@@ -56,6 +56,7 @@ public class ChangePasswordUseCase implements IUsecase<ChangePasswordRequestDTO,
             
             User updater;
             
+            // DOMAIN LOGIC LEAK
             if(!user.id.equals(request.subjectId)) {
                 updater = this.repository.fetchById(request.subjectId);
                 if(updater == null)
