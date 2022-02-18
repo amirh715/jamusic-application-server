@@ -17,17 +17,20 @@ public class MyProfileDetails implements IQueryResponseDTO {
     
     public final UUID id;
     public final String name;
+    public final String mobile;
     public final String email;
     public final Boolean isEmailVerified;
     
     public MyProfileDetails(
             UUID id,
             String name,
+            String mobile,
             String email,
             Boolean isEmailVerified
     ) {
         this.id = id;
         this.name = name;
+        this.mobile = mobile;
         this.email = email;
         this.isEmailVerified = isEmailVerified;
     }
