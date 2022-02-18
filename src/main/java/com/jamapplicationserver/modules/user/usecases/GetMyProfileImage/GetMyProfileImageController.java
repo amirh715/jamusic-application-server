@@ -26,7 +26,7 @@ public class GetMyProfileImageController extends BaseController {
     public void executeImpl() {
         
         try {
-            
+                        
             final Result<InputStream> result = usecase.execute(subjectId);
             
             if(result.isFailure) {
@@ -39,7 +39,9 @@ public class GetMyProfileImageController extends BaseController {
                 return;
             }
             
-            sendFile(result.getValue());
+            final InputStream image = result.getValue();
+            
+            sendFile(image);
             
         } catch(Exception e) {
             fail(e);

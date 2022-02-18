@@ -11,7 +11,8 @@ import com.jamapplicationserver.modules.user.domain.User;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.user.domain.errors.UserProfileImageDoesNotExistError;
+import com.jamapplicationserver.modules.user.repository.*;
+import com.jamapplicationserver.modules.user.domain.errors.*;
 
 /**
  *
@@ -19,10 +20,12 @@ import com.jamapplicationserver.modules.user.domain.errors.UserProfileImageDoesN
  */
 public class GetMyProfileImageUseCase implements IUsecase<UniqueEntityId, String> {
     
+    private final IUserRepository repository;
     private final IFilePersistenceManager persistence;
     
-    private GetMyProfileImageUseCase(IFilePersistenceManager persistence) {
+    private GetMyProfileImageUseCase(IFilePersistenceManager persistence, IUserRepository repository) {
         this.persistence = persistence;
+        this.repository = repository;
     }
     
     @Override
@@ -30,8 +33,15 @@ public class GetMyProfileImageUseCase implements IUsecase<UniqueEntityId, String
         
         try {
             
-            final Path imagePath = persistence.buildPath(User.class);
-            final InputStream image = persistence.read(imagePath.toFile());
+            final User user = repository.fetchById(subjectId);
+            
+            if(user == null)
+                return Result.fail(new UserDoesNotExistError());
+            
+            if(!user.hasProfileImage())
+                return Result.fail(new UserProfileImageDoesNotExistError());
+            
+            final InputStream image = persistence.read(user.getImagePath().toFile());
             
             if(image == null)
                 return Result.fail(new UserProfileImageDoesNotExistError());
@@ -51,6 +61,9 @@ public class GetMyProfileImageUseCase implements IUsecase<UniqueEntityId, String
     private static class GetMyProfileImageUseCaseHolder {
 
         private static final GetMyProfileImageUseCase INSTANCE =
-                new GetMyProfileImageUseCase(FilePersistenceManager.getInstance());
+                new GetMyProfileImageUseCase(
+                        FilePersistenceManager.getInstance(),
+                        UserRepository.getInstance()
+                );
     }
 }
