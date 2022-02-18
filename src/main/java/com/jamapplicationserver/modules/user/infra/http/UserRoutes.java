@@ -22,6 +22,8 @@ import com.jamapplicationserver.modules.user.usecases.ResetPassword.ResetPasswor
 import com.jamapplicationserver.modules.user.usecases.VerifyAccount.VerifyAccountController;
 import com.jamapplicationserver.modules.user.usecases.VerifyEmail.VerifyEmailController;
 import com.jamapplicationserver.modules.user.usecases.GetUserProfileImage.GetUserProfileImageController;
+import com.jamapplicationserver.modules.user.usecases.GetMyProfileInfo.GetMyProfileInfoController;
+import com.jamapplicationserver.modules.user.usecases.GetMyProfileImage.GetMyProfileImageController;
 import com.jamapplicationserver.modules.user.usecases.GetUserLoginAudits.GetUserLoginAuditsController;
 import com.jamapplicationserver.modules.user.usecases.GetAllLoginAudits.GetAllLoginAuditsController;
 import com.jamapplicationserver.modules.user.usecases.UpdateFCMToken.UpdateFCMTokenController;
@@ -58,6 +60,12 @@ public class UserRoutes implements RouteGroup {
                 GetUserByIDController.getInstance()
         );
         
+        // get my profile info
+        get(
+                UserPaths.GET_MY_PROFILE_INFO,
+                GetMyProfileInfoController.getInstance()
+        );
+        
         // get user login audits
         get(
                 UserPaths.GET_LOGIN_AUDITS,
@@ -86,6 +94,12 @@ public class UserRoutes implements RouteGroup {
                 GetUserProfileImageController.getInstance()
         );
 
+        // get my profile image
+        get(
+                UserPaths.GET_MY_PROFILE_IMAGE,
+                GetMyProfileImageController.getInstance()
+        );
+        
         // request account verification
         post(
                 UserPaths.REQUEST_ACCOUNT_VERIFICATION,
