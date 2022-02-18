@@ -363,6 +363,7 @@ public class User extends AggregateRoot {
         }
         this.blockUser();
         this.updaterId = blocker.id;
+        addDomainEvent(new UserBlocked(this));
         return Result.ok();
     }
 
