@@ -117,13 +117,13 @@ public class User extends AggregateRoot {
     ) {
 
         if (name == null) {
-            return Result.fail(new ValidationError("User name is required."));
+            return Result.fail(new ValidationError("اسم کاربر ضروری است"));
         }
         if (mobile == null) {
-            return Result.fail(new ValidationError("Mobile number is required."));
+            return Result.fail(new ValidationError("شماره موبایل ضروری است"));
         }
         if (password == null) {
-            return Result.fail(new ValidationError("Password is required."));
+            return Result.fail(new ValidationError("رمز ضروری است"));
         }
 
         User instance = new User(
@@ -346,7 +346,7 @@ public class User extends AggregateRoot {
 
     public Result activateUser(User activator) {
         if (!activator.isAdmin()) {
-            return Result.fail(new UserIsNotAdminError("Admin is not active"));
+            return Result.fail(new UserIsNotAdminError());
         }
         activateUser();
         this.updaterId = activator.id;
@@ -629,12 +629,12 @@ public class User extends AggregateRoot {
 
         // new password is required
         if (newPassword == null) {
-            return Result.fail(new ValidationError("New password is required"));
+            return Result.fail(new ValidationError("رمز جدید ضروری است"));
         }
 
         // updating user is required
         if (updater == null) {
-            return Result.fail(new ValidationError("Updating user is required"));
+            return Result.fail(new ValidationError("کاربری که بروزرسانی می کند ضروری است"));
         }
 
         // updating user is not active
@@ -670,12 +670,12 @@ public class User extends AggregateRoot {
 
         // new role is null
         if (newRole == null) {
-            return Result.fail(new ValidationError("New role is required."));
+            return Result.fail(new ValidationError("نقش جدید ضروری است"));
         }
 
         // updating user is null
         if (updater == null) {
-            return Result.fail(new ValidationError("Updating user is required."));
+            return Result.fail(new ValidationError("کاربری که بروزرسانی می کند ضروری است"));
         }
 
         // updating user is not active
@@ -685,7 +685,7 @@ public class User extends AggregateRoot {
 
         // updating user is not an admin
         if (!updater.isAdmin()) {
-            return Result.fail(new AccessDeniedError("Only the admin can change user roles"));
+            return Result.fail(new AccessDeniedError("تنها مدیر سیستم می تواند نقش کاربران را تغییر بدهد"));
         }
 
         // only one admin can exist.

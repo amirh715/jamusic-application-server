@@ -36,10 +36,10 @@ public enum ReportStatus {
     
     public static final Result<ReportStatus> create(String value) {
         
-        if(value == null) return Result.fail(new ValidationError("Report status is required"));
+        if(value == null) return Result.fail(new ValidationError("وضعیت گزارش ضروری است"));
         final boolean isValid =
                 ReportStatus.stream().anyMatch(status -> value.equals(status.getValue()));
-        return isValid ? Result.ok(ReportStatus.valueOf(value)) : Result.fail(new ValidationError("Invalid status."));
+        return isValid ? Result.ok(ReportStatus.valueOf(value)) : Result.fail(new ValidationError("مقدار وضعیت گزارش درست نیست"));
     }
     
     public String getValue() {

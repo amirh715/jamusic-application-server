@@ -30,12 +30,12 @@ public class ReportedEntityTitle extends ValueObject<String> {
     
     public static final Result<ReportedEntityTitle> create(String value) {
         
-        if(value == null) return Result.fail(new ValidationError());
+        if(value == null) return Result.fail(new ValidationError("عنوان موجودیت گزارش شده ضروری است"));
         
         if(
                 value.length() < MIN_LENGTH ||
                 value.length() > MAX_LENGTH
-        ) return Result.fail(new ValidationError());
+        ) return Result.fail(new ValidationError("عنوان موجودیت گزارش شده درست نیست"));
         
         return Result.ok(new ReportedEntityTitle(value));
     }

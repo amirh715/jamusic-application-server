@@ -33,7 +33,7 @@ public class Password extends ValueObject {
     
     public static Result<Password> create(String password, boolean hashed) {
         
-        if(password == null) return Result.fail(new ValidationError("User password is required"));
+        if(password == null) return Result.fail(new ValidationError("رمز ضروری است"));
         
         if(hashed == true) { // password is hashed.
             return Result.ok(new Password(password, hashed));
@@ -44,9 +44,9 @@ public class Password extends ValueObject {
                 password.length() < Password.MIN_LENGTH
             ) { // password length is not within limits.
                 
-                return Result.fail(new ValidationError("User password must be between " +
-                    Password.MIN_LENGTH + " to " + Password.MAX_LENGTH
-                    + " characters long"
+                return Result.fail(new ValidationError("رمز باید بین  " +
+                    Password.MIN_LENGTH + " تا " + Password.MAX_LENGTH
+                    + " کاراکتر باشد"
                 ));
                 
             } else { // password length is within limits.

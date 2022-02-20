@@ -32,12 +32,12 @@ public class Message extends ValueObject {
     public static final Result<Message> create(String message) {
         
         if(message == null)
-            return Result.fail(new ValidationError("Notification message is required"));
+            return Result.fail(new ValidationError("پیام نوتیفیکیشن ضروری است"));
         
         if(
                 message.length() > MAX_LENGTH ||
                 message.length() < MIN_LENGTH
-        ) return Result.fail(new ValidationError("Message length must be between 1 to 4000 characters"));
+        ) return Result.fail(new ValidationError("طول پیام نوتیفیکیشن باید بین ۱ تا ۴۰۰۰ کاراکتر باشد"));
         
         return Result.ok(new Message(message));
     }

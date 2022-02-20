@@ -36,12 +36,12 @@ public class NotifTitle extends ValueObject {
     public static final Result<NotifTitle> create(String title) {
         
         if(title == null)
-            return Result.fail(new ValidationError("Notification title is required"));
+            return Result.fail(new ValidationError("نوع نوتیفیکیشن ضروری است"));
         
         if(
                 title.length() > MAX_LENGTH ||
                 title.length() < MIN_LENGTH
-        ) return Result.fail(new ValidationError("Notification title must be gooood :)"));
+        ) return Result.fail(new ValidationError("عنوان نوتیفیکیشن باید بین ۱ تا ۴۰ کاراکتر باشد"));
         
         return Result.ok(new NotifTitle(title));
     }

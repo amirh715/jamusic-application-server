@@ -189,9 +189,9 @@ public class Report extends AggregateRoot {
             ReportType type
     ) {
         
-        if(message == null) return Result.fail(new ValidationError("Report message is required"));
-        if(reporter == null) return Result.fail(new ValidationError("Reporter of the report must be known"));
-        if(type == null) return Result.fail(new ValidationError("Report type is required"));
+        if(message == null) return Result.fail(new ValidationError("پیام گزارش ضروری است"));
+        if(reporter == null) return Result.fail(new ValidationError("گزارش دهنده مشخص نیست"));
+        if(type == null) return Result.fail(new ValidationError("نوع گزارش مشخص نیست"));
         
         return Result.ok(new Report(message, reporter, reportedEntity, type));
     }

@@ -182,6 +182,9 @@ public abstract class Artist extends LibraryEntity {
             );
         }
         
+        this.updaterId = updaterId;
+        modified();
+        
         addDomainEvent(new ArtistEdited(this));
         
         return Result.ok();

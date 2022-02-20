@@ -169,7 +169,7 @@ public abstract class Notification extends AggregateRoot {
                     return Result.fail(new RecipientIsNotEligibleForThisNotificationTypeError());
                 break;
             default:
-                return Result.fail(new ValidationError("Notification type is invalid"));
+                return Result.fail(new ValidationError("نوع نوتیفیکیشن درست نیست"));
         }
             
         final NotificationDelivery delivery = NotificationDelivery.create(recipient);
@@ -188,9 +188,13 @@ public abstract class Notification extends AggregateRoot {
     
     public final Result replaceRecipients(Set<Recipient> recipients) {
         
-        getRecipients().stream()
+        final Set<Recipient> toRemove =
+                getRecipients().stream()
                 .filter(recipient -> !recipients.contains(recipient))
-                .forEach(recipientToRemove -> removeRecipient(recipientToRemove));
+                .collect(Collectors.toSet());
+        for(Recipient recipient : toRemove) {
+            this.deliveries.remove(recipient);
+        }
         
         for(Recipient recipient : recipients) {
             final Result result = addRecipient(recipient);
@@ -340,17 +344,17 @@ public abstract class Notification extends AggregateRoot {
     ) {
         
         if(type == null)
-            return Result.fail(new ValidationError("Notification type is required"));
+            return Result.fail(new ValidationError("عنوان نوتیفیکیشن ضروری است"));
         if(senderType == null)
-            return Result.fail(new ValidationError("Notification sender type is required"));
+            return Result.fail(new ValidationError("نوع ارسال کننده نوتیفیکیشن ضروری است"));
         if(scheduledOn == null)
-            return Result.fail(new ValidationError("Notification needs to be scheduled"));
+            return Result.fail(new ValidationError("تاریخ و زمان نوتیفیکیشن ضروری است"));
         if(senderId == null)
-            return Result.fail(new ValidationError("Notification sender id is required"));
+            return Result.fail(new ValidationError("ارسال کننده نوتیفیکیشن مشخص نیست"));
         if(scheduledOn.getValue().isBefore(LocalDateTime.now()))
-            return Result.fail(new ValidationError("Notification is scheduled in the past"));
+            return Result.fail(new ValidationError("تاریخ و زمان ارسال نوتیفیکیشن باید در آینده باشد"));
         if(recipients == null || recipients.isEmpty())
-            return Result.fail(new ValidationError("Notification must have at least one recipient"));
+            return Result.fail(new ValidationError("حداقل یک مخاطب ضروری است"));
         
         Notification instance;
         
@@ -392,7 +396,7 @@ public abstract class Notification extends AggregateRoot {
                 
                 break;
             default:
-                return Result.fail(new ValidationError("Notification type is unknown"));
+                return Result.fail(new ValidationError("نوع نوتیفیکیشن مشخص نیست"));
         }
         
         for(Recipient recipient : recipients) {
@@ -449,8 +453,6 @@ public abstract class Notification extends AggregateRoot {
         final Result combinedPropsResult = Result.combine(combinedProps);
         if(combinedPropsResult.isFailure) return combinedPropsResult;
         
-        URL routeURL = null;
-        
         switch(typeOrError.getValue()) {
             case SMS:
                 
@@ -459,7 +461,7 @@ public abstract class Notification extends AggregateRoot {
                                 idOrError.getValue(),
                                 title != null ? titleOrError.getValue() : null,
                                 message != null ? messageOrError.getValue() : null,
-                                routeURL != null ? routeURL : null,
+                                route,
                                 senderTypeOrError.getValue(),
                                 scheduledOnOrError.getValue(),
                                 senderIdOrError.getValue(),
@@ -479,7 +481,7 @@ public abstract class Notification extends AggregateRoot {
                                 idOrError.getValue(),
                                 titleOrError.getValue(),
                                 message != null ? messageOrError.getValue() : null,
-                                routeURL,
+                                route,
                                 senderTypeOrError.getValue(),
                                 scheduledOnOrError.getValue(),
                                 senderIdOrError.getValue(),
@@ -498,7 +500,7 @@ public abstract class Notification extends AggregateRoot {
                                 idOrError.getValue(),
                                 titleOrError.getValue(),
                                 message != null ? messageOrError.getValue() : null,
-                                routeURL,
+                                route,
                                 senderTypeOrError.getValue(),
                                 scheduledOnOrError.getValue(),
                                 senderIdOrError.getValue(),

@@ -51,10 +51,10 @@ public enum NotifType {
     }
     
     public static final Result<NotifType> create(String value) {
-        if(value == null) return Result.fail(new ValidationError("Notification type is required"));
+        if(value == null) return Result.fail(new ValidationError("نوع نوتیفیکیشن ضروری است"));
         final boolean isValid =
                 NotifType.stream().anyMatch(type -> value.equals(type.getValue()));
-        return isValid ? Result.ok(NotifType.valueOf(value)) : Result.fail(new ValidationError("Notification type is invalid"));
+        return isValid ? Result.ok(NotifType.valueOf(value)) : Result.fail(new ValidationError("نوع نوتیفیکیشن درست نیست"));
     }
     
 }

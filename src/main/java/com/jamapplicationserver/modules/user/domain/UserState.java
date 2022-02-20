@@ -43,10 +43,10 @@ public enum UserState {
     }
     
     public static final Result<UserState> create(String value) {
-        if(value == null) return Result.fail(new ValidationError("User state is required"));
+        if(value == null) return Result.fail(new ValidationError("وضعیت اکانت ضروری است"));
         final boolean isValid =
                 UserState.stream().anyMatch(state -> value.equals(state.getValue()));
-        return isValid ? Result.ok(UserState.valueOf(value)) : Result.fail(new ValidationError("Invalid state"));
+        return isValid ? Result.ok(UserState.valueOf(value)) : Result.fail(new ValidationError("مقدار وضعیت اکانت نامعتبر است"));
     }
     
 }

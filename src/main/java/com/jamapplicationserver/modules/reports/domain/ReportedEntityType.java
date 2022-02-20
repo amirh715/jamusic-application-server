@@ -41,14 +41,14 @@ public enum ReportedEntityType {
         
         try {
             
-            if(value == null) return Result.fail(new ValidationError("reported entity type is required"));
+            if(value == null) return Result.fail(new ValidationError("نوع موجودیت گزارش شده ضروری است"));
         
             final ReportedEntityType type = ReportedEntityType.valueOf(value);
             
             return Result.ok(type);
             
         } catch(IllegalArgumentException e) {
-            return Result.fail(new ValidationError("Reported entity type is invalid"));
+            return Result.fail(new ValidationError("نوع موجودیت گزارش شده درست نیست"));
         }
         
     }
