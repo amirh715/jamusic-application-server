@@ -68,7 +68,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             
             if(request.description != null)
                 combinedProps.add(descriptionOrError);
-            if(request.genreIds != null)
+            if(request.genreIds != null && !request.genreIds.isEmpty())
                 combinedProps.add(genreListOrError);
             if(request.tags != null)
                 combinedProps.add(tagListOrError);
@@ -93,7 +93,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                     request.description != null ? descriptionOrError.getValue()
                     : null;
             final GenreList genreList =
-                    request.genreIds != null ? genreListOrError.getValue()
+                    request.genreIds != null && !request.genreIds.isEmpty() ? genreListOrError.getValue()
                     : null;
             final TagList tagList =
                     request.tags != null ? tagListOrError.getValue()

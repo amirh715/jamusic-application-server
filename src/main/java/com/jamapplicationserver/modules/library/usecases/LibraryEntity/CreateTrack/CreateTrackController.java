@@ -76,6 +76,7 @@ public class CreateTrackController extends BaseController {
             created();
             
         } catch(Exception e) {
+            e.printStackTrace();
             fail(e);
         }
         

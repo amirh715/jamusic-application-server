@@ -5,9 +5,11 @@
  */
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetRecommendedCollections;
 
+import java.util.*;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.modules.library.infra.DTOs.queries.*;
 
 /**
  *
@@ -26,7 +28,7 @@ public class GetRecommendedCollectionsController extends BaseController {
         
         try {
             
-            final Result result = usecase.execute(subjectId);
+            final Result<Set<RecommendedCollection<LibraryEntityDetails>>> result = usecase.execute(subjectId);
             
             if(result.isFailure) {
                 
@@ -42,7 +44,7 @@ public class GetRecommendedCollectionsController extends BaseController {
                 return;
             }
             
-            noContent();
+            ok(result.getValue());
             
         } catch(Exception e) {
             fail(e);
