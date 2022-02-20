@@ -123,10 +123,12 @@ public abstract class BaseController implements Route {
 
     // SUCCESS RESPONSES (2**)
     protected <T extends IQueryResponseDTO> void ok(T dto) {
+        setCacheControlDirectives();
         BaseController.jsonResponse(res, 200, dto.filter(subjectRole));
     }
     
     protected <T extends IQueryResponseDTO> void ok(Set<T> dto) {
+        setCacheControlDirectives();
         BaseController.jsonResponse(
                 res,
                 200,
@@ -137,10 +139,12 @@ public abstract class BaseController implements Route {
     }
     
     protected void sendHtml(String html, int code) {
+        setCacheControlDirectives();
         BaseController.htmlResponse(res, code, html);
     }
     
     protected void sendFile(InputStream stream) {
+        setCacheControlDirectives();
         BaseController.fileResponse(res, stream);
     }
     
@@ -281,12 +285,12 @@ public abstract class BaseController implements Route {
     
     // VERSIONING
     protected final ETag getEtag() {
-        final String etag = req.raw().getHeader("ETag");
+        final String etag = req.raw().getHeader("If-None-Match");
         return ETag.reconstitute(etag);
     }
     
     protected final boolean hasETag() {
-        return req.raw().getHeader("ETag") != null;
+        return req.raw().getHeader("If-None-Match") != null;
     }
     
     protected final void attachEtag(ETag etag) {
@@ -296,6 +300,9 @@ public abstract class BaseController implements Route {
     private void addCacheControlDirective(String directive) {
         if(cacheControlDirectives.contains(directive)) return;
         cacheControlDirectives.add(directive);
+    }
+    
+    private void setCacheControlDirectives() {
         res.header("Cache-Control", cacheControlDirectives.stream().collect(Collectors.joining(",")));
     }
     
