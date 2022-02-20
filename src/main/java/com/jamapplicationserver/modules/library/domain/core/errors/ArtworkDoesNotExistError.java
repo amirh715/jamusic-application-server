@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ArtworkDoesNotExistError extends NotFoundError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "اثر وجود ندارد";
+    private static final int CODE = 307;
     
     public ArtworkDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

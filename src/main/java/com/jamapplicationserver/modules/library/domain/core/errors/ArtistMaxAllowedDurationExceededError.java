@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ArtistMaxAllowedDurationExceededError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "Max allowed artist duration";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "حداکثر مدت زمان مجاز هنرمند گذشته است";
+    private static final int CODE = 305;
     
     public ArtistMaxAllowedDurationExceededError() {
         super(DEFAULT_MESSAGE, CODE);

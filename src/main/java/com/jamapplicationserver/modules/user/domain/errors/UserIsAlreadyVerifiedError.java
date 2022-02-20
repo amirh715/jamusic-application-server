@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class UserIsAlreadyVerifiedError extends ConflictError {
     
-    private static final int CODE = 111;
+    private static final int CODE = 227;
     private static final String DEFAULT_MESSAGE = "اکانت شما تایید شده است";
     
     public UserIsAlreadyVerifiedError() {

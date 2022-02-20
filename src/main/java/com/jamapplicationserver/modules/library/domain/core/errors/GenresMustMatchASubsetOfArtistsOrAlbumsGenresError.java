@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class GenresMustMatchASubsetOfArtistsOrAlbumsGenresError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "سبک اثر باید زیرمجموعه ای از سبک های هنرمند آن اثر باشد";
+    private static final int CODE = 314;
     
     public GenresMustMatchASubsetOfArtistsOrAlbumsGenresError() {
         super(DEFAULT_MESSAGE, CODE);

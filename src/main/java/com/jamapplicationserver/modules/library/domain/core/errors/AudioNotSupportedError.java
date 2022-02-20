@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.*;
 public class AudioNotSupportedError extends ConflictError {
     
     private static final String DEFAULT_MESSAGE = "فایل صوتی پشتیبانی نشده است";
-    private static final int CODE = 777;
+    private static final int CODE = 309;
     
     public AudioNotSupportedError() {
         super(DEFAULT_MESSAGE, CODE);

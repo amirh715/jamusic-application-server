@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.ClientErrorError;
  */
 public class NoEmailIsSetError extends ClientErrorError {
     
-    private static final int CODE = 111;
+    private static final int CODE = 213;
     private static final String DEFAULT_MESSAGE = "ایمیلی در پروفایل نیست";
     
     public NoEmailIsSetError() {

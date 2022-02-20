@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ParentGenreDoesNotExistError extends NotFoundError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "سبک بالادست وجود ندارد";
+    private static final int CODE = 322;
     
     public ParentGenreDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

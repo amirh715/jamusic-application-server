@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class ArtistMaxAllowedAlbumsExceededError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "حداکثر تعداد مجاز آلبوم های هنرمند ۱۵۰ عدد است";
+    private static final int CODE = 304;
     
     public ArtistMaxAllowedAlbumsExceededError() {
         super(DEFAULT_MESSAGE, CODE);

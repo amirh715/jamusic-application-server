@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class RecipientIsNotEligibleForThisNotificationTypeError extends ConflictError {
     
-    private static final int CODE = 101;
     private static final String DEFAULT_MESSAGE = "مخاطب امکان دریافت این نوع نوتیفیکیشن را ندارد.";
+    private static final int CODE = 505;
     
     public RecipientIsNotEligibleForThisNotificationTypeError() {
         super(DEFAULT_MESSAGE, CODE);

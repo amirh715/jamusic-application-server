@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.NotFoundError;
  */
 public class LibraryEntityDoesNotExistError extends NotFoundError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "عضو مجموعه وجود ندارد";
+    private static final int CODE = 316;
     
     public LibraryEntityDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

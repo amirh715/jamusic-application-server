@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class EmailVerificationLinkDoesNotExistError extends NotFoundError {
     
-    private static final int CODE = 111;
+    private static final int CODE = 207;
     private static final String DEFAULT_MESSAGE = "لینک تایید ایمیل معتبر نیست";
     
     public EmailVerificationLinkDoesNotExistError() {

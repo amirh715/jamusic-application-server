@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.BusinessError;
  */
 public class EmailVerificationLinkIsInvalidError extends BusinessError {
     
-    private static final int CODE = 111;
+    private static final int CODE = 209;
     private static final String DEFAULT_MESSAGE = "لینک تایید ایمیل درست نیست";
     
     public EmailVerificationLinkIsInvalidError() {

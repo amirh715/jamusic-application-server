@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.ClientErrorError;
 public class LibraryEntityCannotBeRemovedByAnyoneOtherThanTheAdmin extends ClientErrorError {
     
     private static final String DEFAULT_MESSAGE = "تنها ادمین می تواند هنرمندان و آثار را پاک کند.";
-    private static final int CODE = 111;
+    private static final int CODE = 315;
     
     public LibraryEntityCannotBeRemovedByAnyoneOtherThanTheAdmin() {
         super(DEFAULT_MESSAGE, CODE);

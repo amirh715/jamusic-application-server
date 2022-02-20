@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class UserAlreadyExistsError extends ConflictError {
     
-    private static final int CODE = 202;
+    private static final int CODE = 221;
     private static final String DEFAULT_MESSAGE = "اکانتی با این شماره موبایل وجود دارد. لطفا از شماره موبایل دیگری استفاده کنید";
     
     public UserAlreadyExistsError() {

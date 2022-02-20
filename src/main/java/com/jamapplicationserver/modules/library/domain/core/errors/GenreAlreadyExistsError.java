@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class GenreAlreadyExistsError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "Genre already exists";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "سبکی با این عنوان وجود دارد";
+    private static final int CODE = 312;
     
     public GenreAlreadyExistsError() {
         super(DEFAULT_MESSAGE, CODE);

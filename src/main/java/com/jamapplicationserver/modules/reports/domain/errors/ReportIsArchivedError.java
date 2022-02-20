@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ReportIsArchivedError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "گزارش آرشیو شده است";
+    private static final int CODE = 406;
     
     public ReportIsArchivedError() {
         super(DEFAULT_MESSAGE, CODE);

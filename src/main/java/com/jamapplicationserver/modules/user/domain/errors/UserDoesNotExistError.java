@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.NotFoundError;
  */
 public class UserDoesNotExistError extends NotFoundError {
     
-    private static final int CODE = 201;
+    private static final int CODE = 224;
     private static final String DEFAULT_MESSAGE = "کاربر وجود ندارد";
     
     public UserDoesNotExistError() {

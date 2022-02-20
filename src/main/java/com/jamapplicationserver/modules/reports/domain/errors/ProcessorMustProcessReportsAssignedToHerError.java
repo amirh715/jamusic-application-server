@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.*;
 public class ProcessorMustProcessReportsAssignedToHerError extends ClientErrorError {
     
     private static final String DEFAULT_MESSAGE = "تنها پردازش کننده تعیین شده می تواند گزارش را پردازش کند.";
-    private static final int CODE = 111;
+    private static final int CODE = 404;
     
     public ProcessorMustProcessReportsAssignedToHerError() {
         super(DEFAULT_MESSAGE, CODE);

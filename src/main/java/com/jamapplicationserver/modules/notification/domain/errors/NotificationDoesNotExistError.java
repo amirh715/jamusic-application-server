@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class NotificationDoesNotExistError extends NotFoundError {
     
-    private static final int CODE = 101;
     private static final String DEFAULT_MESSAGE = "نوتیفیکیشن وجود ندارد.";
+    private static final int CODE = 503;
     
     public NotificationDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

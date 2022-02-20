@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class OnlyOneAdminCanExistError extends ConflictError {
 
-    private static final int CODE = 205;
+    private static final int CODE = 214;
     
     public OnlyOneAdminCanExistError() {
         super("تنها یک مدیر سیستم می تواند وجود داشته باشد", CODE);

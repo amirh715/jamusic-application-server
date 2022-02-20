@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class FCMTokenIsRequiredError extends ClientErrorError {
     
-    private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "توکن FCM الزامی است";
+    private static final int CODE = 211;
+    private static final String DEFAULT_MESSAGE = "توکن FCM ضروری است";
     
     public FCMTokenIsRequiredError() {
         super(DEFAULT_MESSAGE, CODE);

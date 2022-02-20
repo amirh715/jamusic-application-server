@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class EmailVerificationLinkIsExpiredError extends ConflictError {
 
-    private static final int CODE = 111;
+    private static final int CODE = 208;
     private static final String DEFAULT_MESSAGE = "لینک تایید ایمیل منقضی شده است. لطفا دوباره درخواست بدهید";
     
     public EmailVerificationLinkIsExpiredError() {

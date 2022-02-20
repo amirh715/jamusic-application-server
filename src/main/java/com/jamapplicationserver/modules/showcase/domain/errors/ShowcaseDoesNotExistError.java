@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.*;
 public class ShowcaseDoesNotExistError extends NotFoundError {
     
     private static final String DEFAULT_MESSAGE = "آیتم ویترین وجود ندارد.";
-    private static final int CODE = 111;
+    private static final int CODE = 601;
     
     public ShowcaseDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

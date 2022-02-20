@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class AppBugReportsMustBeAssignedToAdminError extends ClientErrorError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "گزارشات فنی باید برای مدیر سیستم ارسال شوند";
+    private static final int CODE = 401;
     
     public AppBugReportsMustBeAssignedToAdminError() {
         super(DEFAULT_MESSAGE, CODE);

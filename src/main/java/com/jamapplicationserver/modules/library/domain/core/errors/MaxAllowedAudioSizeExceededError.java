@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class MaxAllowedAudioSizeExceededError extends ClientErrorError {
     
-    private static final String DEFAULT_MESSAGE = "Max allowed size";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "حداکثر حجم فایل صوتی ۲۰ مگابایت است";
+    private static final int CODE = 318;
     
     public MaxAllowedAudioSizeExceededError() {
         super(DEFAULT_MESSAGE, CODE);

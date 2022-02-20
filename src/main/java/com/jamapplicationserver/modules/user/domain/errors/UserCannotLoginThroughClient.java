@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.ClientErrorError;
  */
 public class UserCannotLoginThroughClient extends ClientErrorError {
     
-    private static final int CODE = 111;
+    private static final int CODE = 222;
     private static final String DEFAULT_MESSAGE = "امکان ورود از طریق این نرم افزار برای شما وجود ندارد";
     
     public UserCannotLoginThroughClient() {

@@ -6,7 +6,6 @@
 package com.jamapplicationserver.modules.user.domain.errors;
 
 import com.jamapplicationserver.core.logic.NotFoundError;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
 
 /**
  *
@@ -14,7 +13,7 @@ import com.jamapplicationserver.core.domain.UniqueEntityId;
  */
 public class CreatorUserDoesNotExistError extends NotFoundError {
     
-    private static final int CODE = 203;
+    private static final int CODE = 205;
     private static final String DEFAULT_MESSAGE = "کاربر ایجادکننده وجود ندارد";
     
     public CreatorUserDoesNotExistError() {

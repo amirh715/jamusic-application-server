@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class BandMaxAllowedMembersExceededError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "حداکثر تعداد مجاز اعضای یک گروه ۲۰ عضو است";
+    private static final int CODE = 311;
     
     public BandMaxAllowedMembersExceededError() {
         super(DEFAULT_MESSAGE, CODE);

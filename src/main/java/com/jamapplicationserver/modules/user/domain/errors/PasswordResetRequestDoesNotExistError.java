@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.ClientErrorError;
 public class PasswordResetRequestDoesNotExistError extends ClientErrorError {
     
     private static final String DEFAULT_MESSAGE = "کد بازنشانی رمز اکانت درخواست نشده است. لطفا ابتدا درخواست بدهید";
-    private static final int CODE = 111;
+    private static final int CODE = 218;
     
     public PasswordResetRequestDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

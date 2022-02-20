@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ReportIsProcessedError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "گزارش پردازش شده است";
+    private static final int CODE = 409;
     
     public ReportIsProcessedError() {
         super(DEFAULT_MESSAGE, CODE);

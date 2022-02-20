@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class MaxAllowedGenresExceededError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "حداکثر تعداد کل سبک ها ۱۰۰ عدد است";
+    private static final int CODE = 319;
     
     public MaxAllowedGenresExceededError() {
         super(DEFAULT_MESSAGE, CODE);

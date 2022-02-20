@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.NotFoundError;
  */
 public class UpdaterUserDoesNotExistError extends NotFoundError {
     
-    private static final int CODE = 204;
+    private static final int CODE = 220;
     private static final String DEFAULT_MESSAGE = "کاربری که این رکورد را بروز می کند وجود ندارد";
     
     public UpdaterUserDoesNotExistError() {

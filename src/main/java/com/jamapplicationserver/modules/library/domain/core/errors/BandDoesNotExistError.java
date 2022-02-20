@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.NotFoundError;
  */
 public class BandDoesNotExistError extends NotFoundError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "گروه وجود ندارد";
+    private static final int CODE = 310;
     
     public BandDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

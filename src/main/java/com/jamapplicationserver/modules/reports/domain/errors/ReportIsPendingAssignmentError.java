@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ReportIsPendingAssignmentError extends ClientErrorError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "گزارش هنوز در مرحله ثبت شده است";
+    private static final int CODE = 408;
     
     public ReportIsPendingAssignmentError() {
         super(DEFAULT_MESSAGE, CODE);

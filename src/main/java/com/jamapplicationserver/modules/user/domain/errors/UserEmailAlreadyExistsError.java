@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class UserEmailAlreadyExistsError extends ConflictError {
     
-    private static final int CODE = 203;
+    private static final int CODE = 225;
     private static final String DEFAULT_MESSAGE = "این ایمیل در سیستم وجود دارد. لطفا از ایمیل دیگری استفاده کنید";
     
     public UserEmailAlreadyExistsError() {

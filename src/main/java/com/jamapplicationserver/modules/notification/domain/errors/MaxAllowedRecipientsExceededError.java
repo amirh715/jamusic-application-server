@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.*;
 public class MaxAllowedRecipientsExceededError extends ConflictError {
     
     private static final String DEFAULT_MESSAGE = "حداکثر تعداد مجاز مخاطبان رعایت نشده است.";
-    private static final int CODE = 111;
+    private static final int CODE = 502;
     
     public MaxAllowedRecipientsExceededError() {
         super(DEFAULT_MESSAGE, CODE);

@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ProcessorDoesNotExistError extends NotFoundError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "پردازش کننده وجود ندارد";
+    private static final int CODE = 402;
     
     public ProcessorDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

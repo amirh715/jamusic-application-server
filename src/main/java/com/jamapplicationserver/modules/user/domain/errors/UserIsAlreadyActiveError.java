@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class UserIsAlreadyActiveError extends ConflictError {
 
-    private static final int CODE = 211;
+    private static final int CODE = 226;
     private static final String DEFAULT_MESSAGE = "اکانت فعال است";
     
     public UserIsAlreadyActiveError() {

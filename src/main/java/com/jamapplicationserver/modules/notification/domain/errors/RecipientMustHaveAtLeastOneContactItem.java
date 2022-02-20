@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class RecipientMustHaveAtLeastOneContactItem extends ClientErrorError {
     
-    private static final int CODE = 101;
-    private static final String DEFAULT_MESSAGE = "Recipient must have at least one contact info";
+    private static final String DEFAULT_MESSAGE = "مخاطب باید حداقل یک راه ارتباطی داشته باشد";
+    private static final int CODE = 506;
     
     public RecipientMustHaveAtLeastOneContactItem() {
         super(DEFAULT_MESSAGE, CODE);

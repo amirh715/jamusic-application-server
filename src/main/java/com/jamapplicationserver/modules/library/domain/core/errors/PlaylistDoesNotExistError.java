@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class PlaylistDoesNotExistError extends NotFoundError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "پلی لیست وجود ندارد";
+    private static final int CODE = 324;
     
     public PlaylistDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class UserIsBlockedError extends ConflictError {
     
-    private static final int CODE = 213;
+    private static final int CODE = 228;
     private static final String DEFAULT_MESSAGE = "اکانت شما مسدود است";
     
     public UserIsBlockedError() {

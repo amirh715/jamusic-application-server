@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ReportDoesNotExistError extends NotFoundError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "گزارش وجود ندارد";
+    private static final int CODE = 405;
     
     public ReportDoesNotExistError() {
         super(DEFAULT_MESSAGE, CODE);

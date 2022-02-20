@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class MaxAllowedPlaylistsExceededError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "حداکثر تعداد مجاز پلی لیست ها ۱۵۰ عدد است";
+    private static final int CODE = 320;
     
     public MaxAllowedPlaylistsExceededError() {
         super(DEFAULT_MESSAGE, CODE);

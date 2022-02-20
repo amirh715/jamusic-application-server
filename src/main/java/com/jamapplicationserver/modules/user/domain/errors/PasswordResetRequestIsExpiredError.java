@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.ClientErrorError;
 public class PasswordResetRequestIsExpiredError extends ClientErrorError {
     
     private static final String DEFAULT_MESSAGE = "کد بازنشانی رمز اکانت منقضی شده است. لطفا دوباره درخواست بدهید";
-    private static final int CODE = 111;
+    private static final int CODE = 219;
     
     public PasswordResetRequestIsExpiredError() {
         super(DEFAULT_MESSAGE, CODE);

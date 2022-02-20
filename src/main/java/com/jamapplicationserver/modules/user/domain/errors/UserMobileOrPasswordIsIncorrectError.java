@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class UserMobileOrPasswordIsIncorrectError extends ConflictError {
     
-    private static final int CODE = 111;
+    private static final int CODE = 232;
     private static final String DEFAULT_MESSAGE = "شماره موبایل یا رمز درست نیست";
     
     public UserMobileOrPasswordIsIncorrectError() {

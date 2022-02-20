@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class LibraryEntityDoesNotHaveAnImage extends NotFoundError {
     
-    private static final int CODE = 111;
-    private static final String DEFAULT_MESSAGE = "";
+    private static final String DEFAULT_MESSAGE = "عکس ندارد";
+    private static final int CODE = 317;
     
     public LibraryEntityDoesNotHaveAnImage() {
         super(DEFAULT_MESSAGE, CODE);

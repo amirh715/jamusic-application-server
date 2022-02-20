@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class ReportIsAssignedError extends ConflictError {
     
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "گزارش ارسال شده است";
+    private static final int CODE = 407;
     
     public ReportIsAssignedError() {
         super(DEFAULT_MESSAGE, CODE);

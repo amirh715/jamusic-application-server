@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.ConflictError;
  */
 public class ArtistMaxAllowedTracksExceededError extends ConflictError {
 
-    private static final String DEFAULT_MESSAGE = "";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "حداکثر تعداد مجاز آهنگ های هنرمند گذشته است";
+    private static final int CODE = 306;
     
     public ArtistMaxAllowedTracksExceededError() {
         super(DEFAULT_MESSAGE, CODE);

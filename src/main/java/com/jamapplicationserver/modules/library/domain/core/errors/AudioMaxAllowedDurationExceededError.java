@@ -13,8 +13,8 @@ import com.jamapplicationserver.core.logic.*;
  */
 public class AudioMaxAllowedDurationExceededError extends ClientErrorError {
     
-    private static final String DEFAULT_MESSAGE = "MAx allowed duration";
-    private static final int CODE = 111;
+    private static final String DEFAULT_MESSAGE = "حداکثر مدت زمان مجاز فایل صوتی ۳۰ دقیقه است";
+    private static final int CODE = 308;
     
     public AudioMaxAllowedDurationExceededError() {
         super(DEFAULT_MESSAGE, CODE);

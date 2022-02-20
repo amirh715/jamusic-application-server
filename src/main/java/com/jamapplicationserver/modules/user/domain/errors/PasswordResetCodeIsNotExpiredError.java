@@ -14,7 +14,7 @@ import com.jamapplicationserver.core.logic.ClientErrorError;
 public class PasswordResetCodeIsNotExpiredError extends ClientErrorError {
     
     private static final String DEFAULT_MESSAGE = "کد بازنشانی رمز هر دو دقیقه یکبار ارسال می شود. لطفا منتظر باشید";
-    private static final int CODE = 111;
+    private static final int CODE = 217;
     
     public PasswordResetCodeIsNotExpiredError() {
         super(DEFAULT_MESSAGE, CODE);
