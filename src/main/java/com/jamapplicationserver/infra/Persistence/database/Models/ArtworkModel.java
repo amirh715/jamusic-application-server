@@ -5,13 +5,10 @@
  */
 package com.jamapplicationserver.infra.Persistence.database.Models;
 
-import java.util.*;
-import javax.persistence.*;
 import java.time.*;
-import java.util.stream.Collectors;
+import javax.persistence.*;
 import org.hibernate.envers.*;
 import com.jamapplicationserver.infra.Persistence.database.AttributeConverters.YearMonthDateAttributeConverter;
-import com.jamapplicationserver.infra.Persistence.database.EntityListeners.ArtworksInheritedTagsSetter;
 
 /**
  *

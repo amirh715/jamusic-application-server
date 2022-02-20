@@ -28,11 +28,11 @@ public abstract class ArtistModel extends LibraryEntityModel {
     @Column(name="instagram_id")
     private String instagramId;
     
-    @OneToMany(mappedBy="artist", fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="artist", orphanRemoval=true, fetch=FetchType.LAZY)
     @NotAudited
     private Set<AlbumModel> albums = new HashSet<AlbumModel>();
     
-    @OneToMany(mappedBy="artist", fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="artist", orphanRemoval=true, fetch=FetchType.LAZY)
     @NotAudited
     private Set<TrackModel> tracks = new HashSet<TrackModel>();
     

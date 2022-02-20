@@ -20,8 +20,8 @@ import org.hibernate.envers.*;
         uniqueConstraints={
             @UniqueConstraint(columnNames={"mobile"}, name="mobile_unique_key"),
             @UniqueConstraint(columnNames={"email"}, name="email_unique_key"),
-            @UniqueConstraint(columnNames={"image_path"}, name="image_path_unique_key"),
-            @UniqueConstraint(columnNames={"fcm_token"}, name="fcm_token_unique_key")
+            @UniqueConstraint(columnNames={"image_path"}, name="image_path_unique_key")
+//            @UniqueConstraint(columnNames={"fcm_token"}, name="fcm_token_unique_key")
         }
 )
 public class UserModel extends EntityModel {
@@ -62,7 +62,7 @@ public class UserModel extends EntityModel {
     @Column(name="last_modified_at", nullable=false)
     private LocalDateTime lastModifiedAt;
     
-    @OneToMany(mappedBy="player", orphanRemoval=true, cascade=CascadeType.ALL)
+    @OneToMany(mappedBy="player", fetch=FetchType.LAZY, orphanRemoval=true, cascade=CascadeType.ALL)
     private Set<PlayedModel> playedTracks = new HashSet<PlayedModel>();
     
     @OneToMany(mappedBy="recipient", fetch=FetchType.LAZY, orphanRemoval=true)
@@ -73,7 +73,7 @@ public class UserModel extends EntityModel {
     @NotAudited
     private Set<PlaylistModel> playlists = new HashSet<>();
     
-    @OneToMany(mappedBy="reporter", fetch=FetchType.LAZY)
+    @OneToMany(fetch=FetchType.LAZY, mappedBy="reporter", orphanRemoval=true)
     @NotAudited
     private Set<ReportModel> reports = new HashSet<>();
 

@@ -23,12 +23,12 @@ import org.hibernate.envers.*;
 public class PlayedModel implements Serializable {
     
     @ManyToOne(optional=false)
-    @JoinColumn(name="played_track_id", referencedColumnName="id", updatable=false)
+    @JoinColumn(name="played_track_id", referencedColumnName="id", updatable=false, nullable=false)
     @Id
     private TrackModel playedTrack;
 
-    @ManyToOne(optional=false, cascade=CascadeType.ALL)
-    @JoinColumn(name="player_id", referencedColumnName="id", updatable=false)
+    @ManyToOne(optional=false)
+    @JoinColumn(name="player_id", referencedColumnName="id", updatable=false, nullable=false)
     @Id
     private UserModel player;
 
@@ -37,10 +37,11 @@ public class PlayedModel implements Serializable {
     private LocalDateTime playedAt;
     
     public PlayedModel() {
-
+        System.out.println("constructor PlayedModel()");
     }
     
     public UserModel getPlayer() {
+        System.out.println("PlayedModel::getPlayer");
         return this.player;
     }
     
@@ -49,6 +50,7 @@ public class PlayedModel implements Serializable {
     }
     
     public TrackModel getPlayedTrack() {
+        System.out.println("PlayedModel::getPlayedTrack");
         return this.playedTrack;
     }
     

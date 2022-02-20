@@ -76,9 +76,11 @@ public abstract class LibraryEntityModel extends EntityModel {
     protected Set<GenreModel> genres = new HashSet<GenreModel>();
     
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
+    @JoinColumn(name="creator_id", nullable=false)
     private UserModel creator;
     
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
+    @JoinColumn(name="updater_id", nullable=false)
     private UserModel updater;
     
     @OneToMany(orphanRemoval=true, mappedBy="reportedEntity")
@@ -201,7 +203,6 @@ public abstract class LibraryEntityModel extends EntityModel {
     public void replaceGenres(Set<GenreModel> genres) {
         this.genres.removeIf(g -> !genres.contains(g));
         genres.forEach(g -> addGenre(g));
-        System.out.println("AA: " + this.genres.size() + " " + genres.size());
     }
     
     public void addGenre(GenreModel genreToAdd) {
@@ -276,15 +277,17 @@ public abstract class LibraryEntityModel extends EntityModel {
     
     @Override
     public int hashCode() {
-        return this.id.hashCode();
+        System.out.println("LibraryEntityModel::hashCode");
+        return this.getId().hashCode();
     }
     
     @Override
     public boolean equals(Object obj) {
+        System.out.println("LibraryEntityModel::equals");
         if(this == obj) return true;
         if(!(obj instanceof LibraryEntityModel)) return false;
         final LibraryEntityModel le = (LibraryEntityModel) obj;
-        return this.id.equals(le.id);
+        return this.getId().equals(le.getId());
     }
     
 }

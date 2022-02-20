@@ -31,14 +31,14 @@ public class TrackModel extends ArtworkModel {
     @Column(name="audio_format")
     private String format;
     
-    @Column(name="lyrics")
+    @Column(name="lyrics", columnDefinition="text")
     private String lyrics;
     
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="album_id")
     private AlbumModel album;
     
-    @OneToMany(orphanRemoval=true, cascade=CascadeType.REMOVE, mappedBy="playedTrack")
+    @OneToMany(orphanRemoval=true, mappedBy="playedTrack")
     private Set<PlayedModel> played = new HashSet<>();
     
     public String getAudioPath() {
@@ -74,6 +74,7 @@ public class TrackModel extends ArtworkModel {
     }
     
     public AlbumModel getAlbum() {
+        System.out.println("TrackModel::getAlbum");
         return this.album;
     }
     
