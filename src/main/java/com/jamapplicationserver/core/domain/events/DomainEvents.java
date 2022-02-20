@@ -60,7 +60,13 @@ public class DomainEvents {
                 for(IDomainEventHandler handler : handlers) {
                     final Class subscribedTo = handler.subscribedToEventType();
                     if (subscribedTo == domainEvent.getClass()) {
-                        handler.handleEvent(domainEvent);
+                        new Thread(() -> {
+                            try {
+                                handler.handleEvent(domainEvent);
+                            } catch(Exception e) {
+                                e.printStackTrace();
+                            }
+                        }).start();
                     }
                 }
             }
