@@ -6,6 +6,7 @@
 package com.jamapplicationserver.modules.library.usecases.Playlist.GetPlaylistsOfPlayer;
 
 import java.util.*;
+import java.time.*;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.domain.*;
@@ -48,6 +49,10 @@ public class GetPlaylistsOfPlayerController extends BaseController {
                 return;
             }
             
+            if(subjectRole.isSubscriber()) {
+                privateCache();
+                cache(Duration.ofMinutes(5));
+            }
             ok(result.getValue());
             
         } catch(Exception e) {

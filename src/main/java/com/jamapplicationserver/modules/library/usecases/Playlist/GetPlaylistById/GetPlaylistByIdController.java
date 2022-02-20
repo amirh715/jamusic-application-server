@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.modules.library.usecases.Playlist.GetPlaylistById;
 
+import java.time.*;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
@@ -51,6 +52,10 @@ public class GetPlaylistByIdController extends BaseController {
                 return;
             }
             
+            if(subjectRole.isSubscriber()) {
+                privateCache();
+                cache(Duration.ofMinutes(5));
+            }
             ok(result.getValue());
             
         } catch(Exception e) {
