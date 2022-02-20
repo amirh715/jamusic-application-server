@@ -44,7 +44,7 @@ public class EditNotificationController extends BaseController {
                             subjectId,
                             subjectRole
                     );
-            
+
             final Result result = usecase.execute(dto);
             
             if(result.isFailure) {

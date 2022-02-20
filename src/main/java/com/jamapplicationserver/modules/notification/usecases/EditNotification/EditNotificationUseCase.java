@@ -41,7 +41,7 @@ public class EditNotificationUseCase implements IUsecase<EditNotificationRequest
             final Result<Optional<Message>> messageOrError = Message.createNullable(request.message);
             final Result<DateTime> scheduledOnOrError = DateTime.create(request.scheduledOn);
             final Optional<URL> route =
-                    request.route != null && request.route.isEmpty() && request.route.isBlank() ?
+                    request.route != null && !request.route.isEmpty() && !request.route.isBlank() ?
                     Optional.of(new URL(request.route)) : Optional.empty();
             final Result<Set<UniqueEntityId>> recipientsIdsOrErrors =
                     UniqueEntityId.createFromStrings(request.recipients);
