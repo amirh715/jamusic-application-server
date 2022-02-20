@@ -46,6 +46,7 @@ public class GetAllGenresController extends BaseController {
                 return;
             }
             
+            noStore();
             ok(result.getValue());
             
         } catch(Exception e) {
