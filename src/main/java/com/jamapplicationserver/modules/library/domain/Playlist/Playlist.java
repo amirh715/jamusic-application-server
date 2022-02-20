@@ -20,7 +20,7 @@ import com.jamapplicationserver.modules.library.domain.Track.Track;
  */
 public class Playlist extends Entity {
     
-    private static final int MAX_ALLOWED_TRACKS_PER_PLAYLIST = 2;
+    private static final int MAX_ALLOWED_TRACKS_PER_PLAYLIST = 150;
     
     private Title title;
     private Set<UniqueEntityId> tracksIds = new HashSet<>();
@@ -47,7 +47,7 @@ public class Playlist extends Entity {
     
     public final Result addTrack(UniqueEntityId trackId) {
         
-        if(tracksIds.size() >= MAX_ALLOWED_TRACKS_PER_PLAYLIST)
+        if(tracksIds.size() + 1 > MAX_ALLOWED_TRACKS_PER_PLAYLIST)
             return Result.fail(new MaxAllowedTracksPerPlaylistExceededError());
         
         tracksIds.add(trackId);
@@ -73,7 +73,7 @@ public class Playlist extends Entity {
         
         this.title = title;
         
-        if(tracks.size() > MAX_ALLOWED_TRACKS_PER_PLAYLIST)
+        if(tracks.size() + 1 > MAX_ALLOWED_TRACKS_PER_PLAYLIST)
             return Result.fail(new MaxAllowedTracksPerPlaylistExceededError());
         
         this.tracksIds =
@@ -101,7 +101,7 @@ public class Playlist extends Entity {
         
         Playlist instance = new Playlist(title);
         
-        if(tracks.size() > MAX_ALLOWED_TRACKS_PER_PLAYLIST)
+        if(tracks.size() + 1 > MAX_ALLOWED_TRACKS_PER_PLAYLIST)
             return Result.fail(new MaxAllowedTracksPerPlaylistExceededError());
         tracks.forEach(track -> instance.tracksIds.add(track.getId()));
         
