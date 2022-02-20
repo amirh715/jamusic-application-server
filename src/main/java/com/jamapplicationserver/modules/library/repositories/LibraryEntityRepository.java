@@ -306,8 +306,9 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                 
             } else if(entity instanceof Singer) {
                 
-                ((SingerModel) model).getTracks()
-                        .forEach(track -> em.remove(track));
+                for(TrackModel track : ((SingerModel) model).getTracks()) {
+                    em.remove(track);
+                }
                 
                 ((SingerModel) model).getAlbums()
                         .forEach(album -> em.remove(album));

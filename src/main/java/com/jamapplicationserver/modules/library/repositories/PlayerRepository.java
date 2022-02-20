@@ -117,7 +117,7 @@ public class PlayerRepository implements IPlayerRepository {
             
             final UserModel model = toPersistence(player, em);
             
-//            em.merge(model);
+            em.merge(model);
             
             tnx.commit();
             
