@@ -31,7 +31,7 @@ public class UpdateFCMTokenController extends BaseController {
             final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
             
             final UpdateFCMTokenRequestDTO dto = new UpdateFCMTokenRequestDTO(
-                    fields.get("fcmToken"),
+                    fields.get("FCMToken"),
                     subjectId,
                     subjectRole
             );
