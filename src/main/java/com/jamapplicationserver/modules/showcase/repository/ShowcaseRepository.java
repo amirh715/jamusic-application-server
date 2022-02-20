@@ -20,7 +20,7 @@ import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryH
 public class ShowcaseRepository implements IShowcaseRepository {
     
     private final EntityManagerFactoryHelper emfh;
-    private final long MAX_ALLOWED_SHOWCASES = 3;
+    private final long MAX_ALLOWED_SHOWCASES = 15;
     
     private ShowcaseRepository(EntityManagerFactoryHelper emfh) {
         this.emfh = emfh;
@@ -113,6 +113,8 @@ public class ShowcaseRepository implements IShowcaseRepository {
             model.setCreator(creator);
             
             if(exists(entity.id)) { // update existing entity
+                
+                em.remove(model);
                 
                 em.merge(model);
                 
