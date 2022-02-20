@@ -6,6 +6,7 @@
 package com.jamapplicationserver.core.infra;
 
 import java.io.*;
+import java.nio.charset.*;
 import java.security.*;
 import org.apache.commons.codec.digest.*;
 
@@ -22,7 +23,21 @@ public class ETag {
     }
     
     public static final ETag create(Serializable obj) {
-        return new ETag("");
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(obj);
+            oos.flush();
+            oos.close();
+            final String hash =
+                    new DigestUtils(
+                            MessageDigest.getInstance("SHA1")
+                    ).digestAsHex(new ByteArrayInputStream(baos.toByteArray()));
+            return new ETag(hash);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
     public static final ETag create(InputStream input) {
@@ -31,6 +46,7 @@ public class ETag {
                     new DigestUtils(MessageDigest.getInstance("SHA1")).digestAsHex(input);
             return new ETag(hash);
         } catch(NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -41,7 +57,8 @@ public class ETag {
     
     public final boolean same(ETag etag) {
         System.out.println("Etag given: " + etag.value);
-        System.out.println("This: " + this.value);
+        System.out.println("This Etag: " + this.value);
+        System.out.println("Is equal?? " + this.value.equals(etag.value));
         return this.value.equals(etag.value);
     }
     
