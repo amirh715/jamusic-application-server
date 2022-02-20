@@ -83,18 +83,18 @@ public class LoginUseCase implements IUsecase<LoginRequestDTO, AuthToken> {
                 return loginResult;
             }
 
-            // non-admin user cannot log in through the admin client
-//            if(request.device.family.equals("") && !user.isAdmin()) {
-//                loginResult = null;
-//                auditLogin(user.id, loginResult, request);
-//                return loginResult;
-//            }
+            // subscribers cannot login throught non-mobile clients
+            if(request.device.family.equals("Other") && user.getRole().isSubscriber()) {
+                loginResult = Result.fail(new UserCannotLoginThroughClient());
+                auditLogin(user.id, loginResult, request);
+                return loginResult;
+            }
             
             // generate token
             final String token =
                     JWTUtils.generateToken(user.id, user.getRole(), request.device);
             if(request.FCMToken != null) {
-                            
+                
                 // if current fcm token is different from the new one, replace it
                 final FCMToken previousFCMToken = user.getFCMToken();
                 if(previousFCMToken != null && !previousFCMToken.equals(fcmToken)) {
