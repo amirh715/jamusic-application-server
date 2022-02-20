@@ -15,7 +15,7 @@ import com.jamapplicationserver.core.logic.*;
 public class FCMToken extends ValueObject {
     
     public static final int MIN_LENGTH = 1;
-    public static final int MAX_LENGTH = 100;
+    public static final int MAX_LENGTH = 500;
     
     private final String value;
     
@@ -30,12 +30,12 @@ public class FCMToken extends ValueObject {
     
     public static final Result<FCMToken> create(String value) {
         
-        if(value == null) return Result.fail(new ValidationError("FCM token is required."));
+        if(value == null) return Result.fail(new ValidationError("توکن FCM ضروری است"));
         
         if(
                 value.length() > MAX_LENGTH ||
                 value.length() < MIN_LENGTH
-        ) return Result.fail(new ValidationError("FCM token length is invalid."));
+        ) return Result.fail(new ValidationError("طول توکن بین ۱ تا ۵۰۰ کاراکتر است"));
         
         return Result.ok(new FCMToken(value));
         
