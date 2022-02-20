@@ -10,6 +10,7 @@ import com.jamapplicationserver.modules.user.infra.DTOs.commands.*;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.infra.DTOs.queries.MyProfileDetails;
+import java.time.Duration;
 
 /**
  *
@@ -45,8 +46,16 @@ public class GetMyProfileInfoController extends BaseController {
                 
                 return;
             }
+
+            privateCache();
+            cache(Duration.ofMinutes(1));
             
-            ok(result.getValue());
+            if(hasETag() && getEtag().same(ETag.create(result.getValue()))) {
+                notModified();
+            } else {
+                ok(result.getValue());
+            }
+            
             
         } catch(Exception e) {
             fail(e);

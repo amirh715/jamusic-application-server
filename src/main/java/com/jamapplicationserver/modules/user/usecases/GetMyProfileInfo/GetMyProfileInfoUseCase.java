@@ -32,6 +32,7 @@ public class GetMyProfileInfoUseCase implements IUsecase<GetMyProfileInfoRequest
             final MyProfileDetails myProfile = new MyProfileDetails(
                     user.id,
                     user.name,
+                    user.mobile,
                     user.email,
                     user.isEmailVerified
             );

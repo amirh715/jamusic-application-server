@@ -9,6 +9,7 @@ import java.io.InputStream;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
+import java.time.Duration;
 
 /**
  *
@@ -41,6 +42,10 @@ public class GetMyProfileImageController extends BaseController {
             
             final InputStream image = result.getValue();
             
+            privateCache();
+            staleIfError(Duration.ofDays(3));
+            cache(Duration.ofMinutes(5));
+//            attachEtag(ETag.create(image));
             sendFile(image);
             
         } catch(Exception e) {
