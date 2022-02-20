@@ -69,8 +69,13 @@ public class SingerDetails extends ArtistDetails {
             case LIBRARY_MANAGER: break;
             case SUBSCRIBER:
                 this.flagNote = null;
+                this.tags = null;
+                this.genres = null;
                 this.published = null;
-                this.duration = null;
+                this.creatorId = null;
+                this.creatorName = null;
+                this.updaterId = null;
+                this.updaterName = null;
                 break;
             default: return null;
         }

@@ -63,8 +63,8 @@ public class TrackDetails extends ArtworkDetails {
                 totalPlayedCount,
                 duration,
                 recordLabel,
-                releaseDate,
                 producer,
+                releaseDate,
                 artist,
                 createdAt,
                 lastModifiedAt,
@@ -88,7 +88,15 @@ public class TrackDetails extends ArtworkDetails {
             case SUBSCRIBER:
                 this.flagNote = null;
                 this.tags = null;
+                this.genres = null;
                 this.audioSize = null;
+                this.published = null;
+                this.creatorId = null;
+                this.creatorName = null;
+                this.updaterId = null;
+                this.updaterName = null;
+                this.createdAt = null;
+                this.lastModifiedAt = null;
                 break;
             default:
                 return null;
