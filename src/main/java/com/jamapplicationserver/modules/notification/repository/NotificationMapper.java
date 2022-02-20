@@ -20,9 +20,7 @@ import com.jamapplicationserver.core.logic.*;
 public class NotificationMapper {
     
     public static final Notification toDomain(NotificationModel model) {
-        
-        Notification instance;
-        
+
         if(model == null) return null;
         
         NotifType type = NotifType.FCM;
@@ -61,7 +59,6 @@ public class NotificationMapper {
                 model.getLastModifiedAt(),
                 deliveries
         );
-        if(instanceR.isFailure) System.out.println(instanceR.getError().message);
 
         return instanceR.getValue();
     }
