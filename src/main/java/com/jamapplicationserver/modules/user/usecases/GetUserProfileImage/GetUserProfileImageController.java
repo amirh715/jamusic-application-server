@@ -6,6 +6,7 @@
 package com.jamapplicationserver.modules.user.usecases.GetUserProfileImage;
 
 import java.io.InputStream;
+import java.time.Duration;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.logic.*;
@@ -45,6 +46,9 @@ public class GetUserProfileImageController extends BaseController {
                 return;
             }
             
+            privateCache();
+            staleIfError(Duration.ofHours(1));
+            cache(Duration.ofHours(1));
             sendFile(result.getValue());
             
         } catch(Exception e) {
