@@ -277,13 +277,11 @@ public abstract class LibraryEntityModel extends EntityModel {
     
     @Override
     public int hashCode() {
-        System.out.println("LibraryEntityModel::hashCode");
         return this.getId().hashCode();
     }
     
     @Override
     public boolean equals(Object obj) {
-        System.out.println("LibraryEntityModel::equals");
         if(this == obj) return true;
         if(!(obj instanceof LibraryEntityModel)) return false;
         final LibraryEntityModel le = (LibraryEntityModel) obj;
