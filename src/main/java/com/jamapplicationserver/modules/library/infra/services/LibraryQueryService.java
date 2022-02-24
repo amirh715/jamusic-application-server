@@ -224,10 +224,10 @@ public class LibraryQueryService implements ILibraryQueryService {
             return playlists
                     .stream()
                     .map(playlist -> {
-                        final Set<LibraryEntityIdAndTitle> tracks =
+                        final Set<TrackDetails> tracks =
                                 playlist.getTracks()
                                 .stream()
-                                .map(track -> LibraryEntityIdAndTitle.create(track))
+                                .map(track -> (TrackDetails) TrackDetails.create(track))
                                 .collect(Collectors.toSet());
                         return new PlaylistDetails(
                                 playlist.getId(),
@@ -262,10 +262,10 @@ public class LibraryQueryService implements ILibraryQueryService {
                     .setParameter(2, playerId.toValue())
                     .getSingleResult();
             if(playlist == null) return null;
-            final Set<LibraryEntityIdAndTitle> tracks =
+            final Set<TrackDetails> tracks =
                     playlist.getTracks()
                     .stream()
-                    .map(track -> LibraryEntityIdAndTitle.create(track))
+                    .map(track -> (TrackDetails) TrackDetails.create(track))
                     .collect(Collectors.toSet());
             return new PlaylistDetails(
                     playlist.getId(),
