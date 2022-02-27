@@ -29,13 +29,13 @@ public class JWTUtils {
     public static final String generateToken(
             UniqueEntityId subject,
             UserRole role,
-            Device device
+            OS os
     ) {
         try {
             return JWT.create()
                     .withSubject(subject.toValue().toString())
-                    .withExpiresAt(determineExpiryDate(role, device))
-                    .withClaim("role", determineUserRole(role, device).getValue())
+                    .withExpiresAt(determineExpiryDate(role, os))
+                    .withClaim("role", determineUserRole(role, os).getValue())
                     .sign(ALGO);
         } catch(JWTCreationException e) {
             throw e;
@@ -52,18 +52,19 @@ public class JWTUtils {
         }
     }
     
-    private static Date determineExpiryDate(UserRole role, Device device) {
-        
-        if(device.family.equals(""))
+    // DOMAIN LOGIC LEAKAGE
+    private static Date determineExpiryDate(UserRole role, OS os) {
+        if(os.family.equals("iOS") || os.family.equals("Android"))
             return Date.from(Instant.now().plus(30, ChronoUnit.DAYS));
         else
             return Date.from(Instant.now().plus(2, ChronoUnit.HOURS));
 
     }
     
-    private static UserRole determineUserRole(UserRole role, Device device) {
+    // DOMAIN LOGIC LEAKAGE
+    private static UserRole determineUserRole(UserRole role, OS os) {
         // for mobile clients subscriber-only permissions are granted (regardless of user's role)
-        if(device.family.equals(""))
+        if(os.family.equals("iOS") || os.family.equals("Android"))
             return UserRole.SUBSCRIBER;
         else
             return role;
