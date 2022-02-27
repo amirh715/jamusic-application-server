@@ -37,7 +37,6 @@ public class PlayedModel implements Serializable {
     private LocalDateTime playedAt;
     
     public PlayedModel() {
-        System.out.println("constructor PlayedModel()");
     }
     
     public UserModel getPlayer() {

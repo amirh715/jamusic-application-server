@@ -74,7 +74,6 @@ public class TrackModel extends ArtworkModel {
     }
     
     public AlbumModel getAlbum() {
-        System.out.println("TrackModel::getAlbum");
         return this.album;
     }
     
