@@ -52,4 +52,21 @@ public class Email extends ValueObject<String> {
         
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Email)) {
+            return false;
+        }
+        Email e = (Email) obj;
+        return e.getValue().equals(value);
+    }
+    
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
+    
 }
