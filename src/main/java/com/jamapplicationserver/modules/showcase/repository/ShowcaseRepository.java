@@ -114,8 +114,6 @@ public class ShowcaseRepository implements IShowcaseRepository {
             
             if(exists(entity.id)) { // update existing entity
                 
-                em.remove(model);
-                
                 em.merge(model);
                 
             } else { // insert new entity
