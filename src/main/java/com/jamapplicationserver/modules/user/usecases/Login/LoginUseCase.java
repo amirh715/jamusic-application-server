@@ -92,7 +92,7 @@ public class LoginUseCase implements IUsecase<LoginRequestDTO, AuthToken> {
             
             // generate token
             final String token =
-                    JWTUtils.generateToken(user.id, user.getRole(), request.device);
+                    JWTUtils.generateToken(user.id, user.getRole(), request.os);
             if(request.FCMToken != null) {
                 
                 // if current fcm token is different from the new one, replace it
