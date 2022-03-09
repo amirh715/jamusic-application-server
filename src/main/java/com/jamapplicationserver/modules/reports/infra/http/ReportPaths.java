@@ -14,6 +14,7 @@ public class ReportPaths {
     public static final String CREATE_REPORT = "/";
     public static final String PROCESS_REPORT = "/";
     public static final String GET_REPORTS_BY_FILTERS = "/";
+    public static final String GET_MY_REPORTS = "/my/";
     public static final String GET_REPORT_BY_ID = "/:id";
     public static final String GET_REPORTER_BY_ID = "/reporter/:id";
     

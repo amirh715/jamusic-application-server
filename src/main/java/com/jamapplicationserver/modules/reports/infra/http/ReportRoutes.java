@@ -12,6 +12,7 @@ import com.jamapplicationserver.modules.reports.usecases.GetReportById.GetReport
 import com.jamapplicationserver.modules.reports.usecases.GetReportsByFilters.GetReportsByFiltersController;
 import com.jamapplicationserver.modules.reports.usecases.ProcessReport.ProcessReportController;
 import com.jamapplicationserver.modules.reports.usecases.GetReporterById.GetReporterByIdController;
+import com.jamapplicationserver.modules.reports.usecases.GetMyReports.GetMyReportsController;
 
 /**
  *
@@ -37,6 +38,12 @@ public class ReportRoutes implements RouteGroup {
         get(
                 ReportPaths.GET_REPORTS_BY_FILTERS,
                 GetReportsByFiltersController.getInstance()
+        );
+        
+        // get my reports
+        get(
+                ReportPaths.GET_MY_REPORTS,
+                GetMyReportsController.getInstance()
         );
         
         // get report by id
