@@ -37,7 +37,7 @@ public class AppMain {
     public static void main(String[] args) {
         // TODO code application logic here
         
-        System.out.println("SERVER STARTED AT port " + port());
+        System.out.println("SERVER STARTED");
         
         before("/*", (req, res) -> req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp")));
         
