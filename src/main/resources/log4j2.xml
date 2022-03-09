@@ -4,21 +4,25 @@
         <Property name="log-path">PropertiesConfiguration</Property>
     </Properties>
     <Appenders>
-        <Console name="Console-Appender" target="SYSTEM_OUT">
+<!--        <Console name="Console-Appender" target="SYSTEM_OUT">
             <PatternLayout>
                 <pattern>
                     [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
                 </pattern>>
             </PatternLayout>
-        </Console>
+        </Console>-->
+        <File name="file-appender" fileName="/home/api/logs/apiLog.log">
+            <PatternLayout>
+                <Pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </Pattern>
+            </PatternLayout>
+        </File>
     </Appenders>
     <Loggers>
         <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
             <AppenderRef ref="Console-Appender"/>
         </Logger>
-<!--        <Logger name="org.hibernate.type.descriptor.sql" level="TRACE" additivity="false">
-            <AppenderRef ref="Console-Appender"/>
-        </Logger>-->
         <Logger name="org.hibernate.stat" level="DEBUG" additivity="false">
             <AppenderRef ref="Console-Appender"></AppenderRef>
         </Logger>
