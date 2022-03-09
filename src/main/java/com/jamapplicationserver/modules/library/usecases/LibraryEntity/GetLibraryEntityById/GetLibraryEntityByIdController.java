@@ -10,6 +10,7 @@ import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.GetLibraryEntityByIdRequestDTO;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
+import java.time.Duration;
 
 /**
  *
@@ -53,6 +54,12 @@ public class GetLibraryEntityByIdController extends BaseController {
                 return;
             }
             
+            if(subjectRole.isSubscriber()) {
+                publicCache();
+                cache(Duration.ofHours(6));
+                staleWhileRevalidate(Duration.ofDays(4));
+                staleIfError(Duration.ofDays(4));
+            }
             ok(result.getValue());
             
         } catch(Exception e) {

@@ -50,8 +50,8 @@ public class GetPlaylistsOfPlayerController extends BaseController {
             }
             
             if(subjectRole.isSubscriber()) {
-                privateCache();
-                cache(Duration.ofMinutes(5));
+                staleIfError(Duration.ofDays(4));
+                staleWhileRevalidate(Duration.ofDays(4));
             }
             ok(result.getValue());
             

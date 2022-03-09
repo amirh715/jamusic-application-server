@@ -10,6 +10,7 @@ import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.*;
+import java.time.Duration;
 
 /**
  *
@@ -51,6 +52,12 @@ public class GetTrackAudioByIdController extends BaseController {
                 return;
             }
             
+            if(subjectRole.isSubscriber()) {
+                publicCache();
+                cache(Duration.ofHours(6));
+                staleWhileRevalidate(Duration.ofDays(4));
+                staleIfError(Duration.ofDays(4));
+            }
             sendFile(result.getValue());
             
         } catch(Exception e) {

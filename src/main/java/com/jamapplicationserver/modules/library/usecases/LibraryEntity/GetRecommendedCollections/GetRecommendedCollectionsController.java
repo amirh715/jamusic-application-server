@@ -10,6 +10,7 @@ import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.*;
+import java.time.Duration;
 
 /**
  *
@@ -44,6 +45,12 @@ public class GetRecommendedCollectionsController extends BaseController {
                 return;
             }
             
+            if(subjectRole.isSubscriber()) {
+                privateCache();
+                cache(Duration.ofHours(2));
+                staleWhileRevalidate(Duration.ofDays(4));
+                staleIfError(Duration.ofDays(4));
+            }
             ok(result.getValue());
             
         } catch(Exception e) {

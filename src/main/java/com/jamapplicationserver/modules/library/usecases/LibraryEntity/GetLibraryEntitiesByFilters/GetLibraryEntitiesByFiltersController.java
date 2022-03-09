@@ -12,6 +12,7 @@ import com.jamapplicationserver.modules.library.infra.DTOs.commands.GetLibraryEn
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
+import java.time.Duration;
 
 /**
  *
@@ -79,6 +80,12 @@ public class GetLibraryEntitiesByFiltersController extends BaseController {
                 return;
             }
             
+            if(subjectRole.isSubscriber()) {
+                publicCache();
+                cache(Duration.ofHours(1));
+                staleWhileRevalidate(Duration.ofDays(1));
+                staleIfError(Duration.ofDays(1));
+            }
             ok(result.getValue());
             
         } catch(Exception e) {
