@@ -25,6 +25,8 @@ public class GetNotificationsByFiltersRequestDTO extends DTOWithAuthClaims {
     public String isSent;
     public String withUndeliveredRecipients;
     public String senderType;
+    public Integer limit;
+    public Integer offset;
     
     public GetNotificationsByFiltersRequestDTO(
             String searchTerm,
@@ -39,7 +41,9 @@ public class GetNotificationsByFiltersRequestDTO extends DTOWithAuthClaims {
             String withUndeliveredRecipients,
             String senderType,
             UniqueEntityId subjectId,
-            UserRole subjectRole
+            UserRole subjectRole,
+            Integer limit,
+            Integer offset
     ) {
         super(subjectId, subjectRole);
         this.searchTerm = searchTerm;
@@ -53,6 +57,8 @@ public class GetNotificationsByFiltersRequestDTO extends DTOWithAuthClaims {
         this.isSent = isSent;
         this.withUndeliveredRecipients = withUndeliveredRecipients;
         this.senderType = senderType;
+        this.limit = limit;
+        this.offset = offset;
     }
     
 }

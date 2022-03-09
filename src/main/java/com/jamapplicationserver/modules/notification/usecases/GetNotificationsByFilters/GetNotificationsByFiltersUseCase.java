@@ -102,7 +102,9 @@ public class GetNotificationsByFiltersUseCase
                             isSent,
                             withUndeliveredRecipients,
                             type,
-                            senderType
+                            senderType,
+                            request.limit,
+                            request.offset
                     );
             
             return Result.ok(queryService.getNotificationsByFilters(filters));

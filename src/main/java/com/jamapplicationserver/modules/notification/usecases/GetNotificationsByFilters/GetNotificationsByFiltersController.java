@@ -46,7 +46,9 @@ public class GetNotificationsByFiltersController extends BaseController {
                             fields.get("withUndeliveredRecipients").value(),
                             fields.get("senderType").value(),
                             subjectId,
-                            subjectRole
+                            subjectRole,
+                            fields.get("limit").integerValue(),
+                            fields.get("offset").integerValue()
                     );
             
             final Result<Set<NotificationDetails>> result = usecase.execute(dto);

@@ -32,6 +32,9 @@ public class NotificationFilters {
     
     public SenderType senderType;
     
+    public Integer limit;
+    public Integer offset;
+    
     public NotificationFilters() {
         
     }
@@ -47,7 +50,9 @@ public class NotificationFilters {
             Boolean isSent,
             Boolean withUndeliveredRecipients,
             NotifType type,
-            SenderType senderType
+            SenderType senderType,
+            Integer limit,
+            Integer offset
     ) {
         this.createdAtFrom = createdAtFrom;
         this.createdAtTill = createdAtTill;
@@ -60,6 +65,8 @@ public class NotificationFilters {
         this.withUndeliveredRecipients = withUndeliveredRecipients;
         this.type = type;
         this.senderType = senderType;
+        this.limit = limit;
+        this.offset = offset;
     }
     
 }
