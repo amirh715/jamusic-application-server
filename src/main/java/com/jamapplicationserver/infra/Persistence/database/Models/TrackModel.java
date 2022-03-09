@@ -31,7 +31,7 @@ public class TrackModel extends ArtworkModel {
     @Column(name="audio_format")
     private String format;
     
-    @Column(name="lyrics", columnDefinition="text")
+    @Column(name="lyrics", columnDefinition="TEXT")
     private String lyrics;
     
     @ManyToOne(fetch=FetchType.LAZY)
