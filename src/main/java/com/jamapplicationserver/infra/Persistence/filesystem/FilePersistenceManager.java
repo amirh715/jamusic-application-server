@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.stream.*;
 import java.nio.file.*;
 import java.util.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -33,7 +34,7 @@ public class FilePersistenceManager implements IFilePersistenceManager {
 
             return path;
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         }
 
@@ -51,7 +52,7 @@ public class FilePersistenceManager implements IFilePersistenceManager {
         } catch(FileNotFoundException e) {
             return null;
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         }
         

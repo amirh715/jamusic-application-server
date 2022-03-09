@@ -13,6 +13,7 @@ import java.nio.file.*;
 import java.io.File;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  * A file is considered "unlinked" if no entity record with image path is referencing it.
@@ -91,7 +92,7 @@ public class DeleteUnlinkedFilesJob implements Job {
             }
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             // LOG
         } finally {
             em.close();

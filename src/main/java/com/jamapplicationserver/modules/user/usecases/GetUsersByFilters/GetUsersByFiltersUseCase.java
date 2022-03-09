@@ -13,6 +13,7 @@ import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.modules.user.infra.services.*;
 import com.jamapplicationserver.modules.user.infra.DTOs.queries.*;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -82,7 +83,7 @@ public class GetUsersByFiltersUseCase implements IUsecase<GetUsersByFiltersReque
             return Result.ok(queryService.getUsersByFilters(filters));
             
         } catch(IllegalStateException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

@@ -9,6 +9,7 @@ import java.util.*;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 
 /**
@@ -57,7 +58,7 @@ public class UpdateFCMTokenController extends BaseController {
             noContent();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

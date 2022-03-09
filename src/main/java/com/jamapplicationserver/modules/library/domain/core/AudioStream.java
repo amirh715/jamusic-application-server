@@ -15,7 +15,7 @@ import org.apache.tika.parser.mp3.Mp3Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.exception.TikaException;
 import org.xml.sax.SAXException;
-import com.jamapplicationserver.modules.library.domain.core.errors.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import javax.sound.sampled.*;
 
 /**
@@ -76,13 +76,13 @@ public class AudioStream extends FilterInputStream {
             return Result.ok(new AudioStream(stream, 0, Duration.ZERO, format));
             
 //        } catch(UnsupportedAudioFileException e) {
-//            e.printStackTrace();
+//            LogService.getInstance().error(e);
 //            return Result.fail(new AudioNotSupportedError());
         } catch(IOException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             return Result.fail(new ValidationError(e.getMessage()));
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             return Result.fail(new ValidationError(e.getMessage()));
         }
         

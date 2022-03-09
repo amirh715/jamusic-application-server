@@ -11,6 +11,7 @@ import java.io.InputStream;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -58,7 +59,7 @@ public class GetLibraryEntityImageByIdController extends BaseController {
             sendFile(result.getValue());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

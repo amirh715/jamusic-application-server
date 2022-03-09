@@ -15,6 +15,7 @@ import com.jamapplicationserver.modules.user.infra.DTOs.queries.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.user.repository.UsersFilters;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -220,7 +221,7 @@ public class UserQueryService implements IUserQueryService {
             );
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();

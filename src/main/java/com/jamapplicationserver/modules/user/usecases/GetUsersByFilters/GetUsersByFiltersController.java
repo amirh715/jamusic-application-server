@@ -12,6 +12,7 @@ import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.infra.DTOs.queries.UserDetails;
 import spark.QueryParamsMap;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -69,7 +70,7 @@ public class GetUsersByFiltersController extends BaseController {
             ok(result.getValue());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e.getMessage());
         }
         

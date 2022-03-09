@@ -18,6 +18,7 @@ import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryH
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.core.logic.Result;
 import com.jamapplicationserver.modules.user.repository.exceptions.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -47,7 +48,7 @@ public class UserRepository implements IUserRepository {
             return toDomain(model);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -78,7 +79,7 @@ public class UserRepository implements IUserRepository {
         } catch(EntityNotFoundException e) {
             return null;
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -130,7 +131,7 @@ public class UserRepository implements IUserRepository {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -157,7 +158,7 @@ public class UserRepository implements IUserRepository {
         } catch(NoResultException e) {
             return null;
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -314,7 +315,7 @@ public class UserRepository implements IUserRepository {
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
             throw e;
         } finally {

@@ -6,7 +6,6 @@
 package com.jamapplicationserver.utils;
 
 import java.io.*;
-import org.apache.tika.Tika;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.*;
@@ -16,6 +15,7 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp3.Mp3Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -94,7 +94,7 @@ public class TikaUtils {
             return new TikaUtils();
             
         } catch(TikaException | IOException | SAXException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             return null;
         }
         

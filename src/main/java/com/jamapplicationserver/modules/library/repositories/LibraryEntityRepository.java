@@ -19,6 +19,7 @@ import com.jamapplicationserver.modules.library.domain.Band.Band;
 import com.jamapplicationserver.modules.library.domain.Singer.Singer;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -262,15 +263,15 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             tnx.commit();
 
         } catch(EntityNotFoundException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
             throw e;
         } catch(RollbackException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
             throw e;
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
             throw e;
         } finally {
@@ -328,7 +329,7 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             
             tnx.commit();
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
             throw e;
         } finally {

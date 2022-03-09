@@ -16,6 +16,7 @@ import com.jamapplicationserver.modules.notification.repository.*;
 import com.jamapplicationserver.modules.notification.domain.*;
 import com.jamapplicationserver.modules.notification.domain.errors.*;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -105,7 +106,7 @@ public class CreateNotificationUseCase implements IUsecase<CreateNotificationReq
         } catch(MalformedURLException e) {
             return Result.fail(new ValidationError("Notification link is invalid"));
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

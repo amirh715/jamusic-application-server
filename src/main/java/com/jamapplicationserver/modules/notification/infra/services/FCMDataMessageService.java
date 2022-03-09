@@ -7,6 +7,7 @@ package com.jamapplicationserver.modules.notification.infra.services;
 
 import java.util.*;
 import com.google.firebase.messaging.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -32,7 +33,7 @@ public class FCMDataMessageService implements IFCMDataMessageService {
             FirebaseMessaging.getInstance().sendMulticast(message);
 
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
         }
         
     }

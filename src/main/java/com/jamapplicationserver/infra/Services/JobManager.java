@@ -7,6 +7,7 @@ package com.jamapplicationserver.infra.Services;
 
 import org.quartz.*;
 import java.time.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -27,7 +28,7 @@ public class JobManager {
             this.scheduler.start();
             
         } catch(SchedulerException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
         }
         
     }
@@ -43,7 +44,7 @@ public class JobManager {
             
             this.scheduler.scheduleJob(job, trigger);
         } catch(SchedulerException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
         }
         
         return this;
@@ -61,7 +62,7 @@ public class JobManager {
             
             this.scheduler.scheduleJob(job, trigger);
         } catch(SchedulerException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
         }
         
         return this;
@@ -184,7 +185,7 @@ public class JobManager {
                 JobManagerHolder.INSTANCE = new JobManager(scheduler);
 
             } catch(SchedulerException e) {
-                e.printStackTrace();
+                LogService.getInstance().error(e);
             }
             
         }

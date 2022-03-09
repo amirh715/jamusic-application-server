@@ -12,6 +12,7 @@ import java.util.*;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.user.infra.DTOs.queries.AuthToken;
 import ua_parser.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -70,7 +71,7 @@ public class LoginController extends BaseController {
             ok(result.getValue());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

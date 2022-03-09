@@ -6,7 +6,6 @@
 package com.jamapplicationserver.modules.reports.usecases.GetReportsByFilters;
 
 import java.util.*;
-import java.util.stream.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.reports.domain.*;
 import com.jamapplicationserver.core.logic.*;
@@ -14,6 +13,7 @@ import com.jamapplicationserver.modules.reports.infra.DTOs.commands.GetReportsBy
 import com.jamapplicationserver.modules.reports.repository.*;
 import com.jamapplicationserver.modules.reports.infra.services.*;
 import com.jamapplicationserver.modules.reports.infra.DTOs.queries.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -189,7 +189,7 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
             
             return Result.ok(reports);
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

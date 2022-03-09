@@ -8,6 +8,7 @@ package com.jamapplicationserver.modules.library.infra.Jobs;
 import javax.persistence.*;
 import org.quartz.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -103,7 +104,7 @@ public class UpdateRateJob implements Job {
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
         } finally {
             em.close();

@@ -10,6 +10,7 @@ import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import java.time.Duration;
 
 /**
@@ -61,7 +62,7 @@ public class GetTrackAudioByIdController extends BaseController {
             sendFile(result.getValue());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

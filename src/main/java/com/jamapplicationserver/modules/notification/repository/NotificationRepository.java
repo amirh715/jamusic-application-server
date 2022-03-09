@@ -19,6 +19,7 @@ import com.jamapplicationserver.modules.notification.domain.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.modules.notification.repository.exceptions.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -45,7 +46,7 @@ public class NotificationRepository implements INotificationRepository {
             return NotificationMapper.toDomain(model);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -127,7 +128,7 @@ public class NotificationRepository implements INotificationRepository {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -164,7 +165,7 @@ public class NotificationRepository implements INotificationRepository {
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
             throw e;
         } finally {
@@ -183,7 +184,7 @@ public class NotificationRepository implements INotificationRepository {
             return em.find(NotificationModel.class, id.toValue()) != null;
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -212,7 +213,7 @@ public class NotificationRepository implements INotificationRepository {
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
             throw e;
         } finally {

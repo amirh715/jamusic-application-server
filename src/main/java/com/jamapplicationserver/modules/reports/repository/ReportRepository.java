@@ -18,6 +18,7 @@ import com.jamapplicationserver.infra.Persistence.database.Models.ReportStatusEn
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.reports.domain.*;
 import com.jamapplicationserver.core.domain.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -45,7 +46,7 @@ public class ReportRepository implements IReportRepository {
             return ReportMapper.toDomain(model);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -90,7 +91,7 @@ public class ReportRepository implements IReportRepository {
                     .map(model -> ReportMapper.toDomain(model))
                     .collect(Collectors.toSet());
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -139,7 +140,7 @@ public class ReportRepository implements IReportRepository {
             
             return ReportMapper.toProcessor(model);
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -163,7 +164,7 @@ public class ReportRepository implements IReportRepository {
             return ReportMapper.toProcessor(model);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -185,7 +186,7 @@ public class ReportRepository implements IReportRepository {
             return ReportMapper.toReportedEntity(model);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -238,7 +239,7 @@ public class ReportRepository implements IReportRepository {
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
         } finally {
             em.close();
@@ -257,7 +258,7 @@ public class ReportRepository implements IReportRepository {
             
             return model != null;
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();

@@ -6,13 +6,13 @@
 package com.jamapplicationserver.modules.user.usecases.GetMyProfileImage;
 
 import java.io.InputStream;
-import java.nio.file.Path;
 import com.jamapplicationserver.modules.user.domain.User;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -49,7 +49,7 @@ public class GetMyProfileImageUseCase implements IUsecase<UniqueEntityId, InputS
             return Result.ok(image);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

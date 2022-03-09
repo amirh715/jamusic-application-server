@@ -7,6 +7,7 @@ package com.jamapplicationserver.core.domain;
 
 import com.jamapplicationserver.core.logic.*;
 import com.google.i18n.phonenumbers.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -41,7 +42,7 @@ public class MobileNo extends ValueObject<String> {
             return Result.ok(new MobileNo(phoneNo));
             
         } catch(NumberParseException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             return Result.fail(new ValidationError("Mobile number is not correct"));
         }
         

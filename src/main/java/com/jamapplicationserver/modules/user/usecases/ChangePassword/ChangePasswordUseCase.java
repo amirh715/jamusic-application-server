@@ -12,6 +12,7 @@ import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.repository.IUserRepository;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -71,7 +72,7 @@ public class ChangePasswordUseCase implements IUsecase<ChangePasswordRequestDTO,
             return Result.ok();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

@@ -20,6 +20,7 @@ import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.repositories.mappers.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.library.domain.core.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -50,7 +51,7 @@ public class GenreRepository implements IGenreRepository {
                     .collect(Collectors.toMap(Genre::getId, g -> g));
 
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -71,7 +72,7 @@ public class GenreRepository implements IGenreRepository {
             return GenreMapper.toDomain(model);
             
         } catch(NoResultException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -86,7 +87,7 @@ public class GenreRepository implements IGenreRepository {
             
             return Set.of();
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         }
         
@@ -108,7 +109,7 @@ public class GenreRepository implements IGenreRepository {
             return GenreMapper.toDomain(model);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -194,7 +195,7 @@ public class GenreRepository implements IGenreRepository {
             
             throw e;
         } catch(Exception e) {
-            e.printStackTrace(); // LOG
+            LogService.getInstance().error(e); // LOG
             tnx.rollback();
             throw e;
         } finally {
@@ -214,7 +215,7 @@ public class GenreRepository implements IGenreRepository {
             return model != null;
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             return false;
         } finally {
             em.close();

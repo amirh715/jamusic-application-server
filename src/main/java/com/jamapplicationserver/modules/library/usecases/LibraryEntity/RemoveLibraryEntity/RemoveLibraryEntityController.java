@@ -11,6 +11,7 @@ import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -60,7 +61,7 @@ public class RemoveLibraryEntityController extends BaseController {
             this.noContent();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

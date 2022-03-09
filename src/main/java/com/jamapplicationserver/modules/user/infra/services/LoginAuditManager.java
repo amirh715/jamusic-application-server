@@ -11,6 +11,7 @@ import javax.persistence.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.BusinessError;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import java.util.*;
 
 /**
@@ -59,7 +60,7 @@ public class LoginAuditManager {
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
         } finally {
             em.close();
@@ -77,7 +78,7 @@ public class LoginAuditManager {
             return null;
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         }
         

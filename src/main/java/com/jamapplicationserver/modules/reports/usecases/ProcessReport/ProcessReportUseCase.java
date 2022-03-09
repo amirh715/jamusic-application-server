@@ -11,6 +11,7 @@ import com.jamapplicationserver.modules.reports.repository.*;
 import com.jamapplicationserver.modules.reports.domain.*;
 import com.jamapplicationserver.modules.reports.domain.errors.*;
 import com.jamapplicationserver.modules.reports.infra.DTOs.commands.ProcessReportRequestDTO;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -58,7 +59,7 @@ public class ProcessReportUseCase implements IUsecase<ProcessReportRequestDTO, S
                         
             return Result.ok(result.getValue());
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

@@ -16,6 +16,7 @@ import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryH
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.notification.infra.DTOs.queries.*;
 import com.jamapplicationserver.modules.notification.repository.NotificationFilters;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -192,7 +193,7 @@ public class NotificationQueryService implements INotificationQueryService {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();

@@ -6,16 +6,14 @@
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.CreateAlbum;
 
 import java.util.*;
-import java.util.stream.*;
-import javax.servlet.http.Part;
 import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateAlbumRequestDTO;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -76,7 +74,7 @@ public class CreateAlbumController extends BaseController {
             created();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             this.fail(e);
         }
         

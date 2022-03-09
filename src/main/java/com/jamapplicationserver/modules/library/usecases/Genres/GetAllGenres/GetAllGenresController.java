@@ -10,6 +10,7 @@ import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.GenreDetails;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -50,7 +51,7 @@ public class GetAllGenresController extends BaseController {
             ok(result.getValue());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

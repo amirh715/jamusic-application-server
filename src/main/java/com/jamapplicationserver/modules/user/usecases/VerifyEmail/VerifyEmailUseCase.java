@@ -11,6 +11,7 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.domain.errors.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -47,7 +48,7 @@ public class VerifyEmailUseCase implements IUsecase<VerifyEmailRequestDTO, Strin
             return Result.ok();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

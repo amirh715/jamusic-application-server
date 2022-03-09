@@ -6,7 +6,7 @@
 package com.jamapplicationserver.core.infra;
 
 import java.io.*;
-import java.nio.charset.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import java.security.*;
 import org.apache.commons.codec.digest.*;
 
@@ -35,7 +35,7 @@ public class ETag {
                     ).digestAsHex(new ByteArrayInputStream(baos.toByteArray()));
             return new ETag(hash);
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             return null;
         }
     }
@@ -46,7 +46,7 @@ public class ETag {
                     new DigestUtils(MessageDigest.getInstance("SHA1")).digestAsHex(input);
             return new ETag(hash);
         } catch(NoSuchAlgorithmException | IOException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             return null;
         }
     }

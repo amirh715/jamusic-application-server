@@ -14,6 +14,7 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.TikaUtils;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.infra.Services.AuthService.AuthService;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -104,7 +105,7 @@ public abstract class BaseController implements Route {
             return res;
             
         } catch(IOException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             res.status(500);
             res.body(e.getMessage());
             return res;

@@ -13,6 +13,7 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.domain.Player.*;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -68,7 +69,7 @@ public class PlayTrackUseCase implements IUsecase<PlayTrackRequestDTO, String> {
             return Result.ok();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

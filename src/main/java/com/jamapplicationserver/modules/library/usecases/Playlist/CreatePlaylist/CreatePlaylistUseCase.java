@@ -15,6 +15,7 @@ import com.jamapplicationserver.modules.library.domain.Playlist.Playlist;
 import com.jamapplicationserver.modules.library.domain.Player.Player;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -84,7 +85,7 @@ public class CreatePlaylistUseCase implements IUsecase<CreatePlaylistRequestDTO,
             return Result.ok();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

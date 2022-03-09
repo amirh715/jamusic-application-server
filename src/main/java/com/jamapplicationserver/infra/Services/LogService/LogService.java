@@ -31,6 +31,10 @@ public class LogService {
         logger.log(Level.ERROR, message);
     }
     
+    public void error(Exception e) {
+        logger.log(Level.ERROR, e.getMessage());
+    }
+    
     public static LogService getInstance() {
         return LogManagerHolder.INSTANCE;
     }

@@ -12,6 +12,7 @@ import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.showcase.domain.Showcase;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -40,7 +41,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
                     .collect(Collectors.toSet());
 
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -62,7 +63,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
             
             return ShowcaseMapper.toDomain(result);
         }  catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -86,7 +87,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
         } catch(NoResultException e) {
             return null;
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -130,7 +131,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
             throw e;
         } finally {
@@ -157,7 +158,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
         } finally {
             em.close();
@@ -177,7 +178,7 @@ public class ShowcaseRepository implements IShowcaseRepository {
             
             return model != null;
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();

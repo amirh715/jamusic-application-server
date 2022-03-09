@@ -13,6 +13,7 @@ import com.jamapplicationserver.modules.showcase.infra.DTOs.commands.CreateShowc
 import com.jamapplicationserver.modules.showcase.repository.*;
 import com.jamapplicationserver.modules.showcase.domain.Showcase;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -63,7 +64,7 @@ public class CreateShowcaseUseCase implements IUsecase<CreateShowcaseRequestDTO,
             
             return Result.ok();
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

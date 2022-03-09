@@ -14,6 +14,7 @@ import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.modules.library.domain.Track.Track;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.GetTrackAudioByIdRequestDTO;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -58,7 +59,7 @@ public class GetTrackAudioByIdUseCase implements IUsecase<GetTrackAudioByIdReque
             return Result.ok(audio);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

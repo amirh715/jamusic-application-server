@@ -13,7 +13,7 @@ import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateTrackRequestDTO;
-import com.jamapplicationserver.modules.library.domain.Track.Track;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -76,7 +76,7 @@ public class CreateTrackController extends BaseController {
             created();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

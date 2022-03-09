@@ -6,6 +6,7 @@
 package com.jamapplicationserver.modules.library.domain.core;
 
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -63,7 +64,7 @@ public enum LibraryEntityType {
             return Result.ok(type);
             
         } catch(IllegalArgumentException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             return Result.fail(new ValidationError("Library entity type is invalid"));
         }
         

@@ -6,7 +6,7 @@
 package com.jamapplicationserver.modules.library.usecases.LibraryEntity.GetLibraryEntitiesByFilters;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.modules.library.infra.services.LibraryQueryService;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityDetails;
 import com.jamapplicationserver.core.domain.IUsecase;
@@ -159,7 +159,7 @@ public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEn
             return Result.ok(entities);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

@@ -11,6 +11,7 @@ import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import java.io.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -69,7 +70,7 @@ public class EditUserController extends BaseController {
             noContent();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

@@ -13,6 +13,7 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.notification.repository.*;
 import com.jamapplicationserver.modules.notification.domain.*;
 import com.jamapplicationserver.modules.notification.domain.errors.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -88,7 +89,7 @@ public class EditNotificationUseCase implements IUsecase<EditNotificationRequest
         } catch(MalformedURLException e) {
             return Result.fail(new ValidationError("URL is invalid"));
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

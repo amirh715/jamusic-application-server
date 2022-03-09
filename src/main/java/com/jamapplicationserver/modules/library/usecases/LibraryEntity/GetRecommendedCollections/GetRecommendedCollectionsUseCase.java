@@ -10,6 +10,7 @@ import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.RecommendedCollection;
 import com.jamapplicationserver.modules.library.infra.services.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -31,7 +32,7 @@ public class GetRecommendedCollectionsUseCase implements IUsecase<UniqueEntityId
             return Result.ok(service.getCollections(playerId));
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

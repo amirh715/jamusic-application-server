@@ -28,6 +28,7 @@ import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.modules.library.repositories.LibraryEntityFilters;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -93,7 +94,7 @@ public class LibraryQueryService implements ILibraryQueryService {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -180,7 +181,7 @@ public class LibraryQueryService implements ILibraryQueryService {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -201,7 +202,7 @@ public class LibraryQueryService implements ILibraryQueryService {
             return GenreDetails.create(genre);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -240,7 +241,7 @@ public class LibraryQueryService implements ILibraryQueryService {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -278,7 +279,7 @@ public class LibraryQueryService implements ILibraryQueryService {
         } catch(NoResultException e) {
             return null;
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();

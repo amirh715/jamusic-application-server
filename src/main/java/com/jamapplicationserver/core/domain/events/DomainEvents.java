@@ -64,7 +64,7 @@ public class DomainEvents {
                             try {
                                 handler.handleEvent(domainEvent);
                             } catch(Exception e) {
-                                e.printStackTrace();
+                                
                             }
                         }).start();
                     }
@@ -72,7 +72,7 @@ public class DomainEvents {
             }
 
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             // LOG
         }
         

@@ -16,6 +16,7 @@ import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateArtistRequestDTO;
 import com.jamapplicationserver.modules.library.domain.Band.Band;
 import com.jamapplicationserver.modules.library.domain.Singer.Singer;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -125,7 +126,7 @@ public class CreateArtistUseCase implements IUsecase<CreateArtistRequestDTO, Str
             
             return Result.ok(artist);
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         
@@ -153,7 +154,7 @@ public class CreateArtistUseCase implements IUsecase<CreateArtistRequestDTO, Str
             
             return GenreList.create(genres);
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

@@ -16,6 +16,7 @@ import com.jamapplicationserver.modules.library.domain.Track.Track;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateTrackRequestDTO;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -195,7 +196,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             
             return Result.ok();
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         
@@ -224,7 +225,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
             
             return GenreList.create(genres);
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

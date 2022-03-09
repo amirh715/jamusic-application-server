@@ -19,6 +19,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.jamapplicationserver.modules.notification.domain.*;
 import com.jamapplicationserver.modules.notification.infra.services.exceptions.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  * Domain service for communicating with FCM, Email, and SMS APIs
@@ -165,10 +166,10 @@ public class NotificationService implements INotificationService {
             FirebaseMessaging.getInstance().sendAll(messages);
             
         } catch(FirebaseMessagingException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new NotificationCannotBeSentException(e);
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
         }
     }
     
@@ -209,7 +210,7 @@ public class NotificationService implements INotificationService {
             Transport.send(message);
         
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new NotificationCannotBeSentException(e);
         }
         

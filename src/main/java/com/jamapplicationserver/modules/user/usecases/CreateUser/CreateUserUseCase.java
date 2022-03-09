@@ -16,6 +16,7 @@ import com.jamapplicationserver.modules.user.repository.exceptions.*;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.repository.IUserRepository;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -154,7 +155,7 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
         } catch(OnlyOneAdminCanExistException e) {
             return Result.fail(new OnlyOneAdminCanExistError());
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException();
         }
         

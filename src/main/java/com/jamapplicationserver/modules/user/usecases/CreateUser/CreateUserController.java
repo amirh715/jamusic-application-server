@@ -11,6 +11,7 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.modules.user.domain.User;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import java.io.InputStream;
 
 /**
@@ -70,7 +71,7 @@ public class CreateUserController extends BaseController {
             created();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
 

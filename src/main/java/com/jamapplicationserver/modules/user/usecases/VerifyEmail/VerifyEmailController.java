@@ -8,6 +8,7 @@ package com.jamapplicationserver.modules.user.usecases.VerifyEmail;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -51,7 +52,7 @@ public class VerifyEmailController extends BaseController {
             sendHtml("<h1 style=\"text-align: center;\"><span style=\"direction: rtl\">ایمیل شما تایید شد.</span></h1>", 200);
                     
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

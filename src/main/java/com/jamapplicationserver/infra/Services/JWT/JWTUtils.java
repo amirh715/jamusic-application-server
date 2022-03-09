@@ -10,7 +10,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import ua_parser.*;
-
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import java.util.*;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.core.domain.UserRole;
@@ -46,7 +46,7 @@ public class JWTUtils {
         try {
             return JWT.decode(token);
         } catch(JWTDecodeException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         }
     }

@@ -11,6 +11,7 @@ import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.showcase.infra.DTOs.queries.ShowcaseDetails;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -52,7 +53,7 @@ public class GetAllShowcasesController extends BaseController {
             ok(result.getValue());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

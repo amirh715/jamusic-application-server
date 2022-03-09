@@ -12,6 +12,7 @@ import com.jamapplicationserver.modules.user.domain.errors.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.user.repository.IUserRepository;
 import com.jamapplicationserver.modules.user.repository.UserRepository;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -58,7 +59,7 @@ public class ResetPasswordUseCase implements IUsecase<ResetPasswordRequestDTO, S
             return Result.ok();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

@@ -9,7 +9,7 @@ import java.util.*;
 import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 import com.jamapplicationserver.core.logic.*;
-import com.jamapplicationserver.modules.library.domain.core.Artist;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.CreateArtistRequestDTO;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import com.jamapplicationserver.core.infra.BaseController;
@@ -70,7 +70,7 @@ public class CreateArtistController extends BaseController {
             created();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             fail(e);
         }
         

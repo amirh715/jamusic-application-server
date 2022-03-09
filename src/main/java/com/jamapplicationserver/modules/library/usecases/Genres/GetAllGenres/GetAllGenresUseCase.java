@@ -6,14 +6,11 @@
 package com.jamapplicationserver.modules.library.usecases.Genres.GetAllGenres;
 
 import com.jamapplicationserver.modules.library.infra.services.LibraryQueryService;
-import java.util.*;
-import java.util.stream.Collectors;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
-import com.jamapplicationserver.modules.library.domain.core.Genre;
 import com.jamapplicationserver.modules.library.infra.services.*;
 import com.jamapplicationserver.core.domain.IUsecase;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.GenreDetails;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -35,7 +32,7 @@ public class GetAllGenresUseCase implements IUsecase {
             return Result.ok(queryService.getAllGenres());
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

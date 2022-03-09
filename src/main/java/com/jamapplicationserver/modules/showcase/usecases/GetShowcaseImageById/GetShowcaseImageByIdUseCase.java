@@ -7,7 +7,7 @@ package com.jamapplicationserver.modules.showcase.usecases.GetShowcaseImageById;
 
 import java.io.*;
 import java.nio.file.Path;
-import com.jamapplicationserver.modules.showcase.infra.services.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
@@ -52,7 +52,7 @@ public class GetShowcaseImageByIdUseCase implements IUsecase<String, InputStream
             return Result.ok(image);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
     }

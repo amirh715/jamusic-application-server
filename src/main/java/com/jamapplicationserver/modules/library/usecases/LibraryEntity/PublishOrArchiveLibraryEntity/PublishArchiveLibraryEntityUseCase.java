@@ -12,7 +12,7 @@ import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.*;
-import com.jamapplicationserver.modules.library.domain.core.subscribers.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -60,7 +60,7 @@ public class PublishArchiveLibraryEntityUseCase implements IUsecase<PublishOrArc
             return Result.ok();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

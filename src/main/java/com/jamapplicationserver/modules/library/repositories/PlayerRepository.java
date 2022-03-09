@@ -13,7 +13,7 @@ import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
 import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.modules.library.domain.Player.*;
-import com.jamapplicationserver.modules.library.domain.Track.Track;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.modules.library.domain.Playlist.Playlist;
 import com.jamapplicationserver.core.domain.*;
 import java.time.LocalDateTime;
@@ -65,7 +65,7 @@ public class PlayerRepository implements IPlayerRepository {
         } catch(NoResultException e) {
             return null;
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -86,7 +86,7 @@ public class PlayerRepository implements IPlayerRepository {
             return model != null;
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw e;
         } finally {
             em.close();
@@ -122,7 +122,7 @@ public class PlayerRepository implements IPlayerRepository {
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             tnx.rollback();
             throw e;
         } finally {

@@ -15,6 +15,7 @@ import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.commands.EditArtworkRequestDTO;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
 import com.jamapplicationserver.modules.library.repositories.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -176,7 +177,7 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
             
             return Result.ok();
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         
@@ -204,7 +205,7 @@ public class EditArtworkUseCase implements IUsecase<EditArtworkRequestDTO, Strin
             
             return GenreList.createNullable(genres);
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

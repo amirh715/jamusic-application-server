@@ -10,6 +10,7 @@ import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.modules.reports.infra.services.*;
 import com.jamapplicationserver.modules.reports.domain.errors.*;
 import com.jamapplicationserver.modules.reports.infra.DTOs.queries.ReportDetails;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -42,7 +43,7 @@ public class GetReportByIdUseCase implements IUsecase<String, ReportDetails> {
             return Result.ok(report);
             
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

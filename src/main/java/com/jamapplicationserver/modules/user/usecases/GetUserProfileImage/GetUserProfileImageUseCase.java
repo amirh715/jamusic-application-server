@@ -14,6 +14,7 @@ import com.jamapplicationserver.modules.user.domain.errors.*;
 import com.jamapplicationserver.modules.user.repository.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.infra.Persistence.filesystem.IFilePersistenceManager;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -54,7 +55,7 @@ public class GetUserProfileImageUseCase implements IUsecase<String, Result> {
             return Result.ok(image);
 
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         

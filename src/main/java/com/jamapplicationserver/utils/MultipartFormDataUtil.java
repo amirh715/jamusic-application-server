@@ -12,6 +12,7 @@ import java.util.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -82,7 +83,7 @@ public class MultipartFormDataUtil {
         try {
             return part != null ? part.getInputStream() : null;
         } catch(IOException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             return null;
         }
     }
@@ -97,7 +98,7 @@ public class MultipartFormDataUtil {
             }
             return map;
         } catch(IOException e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             return Map.of();
         }
     }

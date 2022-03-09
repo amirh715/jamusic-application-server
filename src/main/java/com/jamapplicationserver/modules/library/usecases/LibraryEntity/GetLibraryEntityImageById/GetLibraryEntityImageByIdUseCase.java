@@ -14,6 +14,7 @@ import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
 import com.jamapplicationserver.modules.library.domain.core.LibraryEntity;
 import com.jamapplicationserver.infra.Persistence.filesystem.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -57,7 +58,7 @@ public class GetLibraryEntityImageByIdUseCase implements IUsecase<String, InputS
             
             return Result.ok(stream);
         } catch(Exception e) {
-            e.printStackTrace();
+            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         
