@@ -9,7 +9,6 @@ import com.jamapplicationserver.core.domain.events.*;
 import com.jamapplicationserver.modules.user.domain.events.*;
 import com.jamapplicationserver.modules.notification.infra.services.TransactionalSMSService;
 
-
 /**
  *
  * @author dada
@@ -28,7 +27,7 @@ public class AfterPasswordResetRequested implements IDomainEventHandler<Password
             
             final TransactionalSMSService sms = TransactionalSMSService.getInstance();
             
-            final int bodyId = 0;
+            final int bodyId = 79340;
             final String to = event.user.getMobile().getValue();
             final String code = String.valueOf(event.user.getPasswordResetCode().getCode());
             final String[] args = {code};

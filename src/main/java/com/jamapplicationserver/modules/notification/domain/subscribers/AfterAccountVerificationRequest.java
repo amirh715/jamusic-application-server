@@ -27,7 +27,7 @@ public class AfterAccountVerificationRequest implements IDomainEventHandler<Acco
             
             final TransactionalSMSService sms = TransactionalSMSService.getInstance();
             
-            final int bodyId = 0;
+            final int bodyId = 79339;
             final String to = event.user.getMobile().getValue();
             final String code = String.valueOf(event.user.getUserVerification().getCode());
             final String[] args = {code};
