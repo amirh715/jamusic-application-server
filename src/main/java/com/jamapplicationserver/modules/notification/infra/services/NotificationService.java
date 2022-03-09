@@ -5,6 +5,9 @@
  */
 package com.jamapplicationserver.modules.notification.infra.services;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -24,6 +27,18 @@ import com.jamapplicationserver.modules.notification.infra.services.exceptions.*
 public class NotificationService implements INotificationService {
     
     private NotificationService() {
+        try {
+            String filePath = "./src/main/resources/Config/jamusic-5fd24-firebase-adminsdk-55r1y-d460748557.json";
+            final GoogleCredentials credentials =
+                    GoogleCredentials.fromStream(new FileInputStream(filePath));
+            final FirebaseOptions options =
+                    new FirebaseOptions.Builder()
+                    .setCredentials(credentials)
+                    .build();
+            FirebaseApp.initializeApp(options);
+        } catch(Exception e) {
+            System.out.println(e);
+        }
     }
     
     /**
@@ -146,12 +161,14 @@ public class NotificationService implements INotificationService {
                         .build();
                     })
                     .collect(Collectors.toList());
-            
+
             FirebaseMessaging.getInstance().sendAll(messages);
             
         } catch(FirebaseMessagingException e) {
             e.printStackTrace();
             throw new NotificationCannotBeSentException(e);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
     
@@ -163,6 +180,8 @@ public class NotificationService implements INotificationService {
         
             final Properties props = new Properties();
             props.put("mail.smtp.host", "mail.jamusicapp.ir");
+            props.put("mail.smtp.auth", true);
+            props.put("mail.smtp.port", "2525");
             
             final SmtpAuthenticator authenticator = new SmtpAuthenticator();
             
