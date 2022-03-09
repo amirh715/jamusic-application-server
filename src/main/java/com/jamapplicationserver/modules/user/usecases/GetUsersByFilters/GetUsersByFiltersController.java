@@ -45,8 +45,8 @@ public class GetUsersByFiltersController extends BaseController {
                         queryParams.get("role").value(),
                         queryParams.get("creatorId").value(),
                         queryParams.get("updaterId").value(),
-                        queryParams.get("limit").value(),
-                        queryParams.get("offset").value()
+                        queryParams.get("limit").integerValue(),
+                        queryParams.get("offset").integerValue()
                 );
         
         try {

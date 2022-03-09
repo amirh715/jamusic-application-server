@@ -22,8 +22,8 @@ public class GetUsersByFiltersRequestDTO {
     public final String role;
     public final String creatorId;
     public final String updaterId;
-    public final String limit;
-    public final String offset;
+    public final Integer limit;
+    public final Integer offset;
     
     public GetUsersByFiltersRequestDTO(
             String searchTerm,
@@ -37,8 +37,8 @@ public class GetUsersByFiltersRequestDTO {
             String role,
             String creatorId,
             String updaterId,
-            String limit,
-            String offset
+            Integer limit,
+            Integer offset
     ) {
         this.searchTerm = searchTerm;
         this.createdAtFrom = createdAtFrom;

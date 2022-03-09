@@ -122,10 +122,8 @@ public class UserQueryService implements IUserQueryService {
             );
 
             return em.createQuery(query)
-                    .setFirstResult(filters != null ? filters.offset : 0)
-                    .setFirstResult(0)
                     .setMaxResults(filters != null ? filters.limit : 50)
-                    .setMaxResults(50)
+                    .setFirstResult(filters != null ? filters.offset : 0)
                     .getResultStream()
                     .map(user -> {
                         final long totalReportsCount =

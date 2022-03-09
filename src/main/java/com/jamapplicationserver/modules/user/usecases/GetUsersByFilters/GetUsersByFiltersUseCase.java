@@ -73,12 +73,10 @@ public class GetUsersByFiltersUseCase implements IUsecase<GetUsersByFiltersReque
                         request.hasEmail,
                         request.state != null ? stateOrError.getValue() : null,
                         request.role != null ? roleOrError.getValue() : null,
-                        null,
-                        null,
+                        request.creatorId != null ? creatorIdOrError.getValue().toValue() : null,
+                        request.updaterId != null ? updaterIdOrError.getValue().toValue() : null,
                         request.limit,
                         request.offset
-//                        request.creatorId != null ? creatorIdOrError.getValue() : null,
-//                        request.updaterId != null ? updaterIdOrError.getValue() : null
                 );
             
             return Result.ok(queryService.getUsersByFilters(filters));
