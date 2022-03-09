@@ -17,7 +17,7 @@ public class ErrorSerializer implements JsonSerializer<BusinessError> {
     
     @Override
     public JsonElement serialize(BusinessError error, Type type, JsonSerializationContext context) {
-        
+
         JsonObject json = new JsonObject();
         
         json.add("code", new JsonPrimitive(error.code));

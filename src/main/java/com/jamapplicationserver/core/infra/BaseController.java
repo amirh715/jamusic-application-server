@@ -67,11 +67,11 @@ public abstract class BaseController implements Route {
                 if(!authService.canAccess(acp)) {
                     unauthorized(new AccessDeniedError());
                     return res;
-                } 
+                }
 
             } else { // subject id and/or role are null.
 
-                fail("Subject id and role are required.");
+                forbidden(new AccessCredentialsAreNotProvidedError());
                 return res;
 
             }
@@ -230,7 +230,7 @@ public abstract class BaseController implements Route {
     }
     
     /**
-     * Response can only be stored in private caches.
+     * Response can only be stored in private caches
      * @return BaseController
      */
     protected final BaseController privateCache() {
@@ -238,13 +238,17 @@ public abstract class BaseController implements Route {
         return this;
     }
     
+    /**
+     * Response can be store in intermediate caches
+     * @return 
+     */
     protected final BaseController publicCache() {
         addCacheControlDirective("public");
         return this;
     }
         
     /**
-     * Indicates that the response won't be updated while it's fresh.
+     * Indicates that the response won't be updated while it's fresh
      * @return BaseController
      */
     protected final BaseController immutable() {
