@@ -209,7 +209,6 @@ public class Album extends Artwork {
         if(releaseDate != null) combinedProps.add(releaseDateOrError);
         
         final Result combinedPropsResult = Result.combine(combinedProps);
-//        System.out.println(combinedPropsResult.getError().message);
         if(combinedPropsResult.isFailure) return combinedPropsResult;
         
         Album instance = new Album(

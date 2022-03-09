@@ -9,6 +9,14 @@ package com.jamapplicationserver.core.logic;
  *
  * @author dada
  */
-public class UnauthorizedError {
+public abstract class UnauthorizedError extends BusinessError {
+    
+    protected UnauthorizedError(String message, int code) {
+        super(message, code);
+    }
+    
+    protected UnauthorizedError(String message, int code, String description) {
+        super(message, code, description);
+    }
     
 }

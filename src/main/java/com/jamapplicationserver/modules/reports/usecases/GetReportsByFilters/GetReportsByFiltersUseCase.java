@@ -31,9 +31,7 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
     public Result execute(GetReportsByFiltersRequestDTO request) throws GenericAppException {
         
         try {
-            
-            System.out.println("GetReportsByFiltersUseCase");
-            
+                        
             final ArrayList<Result> combinedProps = new ArrayList<>();
 
             final Result<ReportStatus> statusOrError =

@@ -43,9 +43,7 @@ public class CreateArtistRequestDTO extends DTOWithAuthClaims {
         super(creatorId, creatorRole);
         
         final ISerializer serializer = Serializer.getInstance();
-        
-        System.out.println(genreIds);
-        
+                
         this.type = type;
         this.title = title;
         this.description = description;

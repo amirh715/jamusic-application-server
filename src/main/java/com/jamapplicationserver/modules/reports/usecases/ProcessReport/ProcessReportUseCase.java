@@ -44,26 +44,18 @@ public class ProcessReportUseCase implements IUsecase<ProcessReportRequestDTO, S
             
             final UniqueEntityId reportId = reportIdOrError.getValue();
             final Message processorNote = processorNoteOrError.getValue();
-            
-            System.out.println("1. &&&&&&&&&&&&&&&&&&&");
-            
+                        
             final Processor processor = repository.fetchProcessorById(request.subjectId);
             if(processor == null) return Result.fail(new ProcessorDoesNotExistError());
-            
-            System.out.println("2. &&&&&&&&&&&&&&&&&&&");
-            
+                        
             final Report report = repository.fetchById(reportId);
             if(report == null) return Result.fail(new ReportDoesNotExistError());
-            
-            System.out.println("3. &&&&&&&&&&&&&&&&&&&");
-            
+                        
             final Result result = report.markAsProcessed(processorNote, processor);
             if(result.isFailure) return result;
             
             repository.save(report);
-            
-            System.out.println("4. &&&&&&&&&&&&&&&&&&&");
-            
+                        
             return Result.ok(result.getValue());
         } catch(Exception e) {
             e.printStackTrace();

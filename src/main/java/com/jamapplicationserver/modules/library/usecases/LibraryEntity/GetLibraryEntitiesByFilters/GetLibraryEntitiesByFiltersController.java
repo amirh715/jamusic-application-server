@@ -30,9 +30,7 @@ public class GetLibraryEntitiesByFiltersController extends BaseController {
     public void executeImpl() {
         
         try {
-            
-            System.out.println("GetLibraryEntitiesByFiltersController");
-            
+                        
             final QueryParamsMap fields = req.queryMap();
                         
             final GetLibraryEntitiesByFiltersRequestDTO dto =

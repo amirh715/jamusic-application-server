@@ -25,9 +25,7 @@ public class GetUserByIDController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("GetUserByIDController");
-        
+                
         try {
             
             final Result<UserDetails> result = useCase.execute(req.params(":id"));

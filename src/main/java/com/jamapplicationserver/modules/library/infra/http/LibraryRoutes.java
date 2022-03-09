@@ -43,8 +43,6 @@ public class LibraryRoutes implements RouteGroup {
     @Override
     public void addRoutes() {
         
-        before("/*", (req, res) -> System.out.println(req.url()));
-        
         // create new artist
         post(
                 LibraryPaths.CREATE_NEW_ARTIST,

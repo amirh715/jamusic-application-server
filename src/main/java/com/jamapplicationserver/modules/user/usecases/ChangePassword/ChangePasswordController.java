@@ -25,9 +25,7 @@ public class ChangePasswordController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("ChangePasswordController");
-        
+                
         final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         final ChangePasswordRequestDTO dto =
                 new ChangePasswordRequestDTO(

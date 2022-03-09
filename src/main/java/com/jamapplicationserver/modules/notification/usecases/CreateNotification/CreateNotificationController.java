@@ -44,9 +44,7 @@ public class CreateNotificationController extends BaseController {
                             subjectId,
                             subjectRole
                     );
-            
-            System.out.println(fields.get("type"));
-            
+                        
             final Result result = this.usecase.execute(dto);
             
             if(result.isFailure) {

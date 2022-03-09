@@ -22,7 +22,6 @@ public class DomainEventDispatcher
         PostDeleteEventListener {
     
     public DomainEventDispatcher() {
-        System.out.println("DomainEventDispatcher instantiated");
     }
 
     @Override
@@ -32,9 +31,7 @@ public class DomainEventDispatcher
     
     @Override
     public void onPostInsert(PostInsertEvent event) {
-        
-        System.out.println("PostInsert");
-        
+                
         if(event.getEntity() instanceof EntityModel) {
             dispatchEventsForAggregate((EntityModel) event.getEntity());
         }
@@ -43,9 +40,7 @@ public class DomainEventDispatcher
     
     @Override
     public void onPostUpdate(PostUpdateEvent event) {
-        
-        System.out.println("PostUpdate");
-        
+                
         if(event.getEntity() instanceof EntityModel) {
             dispatchEventsForAggregate((EntityModel) event.getEntity());
         }
@@ -54,9 +49,7 @@ public class DomainEventDispatcher
     
     @Override
     public void onPostDelete(PostDeleteEvent event) {
-        
-        System.out.println("PostDelete");
-        
+                
         if(event.getEntity() instanceof EntityModel) {
             dispatchEventsForAggregate((EntityModel) event.getEntity());
         }

@@ -22,9 +22,7 @@ public class AfterAccountVerificationRequest implements IDomainEventHandler<Acco
     
     @Override
     public void handleEvent(AccountVerificationRequested event) throws Exception {
-        
-        System.out.println("AfterAccountVerificationRequest (Event handler)");
-        
+                
         try {
             
             final TransactionalSMSService sms = TransactionalSMSService.getInstance();
@@ -38,8 +36,6 @@ public class AfterAccountVerificationRequest implements IDomainEventHandler<Acco
             
         } catch(Exception e) {
             throw e;
-        } finally {
-            System.out.println("AfterAccountVerificationRequest (Event handler) ENDS");
         }
         
     }

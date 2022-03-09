@@ -30,9 +30,7 @@ public class CreateReportController extends BaseController {
         try {
         
             final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
-            
-            System.out.println(fields.get("message") + " - " + fields.get("reporterId"));
-            
+                        
             final CreateReportRequestDTO dto =
                     new CreateReportRequestDTO(
                             fields.get("message"),

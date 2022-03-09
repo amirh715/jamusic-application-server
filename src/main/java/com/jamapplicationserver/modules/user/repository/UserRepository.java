@@ -335,9 +335,7 @@ public class UserRepository implements IUserRepository {
         try {
             
             tnx.begin();
-            
-            System.out.println("Remover id: " + removerId.toValue().toString());
-            
+                        
             final UserModel model = em.find(UserModel.class, user.getId().toValue());
             
             UserModel updater;

@@ -17,7 +17,7 @@ import java.util.*;
 public class FilePersistenceManager implements IFilePersistenceManager {
     
     private static boolean isFileStructureSetup = false;
-    public static final String BASE_PATH = "/home/dada/Desktop/JamFS/";
+    public static final String BASE_PATH = "/home/api/JamFileStorage/";
     
     private FilePersistenceManager() {
     }

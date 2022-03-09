@@ -26,9 +26,7 @@ public class RequestEmailVerificationUseCase implements IUsecase<UniqueEntityId,
     
     @Override
     public Result execute(UniqueEntityId id) throws GenericAppException {
-        
-        System.out.println("RequestEmailVerificationUseCase");
-        
+                
         try {
             
             final User user = this.repository.fetchById(id);

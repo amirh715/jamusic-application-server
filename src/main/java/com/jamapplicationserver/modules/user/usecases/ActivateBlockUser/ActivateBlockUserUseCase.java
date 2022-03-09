@@ -27,9 +27,7 @@ public class ActivateBlockUserUseCase implements IUsecase<ActivateBlockUserReque
     
     @Override
     public Result execute(ActivateBlockUserRequestDTO request) throws GenericAppException {
-        
-        System.out.println("ActivateBlockUserUseCase");
-        
+                
         try {
             
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);

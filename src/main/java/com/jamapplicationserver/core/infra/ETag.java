@@ -56,9 +56,6 @@ public class ETag {
     }
     
     public final boolean same(ETag etag) {
-        System.out.println("Etag given: " + etag.value);
-        System.out.println("This Etag: " + this.value);
-        System.out.println("Is equal?? " + this.value.equals(etag.value));
         return this.value.equals(etag.value);
     }
     

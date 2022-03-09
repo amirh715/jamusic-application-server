@@ -22,12 +22,8 @@ public class RequestAccountVerificationCodeUseCase implements IUsecase<String, S
     @Override
     public Result execute(String mobileNoString) throws GenericAppException {
         
-        System.out.println("RequestAccountVerificationCodeUseCase");
-
         try {
-            
-            System.out.println("Mobile: " + mobileNoString);
-            
+                        
             final Result<MobileNo> mobileNoOrError = MobileNo.create(mobileNoString);
             if(mobileNoOrError.isFailure)
                 return mobileNoOrError;

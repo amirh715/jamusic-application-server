@@ -25,9 +25,7 @@ public class ActivateBlockUserController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("ActivateBlockUserController");
-        
+                
         Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
         final ActivateBlockUserRequestDTO dto =
                 new ActivateBlockUserRequestDTO(

@@ -61,8 +61,6 @@ public abstract class BaseController implements Route {
                 
                 // check if access is allowed to this controller
                 final AuthService authService = AuthService.getInstance();
-                System.out.println("Subject Role: " + subjectRole.getValue());
-                System.out.println("Use case name: " + this.getClass().getSimpleName());
                 final AccessControlPolicy acp = new AccessControlPolicy(this.getClass().getSimpleName(), subjectRole.getValue());
                 if(!authService.canAccess(acp)) {
                     unauthorized(new AccessDeniedError());

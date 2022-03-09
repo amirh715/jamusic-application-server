@@ -37,9 +37,7 @@ public class EditUserUseCase implements IUsecase<EditUserRequestDTO, String> {
     
     @Override
     public Result execute(EditUserRequestDTO request) throws GenericAppException {
-        
-        System.out.println("EditUserUseCase");
-        
+                
         try {
             
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);

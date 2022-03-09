@@ -31,9 +31,7 @@ public class LoginUseCase implements IUsecase<LoginRequestDTO, AuthToken> {
     
     @Override
     public Result<AuthToken> execute(LoginRequestDTO request) throws GenericAppException {
-        
-        System.out.println("LoginUseCase");
-        
+                
         try {
             
             Result loginResult;

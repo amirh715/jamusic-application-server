@@ -28,9 +28,7 @@ public class GetUserByIDUseCase implements IUsecase<String, User> {
     
     @Override
     public Result<User> execute(String userID) throws GenericAppException {
-        
-        System.out.println("GetUserByIdUseCase");
-        
+                
         try {
             
             final Result<UniqueEntityId> userIdOrError = UniqueEntityId.createFromString(userID);

@@ -26,9 +26,7 @@ public class RequestPasswordResetController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("RequestPasswordResetController");
-        
+                
         final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
         final RequestPasswordResetRequestDTO dto = new RequestPasswordResetRequestDTO(fields.get("mobile"));
         

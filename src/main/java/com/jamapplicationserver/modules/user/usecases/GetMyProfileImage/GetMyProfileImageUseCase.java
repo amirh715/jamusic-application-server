@@ -32,20 +32,15 @@ public class GetMyProfileImageUseCase implements IUsecase<UniqueEntityId, InputS
     public Result execute(UniqueEntityId subjectId) throws GenericAppException {
         
         try {
-            
-            System.out.println("GetMyProfileImageUsecase (1)");
-            
+                        
             final User user = repository.fetchById(subjectId);
             
             if(user == null)
                 return Result.fail(new UserDoesNotExistError());
-            
-            System.out.println("GetMyProfileImageUsecase (2)");
-            
+                        
             if(!user.hasProfileImage())
                 return Result.fail(new UserProfileImageDoesNotExistError());
             
-            System.out.println("GetMyProfileImageUsecase (3)");
             final InputStream image = persistence.read(user.getImagePath().toFile());
             
             if(image == null)

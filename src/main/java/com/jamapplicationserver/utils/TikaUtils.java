@@ -42,9 +42,7 @@ public class TikaUtils {
     public final boolean isAudio(InputStream stream) throws IOException {
         
         final String type = this.getType(stream);
-        
-        System.out.println(type);
-        
+                
         return type.equals("audio");
         
     }

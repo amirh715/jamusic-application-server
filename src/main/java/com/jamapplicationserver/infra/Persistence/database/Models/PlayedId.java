@@ -52,13 +52,11 @@ public class PlayedId implements Serializable {
     
     @Override
     public int hashCode() {
-        System.out.println("### PlayedId::hashCode ####");
         return Objects.hash(player, playedTrack, playedAt);
     }
     
     @Override
     public boolean equals(Object obj) {
-        System.out.println("### PlayedId::equals ####");
         if(obj == this)
             return true;
         if(!(obj instanceof PlayedId))

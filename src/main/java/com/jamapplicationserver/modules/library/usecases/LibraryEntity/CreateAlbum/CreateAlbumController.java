@@ -34,9 +34,7 @@ public class CreateAlbumController extends BaseController {
     public void executeImpl() {
         
         try {
-            
-            System.out.println("CreateAlbumController");
-            
+                        
             final HttpServletRequest raw = this.req.raw();
             
             final Map<String, String> fields = MultipartFormDataUtil.toMap(raw);

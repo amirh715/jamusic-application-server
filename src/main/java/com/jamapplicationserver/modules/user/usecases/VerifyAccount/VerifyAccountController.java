@@ -21,15 +21,11 @@ public class VerifyAccountController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("VerifyAccountController");
-        
+                
         final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         
         try {
-            
-            System.out.println("Code: " + fields.get("code"));
-            
+                        
             final VerifyAccountRequestDTO dto = new VerifyAccountRequestDTO(
                     fields.get("mobileNo"),
                     fields.get("code")

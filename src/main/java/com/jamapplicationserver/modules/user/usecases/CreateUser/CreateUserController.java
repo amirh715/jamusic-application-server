@@ -23,9 +23,7 @@ public class CreateUserController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("CreateUserController");
-        
+                
         try {
             
             final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());

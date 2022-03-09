@@ -37,7 +37,7 @@ public class NotificationService implements INotificationService {
                     .build();
             FirebaseApp.initializeApp(options);
         } catch(Exception e) {
-            System.out.println(e);
+            
         }
     }
     
@@ -173,9 +173,7 @@ public class NotificationService implements INotificationService {
     }
     
     private void sendEmail(Notification notification) throws NotificationCannotBeSentException {
-        
-        System.out.println("send");
-        
+                
         try {
         
             final Properties props = new Properties();
@@ -259,9 +257,6 @@ public class NotificationService implements INotificationService {
             conn.disconnect();
         }
         catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-            System.out.println(e.getLocalizedMessage());
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             StringBuilder sb = new StringBuilder();
             String output = null;

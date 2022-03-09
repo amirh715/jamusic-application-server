@@ -24,9 +24,7 @@ public class VerifyEmailController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("VerifyEmailController");
-        
+                
         try {
             
             final VerifyEmailRequestDTO dto = new VerifyEmailRequestDTO(req.queryParams("token"));

@@ -7,7 +7,6 @@ package com.jamapplicationserver.modules.user.infra.Jobs;
 
 import org.quartz.*;
 import java.util.*;
-import java.util.stream.*;
 import com.jamapplicationserver.modules.user.domain.*;
 import com.jamapplicationserver.modules.user.repository.*;
 
@@ -21,9 +20,7 @@ public class RemoveUnverifiedUsersJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         
         try {
-            
-            System.out.println("JOB : " + this.getClass().getSimpleName());
-        
+                    
             final IUserRepository repository = UserRepository.getInstance();
 
             // unverified users

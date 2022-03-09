@@ -19,9 +19,7 @@ public class RemoveUnverifiedEmailsJob implements Job {
     
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        
-        System.out.println("JOB : " + this.getClass().getSimpleName());
-        
+                
         final IUserRepository repository = UserRepository.getInstance();
         
         // users with emails
@@ -35,10 +33,14 @@ public class RemoveUnverifiedEmailsJob implements Job {
                 .collect(Collectors.toSet());
         if(users.isEmpty()) return;
         
-//        users.forEach(user -> {
-//            user.removeEmail();
-//            repository.save(user);
-//        });
+        for(User user : users) {
+            try {
+                user.removeEmail();
+                repository.save(user);
+            } catch(Exception e) {
+                
+            }
+        }
         
     }
     

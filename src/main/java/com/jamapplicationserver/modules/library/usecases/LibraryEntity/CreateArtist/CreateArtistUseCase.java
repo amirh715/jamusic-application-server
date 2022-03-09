@@ -41,9 +41,7 @@ public class CreateArtistUseCase implements IUsecase<CreateArtistRequestDTO, Str
     public Result execute(CreateArtistRequestDTO request) throws GenericAppException {
         
         try {
-            
-            System.out.println("CreateArtistUseCase");
-            
+                        
             final Result<LibraryEntityType> typeOrError =
                     LibraryEntityType.create(request.type);
             if(typeOrError.isFailure) return typeOrError;
@@ -77,7 +75,6 @@ public class CreateArtistUseCase implements IUsecase<CreateArtistRequestDTO, Str
                 combinedProps.add(imageOrError);
 
             final Result combinedPropsResult = Result.combine(combinedProps);
-            if(combinedPropsResult.isFailure) System.out.println(combinedPropsResult.getError().message);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
             
             final Title title = titleOrError.getValue();

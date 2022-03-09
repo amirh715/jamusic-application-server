@@ -22,9 +22,7 @@ public class AfterArtistEdited implements IDomainEventHandler<ArtistEdited> {
     public void handleEvent(ArtistEdited event) throws Exception {
         
         try {
-            
-            System.out.println("AfterArtistEdited (Event handler)");
-            
+                        
             final ILibraryEntityRepository repository =
                     LibraryEntityRepository.getInstance();
             
@@ -42,8 +40,6 @@ public class AfterArtistEdited implements IDomainEventHandler<ArtistEdited> {
             
         } catch(Exception e) {
             throw e;
-        } finally {
-            System.out.println("AfterArtistEdited ENDS");
         }
         
     }

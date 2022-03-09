@@ -69,7 +69,6 @@ public class ReleaseDate extends ValueObject<YearMonth> {
 
             return Result.ok(new ReleaseDate(yearMonth));
         } catch(DateTimeParseException e) {
-            System.out.println(e);
             return Result.fail(new ValidationError("Release date is invalid"));
         }
     }

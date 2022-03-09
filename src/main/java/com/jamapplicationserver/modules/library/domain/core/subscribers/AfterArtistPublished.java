@@ -28,8 +28,6 @@ public class AfterArtistPublished implements IDomainEventHandler<ArtistPublished
     
     @Override
     public void handleEvent(ArtistPublished event) throws Exception {
-
-        System.out.println("AfterArtistPublished (Event handler)");
         
         // publish artist's artworks as well
         if(event.cascadeToArtworks) {
@@ -73,8 +71,6 @@ public class AfterArtistPublished implements IDomainEventHandler<ArtistPublished
 
             } catch(Exception e) {
                 throw e; // LOG
-            } finally {
-                System.out.println("AfterArtistPublished (Event handler) ENDS");
             }
             
         }

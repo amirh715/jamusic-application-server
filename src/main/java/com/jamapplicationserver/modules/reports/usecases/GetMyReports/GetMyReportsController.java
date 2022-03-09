@@ -28,9 +28,7 @@ public class GetMyReportsController extends BaseController {
     @Override
     public void executeImpl() {
         try {
-            
-            System.out.println("GetMyReportsController");
-            
+                        
             final QueryParamsMap fields = req.queryMap();
             final GetMyReportsRequestDTO dto =
                     new GetMyReportsRequestDTO(

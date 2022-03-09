@@ -28,8 +28,6 @@ public class ChangePasswordUseCase implements IUsecase<ChangePasswordRequestDTO,
     @Override
     public Result execute(ChangePasswordRequestDTO request) throws GenericAppException {
         
-        System.out.println("ChangePasswordUseCase");
-
         try {
             
             final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(request.id);

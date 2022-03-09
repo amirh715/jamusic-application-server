@@ -9,7 +9,7 @@ package com.jamapplicationserver.core.logic;
  *
  * @author amirhossein
  */
-public class AccessDeniedError extends AuthError {
+public class AccessDeniedError extends UnauthorizedError {
     
     private static final int CODE = 100;
     private static final String DEFAULT_MESSAGE = "اجازه دسترسی وجود ندارد";

@@ -25,9 +25,7 @@ public class RemoveUserController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("RemoveUserController");
-        
+                
         final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         
         try {
@@ -60,7 +58,6 @@ public class RemoveUserController extends BaseController {
             noContent();
             
         } catch(Exception e) {
-            System.out.println(e);
             fail(e);
         }
         

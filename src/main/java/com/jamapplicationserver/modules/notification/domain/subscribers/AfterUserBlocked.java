@@ -25,9 +25,7 @@ public class AfterUserBlocked implements IDomainEventHandler<UserBlocked> {
     public void handleEvent(UserBlocked event) throws Exception {
         
         try {
-            
-            System.out.println("AfterUserBlocked");
-            
+                        
             final IFCMDataMessageService fcmService = FCMDataMessageService.getInstance();
             
             final Map<String, String> data = Map.of("USER_STATE_CHANGED_TO", "BLOCKED");

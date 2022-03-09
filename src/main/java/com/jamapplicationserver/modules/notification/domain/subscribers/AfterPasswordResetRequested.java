@@ -23,9 +23,7 @@ public class AfterPasswordResetRequested implements IDomainEventHandler<Password
     
     @Override
     public void handleEvent(PasswordResetRequested event) throws Exception {
-        
-        System.out.println("AfterPasswordResetRequested (Event handler)");
-        
+                
         try {
             
             final TransactionalSMSService sms = TransactionalSMSService.getInstance();
@@ -39,8 +37,6 @@ public class AfterPasswordResetRequested implements IDomainEventHandler<Password
             
         } catch(Exception e) {
             throw e;
-        } finally {
-            System.out.println("AfterPasswordResetRequested (Event handler) ENDS");
         }
         
     }

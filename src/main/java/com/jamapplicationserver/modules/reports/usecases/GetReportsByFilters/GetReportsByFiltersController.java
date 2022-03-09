@@ -29,9 +29,7 @@ public class GetReportsByFiltersController extends BaseController {
     public void executeImpl() {
         
         try {
-            
-            System.out.println("GetReportsByFiltersController");
-            
+                        
             final QueryParamsMap fields = req.queryMap();
             
             final GetReportsByFiltersRequestDTO dto =

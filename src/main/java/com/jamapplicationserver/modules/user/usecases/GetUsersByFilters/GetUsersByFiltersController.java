@@ -27,9 +27,7 @@ public class GetUsersByFiltersController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("GetUsersByFiltersController");
-        
+                
         final QueryParamsMap queryParams = req.queryMap();
         
         final GetUsersByFiltersRequestDTO dto =

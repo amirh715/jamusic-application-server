@@ -26,9 +26,7 @@ public class VerifyEmailUseCase implements IUsecase<VerifyEmailRequestDTO, Strin
     
     @Override
     public Result execute(VerifyEmailRequestDTO request) throws GenericAppException {
-        
-        System.out.println("VerifyEmailUseCase");
-        
+                
         try {
 
             if(request.token == null)

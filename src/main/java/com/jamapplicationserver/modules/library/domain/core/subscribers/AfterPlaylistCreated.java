@@ -22,9 +22,7 @@ public class AfterPlaylistCreated implements IDomainEventHandler<PlaylistCreated
     
     @Override
     public void handleEvent(PlaylistCreated event) throws Exception {
-        
-        System.out.println("AfterPlaylistCreated Event handler");
-        
+                
         try {
             
             final IPlayerRepository repository =
@@ -33,8 +31,6 @@ public class AfterPlaylistCreated implements IDomainEventHandler<PlaylistCreated
             repository.save(event.player);
         } catch(Exception e) {
             throw e;
-        } finally {
-            System.out.println("AfterPlaylistCreated Event handler ENDS");
         }
         
     }

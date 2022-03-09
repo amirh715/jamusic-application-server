@@ -27,9 +27,7 @@ public class RemoveUserUseCase implements IUsecase<RemoveUserRequestDTO, Object>
     
     @Override
     public Result execute(RemoveUserRequestDTO request) throws GenericAppException {
-        
-        System.out.println("RemoveUserUseCase");
-        
+                
         try {
             
             final Result<UniqueEntityId> idOrError =

@@ -39,9 +39,7 @@ public class UserRoutes implements RouteGroup {
     
     @Override
     public void addRoutes() {
-        
-        before("/*", (req, res) -> System.out.println(req.url()));
-        
+                
         // create new user
         post(
                 UserPaths.CREATE_NEW_USER,

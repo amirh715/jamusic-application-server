@@ -21,9 +21,7 @@ public class VerifyAccountUseCase implements IUsecase<VerifyAccountRequestDTO, R
     
     @Override
     public Result execute(VerifyAccountRequestDTO request) throws GenericAppException {
-        
-        System.out.println("VerifyAccountUseCase");
-        
+                
         try {            
             
             final Result<MobileNo> mobileNoOrError =

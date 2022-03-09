@@ -20,9 +20,7 @@ public class AssignReportsToProcessorsJob implements Job {
     
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        
-        System.out.println("JOB : " + this.getClass().getSimpleName());
-        
+                
         final IReportRepository repository = ReportRepository.getInstance();
         
         // pending assignments

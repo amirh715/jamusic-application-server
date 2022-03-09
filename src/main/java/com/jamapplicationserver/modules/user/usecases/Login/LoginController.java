@@ -10,7 +10,6 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 import java.util.*;
 import com.jamapplicationserver.core.domain.IUsecase;
-import com.jamapplicationserver.modules.user.infra.services.LoginAuditManager;
 import com.jamapplicationserver.modules.user.infra.DTOs.queries.AuthToken;
 import ua_parser.*;
 
@@ -29,9 +28,7 @@ public class LoginController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("LoginController");
-        
+                
         final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         
         final Parser userAgentParser = new Parser();

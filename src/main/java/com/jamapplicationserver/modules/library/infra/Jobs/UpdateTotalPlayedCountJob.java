@@ -17,9 +17,7 @@ public class UpdateTotalPlayedCountJob implements Job {
     
     @Override
     public void execute(JobExecutionContext context) {
-        
-        System.out.println("Job: UpdateTotalPlayedCountJob");
-        
+                
         final EntityManager em =
                 EntityManagerFactoryHelper.getInstance()
                 .createEntityManager();

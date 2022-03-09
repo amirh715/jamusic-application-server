@@ -27,9 +27,7 @@ public class ResetPasswordUseCase implements IUsecase<ResetPasswordRequestDTO, S
     
     @Override
     public Result execute(ResetPasswordRequestDTO request) throws GenericAppException {
-        
-        System.out.println("ResetPasswordUseCase");
-        
+                
         try {
             
             final Result<MobileNo> mobileOrError = MobileNo.create(request.mobile);

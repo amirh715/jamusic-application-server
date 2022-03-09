@@ -8,7 +8,6 @@ package com.jamapplicationserver.modules.user.usecases.RequestAccountVerificatio
 import java.util.*;
 import com.jamapplicationserver.core.infra.BaseController;
 import com.jamapplicationserver.core.domain.IUsecase;
-import com.jamapplicationserver.core.domain.UniqueEntityId;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.MultipartFormDataUtil;
 
@@ -23,9 +22,7 @@ public class RequestAccountVerificationCodeController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("RequestUserVerificationRequestController");
-        
+                
         final Map<String, String> fields = MultipartFormDataUtil.toMap(req.raw());
         
         try {

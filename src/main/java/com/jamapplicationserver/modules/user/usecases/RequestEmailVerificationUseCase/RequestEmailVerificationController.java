@@ -26,9 +26,7 @@ public class RequestEmailVerificationController extends BaseController {
     
     @Override
     public void executeImpl() {
-        
-        System.out.println("RequestEmailVerificationController");
-        
+                
         final Map<String, String> fields = MultipartFormDataUtil.toMap(this.req.raw());
         final Result<UniqueEntityId> idOrError = UniqueEntityId.createFromString(fields.get("id"));
         

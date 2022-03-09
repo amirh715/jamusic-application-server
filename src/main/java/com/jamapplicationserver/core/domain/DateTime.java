@@ -47,7 +47,6 @@ public class DateTime extends ValueObject<LocalDateTime> {
                     DateTime.create(LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME)).getValue();
             return Result.ok(instance);
         } catch(DateTimeParseException e) {
-            System.out.println(e);
             return Result.fail(new ValidationError("Invalid datetime"));
         }
         

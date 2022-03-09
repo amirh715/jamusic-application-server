@@ -20,9 +20,7 @@ public class SendScheduledNotificationsJob implements Job {
     
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        
-        System.out.println("JOB : " + this.getClass().getSimpleName());
-        
+                
         try {
             
             final INotificationRepository repository =
@@ -50,8 +48,6 @@ public class SendScheduledNotificationsJob implements Job {
             }
             
         } catch(Exception e) {
-            System.out.println(e);
-        } finally {
             
         }
         

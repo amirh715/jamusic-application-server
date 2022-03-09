@@ -40,13 +40,9 @@ public class RemovePlaylistUseCase implements IUsecase<RemovePlaylistRequestDTO,
             
             final Playlist playlist = player.getPlaylist(id);
             if(playlist == null) return Result.fail(new PlaylistDoesNotExistError());
-            
-            System.out.println("(before) playlists count: " + player.getPlaylists().size());
-            
+                        
             player.removePlaylist(playlist);
-            
-            System.out.println("(after) playlists count: " + player.getPlaylists().size());
-            
+                        
             repository.save(player);
             
             return Result.ok();

@@ -25,9 +25,7 @@ public class AfterArtistArchived implements IDomainEventHandler<ArtistArchived> 
     
     @Override
     public void handleEvent(ArtistArchived event) throws Exception {
-        
-        System.out.println("AfterArtistArchived (Event handler)");
-        
+                
         try {
             
             final ILibraryEntityRepository repository =
@@ -49,8 +47,6 @@ public class AfterArtistArchived implements IDomainEventHandler<ArtistArchived> 
             
         } catch(Exception e) {
             throw e;
-        } finally {
-            System.out.println("AfterArtistArchived (Event handler) ENDS");
         }
         
     }

@@ -40,7 +40,6 @@ public class PlayedModel implements Serializable {
     }
     
     public UserModel getPlayer() {
-        System.out.println("PlayedModel::getPlayer");
         return this.player;
     }
     
@@ -49,7 +48,6 @@ public class PlayedModel implements Serializable {
     }
     
     public TrackModel getPlayedTrack() {
-        System.out.println("PlayedModel::getPlayedTrack");
         return this.playedTrack;
     }
     

@@ -37,8 +37,6 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
     @Override
     public Result execute(CreateUserRequestDTO request) throws GenericAppException {
         
-        System.out.println("CreateUserUseCase");
-
         try {
             
             final Result<UserName> nameOrError =

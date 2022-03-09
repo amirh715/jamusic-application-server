@@ -26,8 +26,6 @@ public class ReportRoutes implements RouteGroup {
     @Override
     public void addRoutes() {
         
-        before("/*", (req, res) -> System.out.println(req.url()));
-        
         // create new report
         post(
                 ReportPaths.CREATE_REPORT,

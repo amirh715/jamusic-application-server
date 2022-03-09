@@ -36,8 +36,6 @@ public class CreateShowcaseUseCase implements IUsecase<CreateShowcaseRequestDTO,
         
         try {
             
-            System.out.println("CreateShowcaseUseCase");
-
             final Result<ImageStream> imageOrError =
                     ImageStream.createAndValidate(request.image);
             if(imageOrError.isFailure) return imageOrError;

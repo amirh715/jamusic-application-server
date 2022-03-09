@@ -33,9 +33,7 @@ public class GetLibraryEntitiesByFiltersUseCase implements IUsecase<GetLibraryEn
     
     @Override
     public Result<Set<LibraryEntityDetails>> execute(GetLibraryEntitiesByFiltersRequestDTO request) throws GenericAppException {
-        
-        System.out.println("GetLibraryEntitiesByFiltersUsecase");
-        
+                
         try {
             
             final ArrayList<Result> combinedProps = new ArrayList<>();
