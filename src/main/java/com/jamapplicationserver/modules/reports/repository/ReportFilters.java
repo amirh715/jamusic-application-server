@@ -41,6 +41,9 @@ public class ReportFilters {
     public final Boolean isTechnicalReport;
     public final Boolean isLibraryEntityReport;
     
+    public final Integer limit;
+    public final Integer offset;
+    
     public ReportFilters(
             ReportStatus status,
             UniqueEntityId reporterId,
@@ -59,7 +62,9 @@ public class ReportFilters {
             DateTime lastModifiedAtTill,
             String isContentReport,
             String isTechnicalReport,
-            String isLibraryEntityReport
+            String isLibraryEntityReport,
+            Integer limit,
+            Integer offset
     ) {
         this.status = status;
         this.reporterId = reporterId;
@@ -79,6 +84,8 @@ public class ReportFilters {
         this.isContentReport = isContentReport != null ? Boolean.parseBoolean(isContentReport) : null;
         this.isTechnicalReport = isTechnicalReport != null ? Boolean.parseBoolean(isTechnicalReport) : null;
         this.isLibraryEntityReport = isLibraryEntityReport != null ? Boolean.parseBoolean(isLibraryEntityReport) : null;
+        this.limit = limit;
+        this.offset = offset;
     }
     
     public ReportFilters(
@@ -102,6 +109,8 @@ public class ReportFilters {
         this.isContentReport = null;
         this.isTechnicalReport = null;
         this.isLibraryEntityReport = null;
+        this.limit = null;
+        this.offset = null;
     }
     
     public ReportFilters(
@@ -126,6 +135,34 @@ public class ReportFilters {
         this.isContentReport = null;
         this.isTechnicalReport = null;
         this.isLibraryEntityReport = null;
+        this.limit = null;
+        this.offset = null;
+    }
+    
+    public ReportFilters(
+            Integer limit,
+            Integer offset
+    ) {
+        this.status = null;
+        this.reporterId = null;
+        this.processorId = null;
+        this.reportedEntityId = null;
+        this.type = null;
+        this.assignedAtFrom = null;
+        this.assignedAtTill = null;
+        this.processedAtFrom = null;
+        this.processedAtTill = null;
+        this.archivedAtFrom = null;
+        this.archivedAtTill = null;
+        this.createdAtFrom = null;
+        this.createdAtTill = null;
+        this.lastModifiedAtFrom = null;
+        this.lastModifiedAtTill = null;
+        this.isContentReport = null;
+        this.isTechnicalReport = null;
+        this.isLibraryEntityReport = null;
+        this.limit = limit;
+        this.offset = offset;
     }
     
 }
