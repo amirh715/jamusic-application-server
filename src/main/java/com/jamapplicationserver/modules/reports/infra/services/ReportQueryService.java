@@ -209,7 +209,53 @@ public class ReportQueryService implements IReportQueryService {
     }
     
     @Override
-    public Set<ReportDetails> getAllReports(UniqueEntityId subjectId, UserRole role) {
+    public Set<ReportDetails> getMyReports(UniqueEntityId subjectId, Integer limit, Integer offset) {
+        
+        final EntityManager em = emfh.createEntityManager();
+        
+        try {
+            
+            final String query = "SELECT r FROM ReportModel r WHERE r.reporter.id = ?1";
+            return em.createQuery(query, ReportModel.class)
+                    .setParameter(1, subjectId.toValue())
+                    .setMaxResults(limit != null ? limit : 50)
+                    .setFirstResult(offset != null ? offset : 0)
+                    .getResultStream()
+                    .map(report -> {
+                        return new ReportDetails(
+                                report.getId(),
+                                report.getMessage(),
+                                report.getStatus(),
+                                report.getType().toString(),
+                                report.getReporter().getId(),
+                                report.getReporter().getName(),
+                                report.getReportedEntity() != null ?
+                                        report.getReportedEntity().getId() : null,
+                                report.getReportedEntity() != null ?
+                                        report.getReportedEntity().getTitle() : null,
+                                report.isAssigned() ?
+                                        report.getProcessor().getId() : null,
+                                report.isAssigned() ?
+                                        report.getProcessor().getName() : null,
+                                report.getProcessorNote(),
+                                report.getAssignedAt(),
+                                report.getProcessedAt(),
+                                report.getArchivedAt(),
+                                report.getCreatedAt(),
+                                report.getLastModifiedAt()
+                        );
+                    })
+                    .collect(Collectors.toSet());
+            
+        } catch(Exception e) {
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+    
+    @Override
+    public Set<ReportDetails> getAllReports(UniqueEntityId subjectId, UserRole role, Integer limit, Integer offset) {
         
         final EntityManager em = emfh.createEntityManager();
         
@@ -220,6 +266,8 @@ public class ReportQueryService implements IReportQueryService {
             if(role.isAdmin()) {
                 query = "SELECT r FROM ReportModel r ORDER BY status desc";
                 results = em.createQuery(query, ReportModel.class)
+                        .setMaxResults(limit != null ? limit : 50)
+                        .setFirstResult(offset != null ? offset : 0)
                         .getResultStream()
                         .map(report -> {
                             return new ReportDetails(
@@ -247,7 +295,7 @@ public class ReportQueryService implements IReportQueryService {
                         })
                         .collect(Collectors.toSet());
             } else {
-                query = "SELECT r FROM ReportModel r WHERE r.processor.id = ?1";
+                query = "SELECT r FROM ReportModel r WHERE r.processor.id = ?1 LIMIT 30 OFFSET ?2";
                 results = em.createQuery(query, ReportModel.class)
                         .setParameter(1, subjectId.toValue())
                         .getResultStream()

@@ -18,7 +18,9 @@ public interface IReportQueryService {
     
     public Set<ReportDetails> getReportsByFilters(ReportFilters filters);
     
-    public Set<ReportDetails> getAllReports(UniqueEntityId subjectId, UserRole role);
+    public Set<ReportDetails> getMyReports(UniqueEntityId subjectId, Integer limit, Integer offset);
+    
+    public Set<ReportDetails> getAllReports(UniqueEntityId subjectId, UserRole role, Integer limit, Integer offset);
     
     public ReportDetails getReportById(UniqueEntityId id);
     

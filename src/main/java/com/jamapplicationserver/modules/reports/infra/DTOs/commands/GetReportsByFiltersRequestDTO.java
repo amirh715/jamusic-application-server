@@ -41,6 +41,9 @@ public class GetReportsByFiltersRequestDTO extends DTOWithAuthClaims {
     public final String isTechnicalReport;
     public final String isLibraryEntityReport;
     
+    public final Integer limit;
+    public final Integer offset;
+    
     public GetReportsByFiltersRequestDTO(
             String status,
             String reporterId,
@@ -61,7 +64,9 @@ public class GetReportsByFiltersRequestDTO extends DTOWithAuthClaims {
             String isTechnicalReport,
             String isLibraryEntityReport,
             UniqueEntityId creatorId,
-            UserRole creatorRole
+            UserRole creatorRole,
+            Integer limit,
+            Integer offset
     ) {
         
         super(creatorId, creatorRole);
@@ -84,6 +89,8 @@ public class GetReportsByFiltersRequestDTO extends DTOWithAuthClaims {
         this.isContentReport = isContentReport;
         this.isTechnicalReport = isTechnicalReport;
         this.isLibraryEntityReport = isLibraryEntityReport;
+        this.limit = limit;
+        this.offset = offset;
     }
     
 }

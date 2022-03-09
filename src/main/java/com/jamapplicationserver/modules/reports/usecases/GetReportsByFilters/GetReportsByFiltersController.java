@@ -55,7 +55,9 @@ public class GetReportsByFiltersController extends BaseController {
                             fields.get("isTechnicalReport").value(),
                             fields.get("isLibraryEntityReport").value(),
                             subjectId,
-                            subjectRole
+                            subjectRole,
+                            fields.get("limit").integerValue(),
+                            fields.get("offset").integerValue()
                     );
             
             final Result<Set<ReportDetails>> result = usecase.execute(dto);

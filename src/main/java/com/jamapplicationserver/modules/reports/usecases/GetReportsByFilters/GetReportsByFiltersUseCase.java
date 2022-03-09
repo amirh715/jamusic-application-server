@@ -180,12 +180,14 @@ public class GetReportsByFiltersUseCase implements IUsecase<GetReportsByFiltersR
                             lastModifiedAtTill,
                             request.isContentReport,
                             request.isTechnicalReport,
-                            request.isLibraryEntityReport
+                            request.isLibraryEntityReport,
+                            request.limit,
+                            request.offset
                     );
             
 //            final Set<ReportDetails> reports = queryService.getReportsByFilters(filters);
             final Set<ReportDetails> reports =
-                    queryService.getAllReports(request.subjectId, request.subjectRole);
+                    queryService.getAllReports(request.subjectId, request.subjectRole, request.limit, request.offset);
             
             return Result.ok(reports);
         } catch(Exception e) {
