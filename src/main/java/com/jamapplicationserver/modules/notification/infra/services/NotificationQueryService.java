@@ -146,9 +146,9 @@ public class NotificationQueryService implements INotificationQueryService {
                     )
             );
             
+            
+            
             return em.createQuery(query)
-                    .setMaxResults(filters != null ? filters.limit : 50)
-                    .setFirstResult(filters != null ? filters.offset : 0)
                     .getResultStream()
                     .map(notif -> {
                         final long deliveryCount =
