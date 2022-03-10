@@ -170,7 +170,7 @@ public abstract class LibraryEntityDetails implements IQueryResponseDTO {
                             ((AlbumModel) entity).getRecordLabel(),
                             ((AlbumModel) entity).getProducer(),
                             ((AlbumModel) entity).getReleaseDate() != null ?
-                            ((AlbumModel) entity).getReleaseDate().toString() : null,
+                            ((AlbumModel) entity).getReleaseDate() : null,
                             LibraryEntityIdAndTitle.create(((AlbumModel) entity).getArtist()),
                             ((AlbumModel) entity).getTracks()
                                 .stream()
@@ -210,7 +210,7 @@ public abstract class LibraryEntityDetails implements IQueryResponseDTO {
                             ((TrackModel) entity).getRecordLabel(),
                             ((TrackModel) entity).getProducer(),
                             ((TrackModel) entity).getReleaseDate() != null ?
-                                    ((TrackModel) entity).getReleaseDate().toString() : null,
+                                    ((TrackModel) entity).getReleaseDate() : null,
                             ((TrackModel) entity).getArtist() != null ?
                             LibraryEntityIdAndTitle.create(
                                     ((TrackModel) entity).getArtist()

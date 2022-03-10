@@ -68,6 +68,7 @@ public class BandDetails extends ArtistDetails {
             case ADMIN: break;
             case LIBRARY_MANAGER: break;
             case SUBSCRIBER:
+                if(!this.published) return null;
                 this.flagNote = null;
                 this.tags = null;
                 this.genres = null;

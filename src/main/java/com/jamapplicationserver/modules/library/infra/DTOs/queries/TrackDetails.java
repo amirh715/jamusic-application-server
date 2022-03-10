@@ -7,7 +7,7 @@ package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
 import java.util.Set;
 import com.jamapplicationserver.core.domain.UserRole;
-import java.time.LocalDateTime;
+import java.time.*;
 
 /**
  *
@@ -40,7 +40,7 @@ public class TrackDetails extends ArtworkDetails {
             LibraryEntityIdAndTitle album,
             String recordLabel,
             String producer,
-            String releaseDate,
+            YearMonth releaseDate,
             LibraryEntityIdAndTitle artist,
             LocalDateTime createdAt,
             LocalDateTime lastModifiedAt,
@@ -86,6 +86,7 @@ public class TrackDetails extends ArtworkDetails {
             case ADMIN: break;
             case LIBRARY_MANAGER: break;
             case SUBSCRIBER:
+                if(!this.published) return null;
                 this.flagNote = null;
                 this.tags = null;
                 this.genres = null;

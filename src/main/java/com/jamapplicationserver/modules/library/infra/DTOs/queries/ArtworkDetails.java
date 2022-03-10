@@ -5,7 +5,8 @@
  */
 package com.jamapplicationserver.modules.library.infra.DTOs.queries;
 
-import java.time.LocalDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -34,7 +35,7 @@ public abstract class ArtworkDetails extends LibraryEntityDetails {
             long duration,
             String recordLabel,
             String producer,
-            String releaseDate,
+            YearMonth releaseDate,
             LibraryEntityIdAndTitle artist,
             LocalDateTime createdAt,
             LocalDateTime lastModifiedAt,
@@ -65,7 +66,7 @@ public abstract class ArtworkDetails extends LibraryEntityDetails {
         );
         this.recordLabel = recordLabel;
         this.producer = producer;
-        this.releaseDate = releaseDate;
+        this.releaseDate = LocalDateTime.of(releaseDate.getYear(), releaseDate.getMonth(), 1, 0, 0, 0).format(DateTimeFormatter.ISO_DATE_TIME);
         this.artist = artist;
     }
 }
