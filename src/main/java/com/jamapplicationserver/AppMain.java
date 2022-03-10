@@ -7,6 +7,7 @@ package com.jamapplicationserver;
 
 import static spark.Spark.*;
 import javax.servlet.*;
+import java.util.Set;
 import com.jamapplicationserver.modules.user.infra.http.UserRoutes;
 import com.jamapplicationserver.modules.library.infra.http.LibraryRoutes;
 import com.jamapplicationserver.modules.reports.infra.http.ReportRoutes;
@@ -18,7 +19,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jamapplicationserver.core.domain.events.*;
 import com.jamapplicationserver.modules.library.domain.core.subscribers.*;
 import com.jamapplicationserver.modules.notification.domain.subscribers.*;
-import com.jamapplicationserver.modules.user.infra.Jobs.*;
 import com.jamapplicationserver.modules.library.infra.Jobs.*;
 import com.jamapplicationserver.modules.notification.infra.Jobs.*;
 import com.jamapplicationserver.modules.reports.infra.Jobs.*;
@@ -48,9 +48,12 @@ public class AppMain {
         });
 
         options("/*", (request, response) -> {
+            final Set<String> allowedOrigins = Set.of("https://jamusicapp.ir", "https://admin.jamusicapp.ir");
+            
             String accessControlRequestHeaders = request
                     .headers("Access-Control-Request-Headers");
             if (accessControlRequestHeaders != null) {
+                if(allowedOrigins.contains(accessControlRequestHeaders)) return halt(400);
                 response.header("Access-Control-Allow-Headers",
                         accessControlRequestHeaders);
             }
@@ -81,9 +84,10 @@ public class AppMain {
         DomainEvents.register(new AfterArtistEdited());
         DomainEvents.register(new AfterPlaylistCreated());
         DomainEvents.register(new AfterUserBlocked());
+        DomainEvents.register(new AfterTrackArchived());
         
         // API ROUTES (v1)
-        path("v1", () -> {
+        path("api/v1", () -> {
             
             // configure multipart/formData
             before("/*", (req, res) -> req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp")));
@@ -94,12 +98,12 @@ public class AppMain {
                 try {
                     
                     if(
-                            req.pathInfo().equals("/v1/user/login") ||
-                            req.pathInfo().equals("/v1/user/request-account-verification") ||
-                            req.pathInfo().equals("/v1/user/verify-account") ||
-                            req.pathInfo().equals("/v1/user/request-password-reset") ||
-                            req.pathInfo().equals("/v1/user/reset-password") ||
-                            req.pathInfo().equals("/v1/user/verify-email")
+                            req.pathInfo().equals("api/v1/user/login") ||
+                            req.pathInfo().equals("api/v1/user/request-account-verification") ||
+                            req.pathInfo().equals("api/v1/user/verify-account") ||
+                            req.pathInfo().equals("api/v1/user/request-password-reset") ||
+                            req.pathInfo().equals("api/v1/user/reset-password") ||
+                            req.pathInfo().equals("api/v1/user/verify-email")
                     ) {
 
                     } else {

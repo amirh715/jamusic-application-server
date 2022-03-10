@@ -14,6 +14,7 @@ import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.Album.Album;
 import com.jamapplicationserver.modules.library.domain.core.errors.*;
+import com.jamapplicationserver.modules.library.domain.core.events.TrackArchived;
 
 /**
  *
@@ -314,6 +315,7 @@ public class Track extends Artwork {
     @Override
     public final void archive(UniqueEntityId updaterId) {
         archive();
+        addDomainEvent(new TrackArchived(this));
         this.updaterId = updaterId;
     }
     
