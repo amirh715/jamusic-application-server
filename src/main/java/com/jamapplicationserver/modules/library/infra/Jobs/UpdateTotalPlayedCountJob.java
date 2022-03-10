@@ -27,6 +27,8 @@ public class UpdateTotalPlayedCountJob implements Job {
             
             tnx.begin();
             
+            System.out.println("Job is running");
+            
             // update tracks total played count
             {
             
@@ -34,10 +36,11 @@ public class UpdateTotalPlayedCountJob implements Job {
                         "UPDATE jamschema.library_entities tracks "
                         + "SET total_played_count = subQuery.total_played_count "
                         + "FROM "
-                        + "(SELECT tracks.id track_id, tracks.title, COUNT(pt.played_track_id) total_played_count "
-                        + "FROM jamschema.library_entities tracks, jamschema.played_tracks pt "
-                        + "WHERE tracks.id = pt.played_track_id "
-                        + "GROUP BY (tracks.id)) subQuery "
+                        + "("
+                        + "SELECT pt.played_track_id track_id, COUNT(*) total_played_count "
+                        + "FROM jamschema.played_tracks pt "
+                        + "GROUP BY (pt.played_track_id)"
+                        + ") subQuery "
                         + "WHERE tracks.id = subQuery.track_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
@@ -52,11 +55,16 @@ public class UpdateTotalPlayedCountJob implements Job {
                         + "SET total_played_count = subQuery.total_played_count "
                         + "FROM "
                         + "("
-                        + "SELECT SUM(album_tracks.total_played_count) total_played_count, "
-                        + "album_tracks.album_id album_id "
-                        + "FROM jamschema.library_entities album_tracks "
-                        + "WHERE album_tracks.album_id IS NOT NULL "
-                        + "GROUP BY (album_tracks.album_id)"
+                        + "SELECT tracks.album_id, SUM(total_played_count_of_tracks.total_played_count) total_played_count "
+                        + "FROM jamschema.library_entities tracks, "
+                        + "("
+                        + "SELECT pt.played_track_id track_id, COUNT(*) total_played_count "
+                        + "FROM jamschema.played_tracks pt "
+                        + "GROUP BY (pt.played_track_id)"
+                        + ") total_played_count_of_tracks "
+                        + "WHERE tracks.id = total_played_count_of_tracks.track_id "
+                        + "AND tracks.album_id IS NOT NULL "
+                        + "GROUP BY (tracks.album_id)"
                         + ") subQuery "
                         + "WHERE albums.id = subQuery.album_id";
                 em.createNativeQuery(query)
@@ -68,16 +76,21 @@ public class UpdateTotalPlayedCountJob implements Job {
             {
             
                 final String query =
-                        "UPDATE jamschema.library_entities artists "
+                        "UPDATE jamschema.library_entities le "
                         + "SET total_played_count = subQuery.total_played_count "
                         + "FROM "
-                        + "(SELECT artists.id artist_id, tracks.id, COUNT(pt.played_track_id) total_played_count "
-                        + "FROM jamschema.library_entities artists, jamschema.library_entities tracks, jamschema.played_tracks pt "
-                        + "WHERE artists.id = tracks.artist_id "
-                        + "AND tracks.id = pt.played_track_id "
-                        + "AND tracks.entity_type = 'T' "
-                        + "GROUP BY (artists.id, tracks.id)) subQuery "
-                        + "WHERE artists.id = subQuery.artist_id";
+                        + "("
+                        + "SELECT le.artist_id, SUM(total_played_count_of_tracks.total_played_count) total_played_count "
+                        + "FROM jamschema.library_entities le, "
+                        + "("
+                        + "SELECT pt.played_track_id track_id, COUNT(*) total_played_count "
+                        + "FROM jamschema.played_tracks pt "
+                        + "GROUP BY (pt.played_track_id)"
+                        + ") total_played_count_of_tracks "
+                        + "WHERE le.id = total_played_count_of_tracks.track_id "
+                        + "GROUP BY (le.artist_id)"
+                        + ") subQuery "
+                        + "WHERE le.id = subQuery.artist_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
                 
@@ -87,6 +100,7 @@ public class UpdateTotalPlayedCountJob implements Job {
             
         } catch(Exception e) {
             tnx.rollback();
+            e.printStackTrace();
         } finally {
             em.close();
         }
