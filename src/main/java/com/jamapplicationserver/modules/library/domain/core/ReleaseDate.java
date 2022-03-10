@@ -57,7 +57,7 @@ public class ReleaseDate extends ValueObject<YearMonth> {
     }
     
     public static final Result<ReleaseDate> create(String value) {
-        
+                
         if(value == null) return Result.fail(new ValidationError("Release date is required"));
         
         try {
