@@ -68,7 +68,7 @@ public class AppMain {
             return "OK";
         });
         
-//      SET UP JOB SCHEDUELER
+        // SET UP JOB SCHEDUELER
         final JobManager jobManager = JobManager.getInstance();
         jobManager
                 .addJob(DeleteUnlinkedFilesJob.class, jobManager.getDailyTrigger(0, 0))
