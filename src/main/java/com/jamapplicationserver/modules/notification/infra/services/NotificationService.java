@@ -93,16 +93,7 @@ public class NotificationService implements INotificationService {
      */
     @Override
     public boolean canSend(Notification notification) {
-        
-        try {
-            
-            
-            
-            return true;
-        } catch(Exception e) {
-            throw e;
-        }
-        
+        return true;
     }
     
     /**
@@ -179,7 +170,6 @@ public class NotificationService implements INotificationService {
         
             final Properties props = new Properties();
             props.put("mail.smtp.host", "mail.jamusicapp.ir");
-            props.put("mail.smtp.auth", true);
             props.put("mail.smtp.port", "2525");
             
             final SmtpAuthenticator authenticator = new SmtpAuthenticator();
@@ -202,7 +192,7 @@ public class NotificationService implements INotificationService {
             
             final Address[] recipients = new InternetAddress[notification.getRecipients().size()];
             for(int i = 0; i < notification.getRecipients().size(); i++) {
-                final Address recipient = new InternetAddress("dada@jamusicapp.ir");
+                final Address recipient = new InternetAddress("amirh715@gmail.com");
                 recipients[i] = recipient;
             }
             message.setRecipients(javax.mail.Message.RecipientType.TO, recipients);
@@ -210,6 +200,7 @@ public class NotificationService implements INotificationService {
             Transport.send(message);
         
         } catch(Exception e) {
+            e.printStackTrace();
             LogService.getInstance().error(e);
             throw new NotificationCannotBeSentException(e);
         }
