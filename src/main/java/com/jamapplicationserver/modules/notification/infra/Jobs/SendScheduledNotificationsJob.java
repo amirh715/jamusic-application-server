@@ -8,6 +8,7 @@ package com.jamapplicationserver.modules.notification.infra.Jobs;
 import java.util.*;
 import org.quartz.*;
 import com.jamapplicationserver.core.domain.DateTime;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.modules.notification.domain.*;
 import com.jamapplicationserver.modules.notification.repository.*;
 import com.jamapplicationserver.modules.notification.infra.services.*;
@@ -48,7 +49,7 @@ public class SendScheduledNotificationsJob implements Job {
             }
             
         } catch(Exception e) {
-            
+            LogService.getInstance().error(e);
         }
         
     }

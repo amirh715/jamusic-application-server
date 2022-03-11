@@ -38,7 +38,7 @@ public class NotificationService implements INotificationService {
                     .build();
             FirebaseApp.initializeApp(options);
         } catch(Exception e) {
-            
+            LogService.getInstance().error(e);
         }
     }
     
@@ -146,7 +146,7 @@ public class NotificationService implements INotificationService {
                         .setNotification(
                                 com.google.firebase.messaging.Notification.builder()
                                 .setTitle(notification.getTitle().getValue())
-                                .setBody(notification.getMessage().getValue())
+                                .setBody(notification.getMessage() != null ? notification.getMessage().getValue() : null)
                                 .build()
                         )
                         .setToken(token)
@@ -200,7 +200,6 @@ public class NotificationService implements INotificationService {
             Transport.send(message);
         
         } catch(Exception e) {
-            e.printStackTrace();
             LogService.getInstance().error(e);
             throw new NotificationCannotBeSentException(e);
         }
