@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.*;
 import javax.persistence.*;
 import java.time.*;
-import com.jamapplicationserver.infra.Persistence.database.Models.ArtworkModel;
+import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
@@ -24,16 +24,13 @@ import com.jamapplicationserver.modules.library.repositories.*;
 public class RecommendationService implements IRecommendationService {
     
     private final EntityManagerFactoryHelper emfh;
-    private final IGenreRepository genreRepository;
     private final IPlayerRepository playerRepository;
     
     private RecommendationService(
             EntityManagerFactoryHelper emfh,
-            IGenreRepository genreRepository,
             IPlayerRepository playerRepository
     ) {
         this.emfh = emfh;
-        this.genreRepository = genreRepository;
         this.playerRepository = playerRepository;
     }
     
@@ -51,97 +48,47 @@ public class RecommendationService implements IRecommendationService {
             final Player player = playerRepository.fetchById(playerId);
             if(player == null) return collections;
 
-            if(player.getPlayedTracks().size() < 20) return collections;
-
-//            // recommended artworks based on favorite genres
-//            {
-//                final String title = "شاید از اینا هم خوشت بیاد";
-//                final Map<GenreModel, Long> favoriteGenres =
-//                    player.getPlayedTracks().stream()
-//                    // filter played tracks within the past week
-//                    .filter(played -> {
-//                        final LocalDateTime playedAt =
-//                                played.getPlayedAt().getValue();
-//                        final LocalDateTime thePastWeek =
-//                                LocalDateTime.now()
-//                                .minusDays(5);
-//                        return playedAt.isAfter(thePastWeek);
-//                    })
-//                    // extract genres from played tracks genre lists
-//                    .flatMap(played -> played.getTrack().getGenres().getValue().stream())
-//                    .map(genre -> genreRepository.toPersistence(genre))
-//                    // group played genres and count them
-//                    .collect(
-//                            Collectors.groupingBy(e -> e, Collectors.counting())
-//                    );
-//                final Set<UUID> playedTracksIds =
-//                        player.getPlayedTracks().stream()
-//                        .map(played -> played.track.id.toValue())
-//                        .collect(Collectors.toSet());
-//                final String query = "SELECT artworks FROM ArtworkModel artworks JOIN artworks.genres genres "
-//                        + "WHERE genres.id IN (:favoriteGenres) AND "
-//                        + "artworks.id NOT IN (:playedTracksIds)";
-//                final Set<ArtworkIdAndTitle> items =
-//                        em.createQuery(query, ArtworkModel.class)
-//                        .setParameter("favoriteGenres",
-//                                favoriteGenres.keySet().stream().map(g -> g.getId()).collect(Collectors.toSet())
-//                        )
-//                        .setParameter("playedTracksIds", playedTracksIds)
-//                        .setMaxResults(15)
-//                        .getResultStream()
-//                        .map(artwork -> ArtworkIdAndTitle.create(artwork))
-//                        .collect(Collectors.toSet());
-//                collections.add(new RecommendedCollection(title, items));
-//            }
+            if(player.getPlayedTracks().size() < 10) return collections;
 
             // recommended artworks based on being repetitively played
             {
                 final String title = "قفلی زدی";
-                final LocalDateTime from = LocalDateTime.now().minusDays(5);
-    //            final Set<UUID> repetitivelyPlayedTracksIds =
-    //                    player.getPlayedTracks()
-    //                    .stream()
-    //                    .filter(played -> {
-    //                        final LocalDateTime from = LocalDateTime.now().minusDays(5);
-    //                        return played.playedAt.getValue().isAfter(from);
-    //                    })
-    //                    .collect(Collectors.toSet());
-
-    //            if(repetitivelyPlayedTracksIds.isEmpty()) return collections;
-
-                final String query = "SELECT artworks FROM ArtworkModel artworks "
-                        + "WHERE artworks.id IN (:repetitivelyPlayedTracksIds)";
+                final String query = "SELECT le "
+                        + "FROM jamschema.library_entities le, jamschema.played_tracks pt "
+                        + "WHERE le.id = pt.played_track_id "
+                        + "AND pt.player_id = :playerId "
+                        + "AND pt.played_at BETWEEN now() - interval '5 day' AND now() "
+                        + "AND le.published IS TRUE "
+                        + "GROUP BY (le.id) "
+                        + "HAVING COUNT(*) > 15";
                 final Set<LibraryEntityIdAndTitle> items =
-                        em.createQuery(query, ArtworkModel.class)
-                        .setParameter("repetitivelyPlayedTracksIds", null)
-                        .setMaxResults(10)
+                        (Set<LibraryEntityIdAndTitle>) em.createNativeQuery(query, LibraryEntityModel.class)
+                        .setParameter("playerId", playerId)
+                        .setMaxResults(15)
                         .getResultStream()
-                        .map(artwork -> LibraryEntityIdAndTitle.create(artwork))
+                        .map(item -> LibraryEntityIdAndTitle.create((LibraryEntityModel) item))
                         .collect(Collectors.toSet());
-                collections.add(new RecommendedCollection(title, items));
+                if(items.size() > 0)
+                    collections.add(new RecommendedCollection(title, items));
             }
 
             // recommended artworks based on what others are listening to
             {
                 final String title = "دیگران گوش می دهند";
-
-                final String query = "SELECT artworks "
-                        + "FROM ArtworkModel artworks, PlayedModel played "
-                        + "WHERE artworks.id = played.playedTrack.id AND "
-                        + "played.playedAt BETWEEN :from AND :till AND "
-                        + "played.player.id <> :playerId ";
-                final LocalDateTime from = LocalDateTime.now().minusDays(5);
-                final LocalDateTime till = LocalDateTime.now();
+                final String query = "SELECT le "
+                        + "FROM jamschema.library_entities le, jamschema.played_tracks pt "
+                        + "WHERE le.id = pt.played_track_id "
+                        + "AND pt.played_at BETWEEN now() - interval '7 day' AND now() "
+                        + "GROUP BY (le.id) "
+                        + "ORDER BY (COUNT(*) DESC)";
                 final Set<LibraryEntityIdAndTitle> items =
-                        em.createQuery(query, ArtworkModel.class)
-                        .setParameter("from", from)
-                        .setParameter("till", till)
-                        .setParameter("playerId", playerId.toValue())
-                        .setMaxResults(30)
+                        (Set<LibraryEntityIdAndTitle>) em.createNativeQuery(query, LibraryEntityModel.class)
+                        .setMaxResults(15)
                         .getResultStream()
-                        .map(artwork -> LibraryEntityIdAndTitle.create(artwork))
+                        .map(item -> LibraryEntityIdAndTitle.create((LibraryEntityModel) item))
                         .collect(Collectors.toSet());
-                collections.add(new RecommendedCollection(title, items));
+                if(items.size() > 0)
+                    collections.add(new RecommendedCollection(title, items));
             }
 
             // recommended artworks based on their release year
@@ -153,11 +100,12 @@ public class RecommendationService implements IRecommendationService {
                 final Set<LibraryEntityIdAndTitle> items =
                         em.createQuery(query, ArtworkModel.class)
                         .setParameter("thisYearMonth", thisYearMonth)
-                        .setMaxResults(20)
+                        .setMaxResults(12)
                         .getResultStream()
                         .map(artwork -> LibraryEntityIdAndTitle.create(artwork))
                         .collect(Collectors.toSet());
-                collections.add(new RecommendedCollection(title, items));
+                if(items.size() > 0)
+                    collections.add(new RecommendedCollection(title, items));
             }
 
             return collections;
@@ -179,7 +127,6 @@ public class RecommendationService implements IRecommendationService {
         private static final RecommendationService INSTANCE =
                 new RecommendationService(
                         EntityManagerFactoryHelper.getInstance(),
-                        GenreRepository.getInstance(),
                         PlayerRepository.getInstance()
                 );
     }
