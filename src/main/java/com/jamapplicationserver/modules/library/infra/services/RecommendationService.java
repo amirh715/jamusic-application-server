@@ -100,7 +100,7 @@ public class RecommendationService implements IRecommendationService {
                 final Set<LibraryEntityIdAndTitle> items =
                         em.createQuery(query, ArtworkModel.class)
                         .setParameter("thisYearMonth", thisYearMonth)
-                        .setMaxResults(12)
+                        .setMaxResults(15)
                         .getResultStream()
                         .map(artwork -> LibraryEntityIdAndTitle.create(artwork))
                         .collect(Collectors.toSet());
