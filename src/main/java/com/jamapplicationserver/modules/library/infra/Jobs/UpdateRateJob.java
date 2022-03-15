@@ -31,37 +31,21 @@ public class UpdateRateJob implements Job {
             {
 
                 final String query =
-                        "UPDATE jamschema.library_entities "
-                        + "SET rate = ratings.rate "
+                        "UPDATE jamschema.library_entities SET rate = results.rate "
                         + "FROM "
-                        + "(SELECT res.track_id track_id, AVG(res.rate) rate "
-                        + "FROM ( "
-                        + "SELECT tracks.id track_id, "
-                        + "eg.genre_id, "
-                        + "entity_count_of_each_genre.total_count, "
-                        + "((row_number () OVER (PARTITION BY eg.genre_id ORDER BY COUNT(pt.played_track_id)) * 5) / total_count) rate "
-                        + "FROM "
-                        + "jamschema.library_entities tracks, "
-                        + "jamschema.entity_genres eg, "
-                        + "jamschema.played_tracks pt, "
                         + "("
-                        + "SELECT eg.genre_id genre_id, COUNT(eg.entity_id) total_count "
-                        + "FROM "
-                        + "jamschema.library_entities le, "
-                        + "jamschema.entity_genres eg "
-                        + "WHERE le.entity_type = 'T' AND eg.entity_id = le.id "
-                        + "GROUP BY (eg.genre_id) "
-                        + ") entity_count_of_each_genre "
-                        + "WHERE tracks.id = eg.entity_id "
-                        + "AND tracks.id = pt.played_track_id "
-                        + "AND pt.played_at BETWEEN NOW() - INTERVAL '7 DAY' AND NOW() "
-                        + "AND eg.genre_id = entity_count_of_each_genre.genre_id "
-                        + "GROUP BY (tracks.id, eg.genre_id, entity_count_of_each_genre.total_count) "
-                        + "ORDER BY (row_number () OVER (PARTITION BY eg.genre_id ORDER BY COUNT(pt.played_track_id))) DESC "
-                        + ") res "
-                        + "GROUP BY (res.track_id)"
-                        + ") ratings "
-                        + "WHERE id = ratings.track_id";
+                        + "SELECT track_rates_in_each_genre.track_id, AVG(track_rates_in_each_genre.rate) rate "
+                        + "FROM ("
+                        + "SELECT pt.played_track_id track_id, rank() over (partition by eg.genre_id order by COUNT(*)) * 5 / number_of_tracks rate "
+                        + "FROM jamschema.played_tracks pt, jamschema.entity_genres eg, "
+                        + "(SELECT g.id genre_id, COUNT(*) number_of_tracks FROM jamschema.library_entities le, jamschema.entity_genres eg, jamschema.genres g "
+                        + "WHERE le.entity_type = 'T' AND le.id = eg.entity_id AND g.id = eg.genre_id GROUP BY g.id) total_number_of_tracks_per_genre "
+                        + "WHERE pt.played_track_id = eg.entity_id AND total_number_of_tracks_per_genre.genre_id = eg.genre_id "
+                        + "AND pt.played_at BETWEEN NOW() - interval '20 day' AND NOW() "
+                        + "GROUP BY (track_id, eg.genre_id, total_number_of_tracks_per_genre.number_of_tracks)"
+                        + ") track_rates_in_each_genre GROUP BY (track_id)"
+                        + ") results "
+                        + "WHERE id = results.track_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
 
@@ -71,14 +55,23 @@ public class UpdateRateJob implements Job {
             {
 
                 final String query =
-                        "UPDATE jamschema.library_entities "
-                        + "SET rate = subQuery.averageTracksRate "
-                        + "FROM (SELECT "
-                        + "AVG(tracks.rate) averageTracksRate, "
-                        + "tracks.album_id album_id "
-                        + "FROM jamschema.library_entities tracks "
-                        + "GROUP BY (tracks.album_id)) subQuery "
-                        + "WHERE id = subQuery.album_id ";
+                        "UPDATE jamschema.library_entities SET rate = results.rate "
+                        + "FROM "
+                        + "("
+                        + "SELECT album_id, AVG(rate) rate "
+                        + "FROM ("
+                        + "SELECT tracks.album_id, SUM(total_played_count_of_tracks.total_played_count) total_played_count, "
+                        + "rank() over (partition by genre_id order by COUNT(*)) * 5 / number_of_albums rate "
+                        + "FROM jamschema.library_entities tracks, "
+                        + "(SELECT pt.played_track_id track_id, COUNT(*) total_played_count FROM jamschema.played_tracks pt "
+                        + "WHERE pt.played_at BETWEEN NOW() - interval '20 day' AND NOW() GROUP BY pt.played_track_id) total_played_count_of_tracks, "
+                        + "(SELECT g.id genre_id, COUNT(*) number_of_albums FROM jamschema.library_entities le, jamschema.entity_genres eg, jamschema.genres g "
+                        + "WHERE le.entity_type = 'A' AND le.id = eg.entity_id AND g.id = eg.genre_id GROUP BY g.id) total_number_of_albums_per_genre "
+                        + "WHERE tracks.id = total_played_count_of_tracks.track_id AND "
+                        + "tracks.album_id IS NOT NULL GROUP BY (tracks.album_id, genre_id, number_of_albums)"
+                        + ") subQuery GROUP BY (subQuery.album_id)"
+                        + ") results "
+                        + "WHERE id = results.album_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
 
@@ -88,13 +81,15 @@ public class UpdateRateJob implements Job {
             {
             
                 final String query =
-                        "UPDATE jamschema.library_entities "
-                        + "SET rate = subQuery.averageArtworksRate "
-                        + "FROM (SELECT "
-                        + "AVG(artworks.rate) averageArtworksRate, "
-                        + "artworks.artist_id artist_id "
-                        + "FROM jamschema.library_entities artworks "
-                        + "GROUP BY (artworks.artist_id)) subQuery "
+                        "UPDATE jamschema.library_entities SET rate = subQuery.rate "
+                        + "FROM "
+                        + "("
+                        + "SELECT le.artist_id artist_id, AVG(le.rate) rate "
+                        + "FROM jamschema.library_entities le, jamschema.played_tracks pt "
+                        + "WHERE le.id = pt.played_track_id "
+                        + "AND pt.played_at BETWEEN NOW() - interval '20 day' AND NOW() "
+                        + "GROUP BY artist_id"
+                        + ") subQuery "
                         + "WHERE id = subQuery.artist_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
@@ -104,6 +99,7 @@ public class UpdateRateJob implements Job {
             tnx.commit();
             
         } catch(Exception e) {
+            e.printStackTrace();
             LogService.getInstance().error(e);
             tnx.rollback();
         } finally {
