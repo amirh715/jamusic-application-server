@@ -1,1 +1,116 @@
+p, ADMIN, ActivateBlockUserController
+p, ADMIN, ChangePasswordController
+p, ADMIN, EditUserController
+p, ADMIN, GetAllLoginAuditsController
+p, ADMIN, GetUserByIDController
+p, ADMIN, GetUserLoginAuditsController
+p, ADMIN, GetUserProfileImageController
+p, ADMIN, GetUsersByFiltersController
+p, ADMIN, GetMyProfileInfoController
+p, ADMIN, GetMyProfileImageController
+p, ADMIN, RemoveUserController
+p, ADMIN, RequestEmailVerificationController
+p, ADMIN, VerifyAccountController
+p, ADMIN, VerifyEmailController
+p, ADMIN, UpdateFCMTokenController
 
+p, LIBRARY_MANAGER, ChangePasswordController
+p, LIBRARY_MANAGER, EditUserController
+p, LIBRARY_MANAGER, GetMyProfileInfoController
+p, LIBRARY_MANAGER, GetMyProfileImageController
+p, LIBRARY_MANAGER, RequestEmailVerificationController
+p, LIBRARY_MANAGER, UpdateFCMTokenController
+
+p, SUBSCRIBER, ChangePasswordController
+p, SUBSCRIBER, EditUserController
+p, SUBSCRIBER, GetMyProfileInfoController
+p, SUBSCRIBER, GetMyProfileImageController
+p, SUBSCRIBER, RequestEmailVerificationController
+p, SUBSCRIBER, UpdateFCMTokenController
+
+p, ADMIN, CreateAlbumController
+p, ADMIN, CreateArtistController
+p, ADMIN, CreateTrackController
+p, ADMIN, EditArtistController
+p, ADMIN, EditArtworkController
+p, ADMIN, GetLibraryEntitiesByFiltersController
+p, ADMIN, GetLibraryEntityByIdController
+p, ADMIN, GetLibraryEntityImageByIdController
+p, ADMIN, GetTrackAudioByIdController
+p, ADMIN, PlayTrackController
+p, ADMIN, PublishArchiveLibraryEntityController
+p, ADMIN, RemoveLibraryEntityController
+p, ADMIN, CreateGenreController
+p, ADMIN, EditGenreController
+p, ADMIN, GetAllGenresController
+p, ADMIN, GetGenreByIdController
+p, ADMIN, RemoveGenreController
+
+p, LIBRARY_MANAGER, CreateAlbumController
+p, LIBRARY_MANAGER, CreateArtistController
+p, LIBRARY_MANAGER, CreateTrackController
+p, LIBRARY_MANAGER, EditArtistController
+p, LIBRARY_MANAGER, EditArtworkController
+p, LIBRARY_MANAGER, GetLibraryEntitiesByFiltersController
+p, LIBRARY_MANAGER, GetLibraryEntityByIdController
+p, LIBRARY_MANAGER, GetLibraryEntityImageByIdController
+p, LIBRARY_MANAGER, GetTrackAudioByIdController
+p, LIBRARY_MANAGER, PlayTrackController
+p, LIBRARY_MANAGER, PublishArchiveLibraryEntityController
+p, LIBRARY_MANAGER, RemoveLibraryEntityController
+p, LIBRARY_MANAGER, CreateGenreController
+p, LIBRARY_MANAGER, EditGenreController
+p, LIBRARY_MANAGER, GetAllGenresController
+p, LIBRARY_MANAGER, GetGenreByIdController
+p, LIBRARY_MANAGER, RemoveGenreController
+
+p, SUBSCRIBER, GetLibraryEntitiesByFiltersController
+p, SUBSCRIBER, GetLibraryEntityByIdController
+p, SUBSCRIBER, GetLibraryEntityImageByIdController
+p, SUBSCRIBER, GetTrackAudioByIdController
+p, SUBSCRIBER, PlayTrackController
+p, SUBSCRIBER, GetAllGenresController
+p, SUBSCRIBER, GetGenreByIdController
+p, SUBSCRIBER, CreatePlaylistController
+p, SUBSCRIBER, EditPlaylistController
+p, SUBSCRIBER, GetPlaylistByIdController
+p, SUBSCRIBER, GetPlaylistsOfPlayerController
+p, SUBSCRIBER, RemovePlaylistController
+p, SUBSCRIBER, GetRecommendedCollectionsController
+
+p, ADMIN, CreateNotificationController
+p, ADMIN, EditNotificationController
+p, ADMIN, GetNotificationByIdController
+p, ADMIN, GetNotificationsByFiltersController
+p, ADMIN, GetNotificationsOfRecipientsController
+p, ADMIN, RemoveNotificationController
+
+p, ADMIN, GetReportByIdController
+p, ADMIN, GetMyReportsController
+p, ADMIN, GetReporterByIdController
+p, ADMIN, GetReportsByFiltersController
+p, ADMIN, ProcessReportController
+p, ADMIN, CreateReportController
+
+p, LIBRARY_MANAGER, GetReportByIdController
+p, LIBRARY_MANAGER, GetMyReportsController
+p, LIBRARY_MANAGER, GetReporterByIdController
+p, LIBRARY_MANAGER, GetReportsByFiltersController
+p, LIBRARY_MANAGER, ProcessReportController
+p, LIBRARY_MANAGER, CreateReportController
+
+p, SUBSCRIBER, CreateReportController
+p, SUBSCRIBER, GetMyReportsController
+
+p, ADMIN, CreateShowcaseController
+p, ADMIN, GetAllShowcasesController
+p, ADMIN, GetShowcaseImageByIdController
+p, ADMIN, RemoveShowcaseController
+
+p, LIBRARY_MANAGER, GetAllShowcasesController
+p, LIBRARY_MANAGER, GetShowcaseImageByIdController
+p, LIBRARY_MANAGER, ShowcaseInteractedWithController
+
+p, SUBSCRIBER, GetAllShowcasesController
+p, SUBSCRIBER, GetShowcaseImageByIdController
+p, SUBSCRIBER, ShowcaseInteractedWithController
