@@ -20,14 +20,14 @@
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+<!--        <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
             <AppenderRef ref="Console-Appender"/>
         </Logger>
         <Logger name="org.hibernate.stat" level="DEBUG" additivity="false">
             <AppenderRef ref="Console-Appender"></AppenderRef>
-        </Logger>
-        <Root level="info">
-            <AppenderRef ref="Console-Appender"/>
+        </Logger>-->
+        <Root level="all">
+            <AppenderRef ref="file-appender"/>
         </Root>
     </Loggers>
 </Configuration>
