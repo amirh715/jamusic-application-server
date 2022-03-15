@@ -73,9 +73,9 @@ public class AppMain {
         jobManager
                 .addJob(DeleteUnlinkedFilesJob.class, jobManager.getDailyTrigger(0, 0))
                 .addJob(SendScheduledNotificationsJob.class, jobManager.getEveryXMinutesTrigger(1))
-                .addJob(AssignReportsToProcessorsJob.class, jobManager.getEveryXMinutesTrigger(15))
+                .addJob(AssignReportsToProcessorsJob.class, jobManager.getEveryXMinutesTrigger(1))
                 .addJob(UpdateTotalPlayedCountJob.class, jobManager.getEveryXHoursTrigger(1))
-                .addJob(UpdateRateJob.class, jobManager.getEveryXHoursTrigger(2))
+                .addJob(UpdateRateJob.class, jobManager.getEveryXHoursTrigger(1))
                 .startScheduler();
         
         // REGISTER DOMAIN EVENT HANDLERS
