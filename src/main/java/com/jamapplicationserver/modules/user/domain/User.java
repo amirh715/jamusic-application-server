@@ -355,6 +355,7 @@ public class User extends AggregateRoot {
 
     private void activateUser() {
         this.state = UserState.ACTIVE;
+        addDomainEvent(new UserActivated(this));
     }
 
     public Result blockUser(User blocker) {
@@ -363,12 +364,12 @@ public class User extends AggregateRoot {
         }
         this.blockUser();
         this.updaterId = blocker.id;
-        addDomainEvent(new UserBlocked(this));
         return Result.ok();
     }
 
     private void blockUser() {
         this.state = UserState.BLOCKED;
+        addDomainEvent(new UserBlocked(this));
     }
 
     public boolean isActive() {
@@ -427,6 +428,8 @@ public class User extends AggregateRoot {
 
         modified();
 
+        addDomainEvent(new UserVerifiedAndActivated(this));
+        
         return Result.ok();
     }
 
@@ -449,6 +452,7 @@ public class User extends AggregateRoot {
         }
 
         this.emailVerification = EmailVerification.create();
+        addDomainEvent(new EmailVerificationRequested(this));
 
         return Result.ok();
     }
@@ -573,6 +577,7 @@ public class User extends AggregateRoot {
         }
 
         this.passwordResetVerification = PasswordResetCode.create();
+        addDomainEvent(new PasswordResetRequested(this));
 
         return Result.ok();
     }
@@ -607,6 +612,8 @@ public class User extends AggregateRoot {
 
         // nullify password reset verification
         this.passwordResetVerification = null;
+        
+        addDomainEvent(new UserPasswordChanged(this));
 
         modified();
 
@@ -662,6 +669,8 @@ public class User extends AggregateRoot {
         this.password = newPassword;
         this.updaterId = updater.id;
         modified();
+        
+        addDomainEvent(new UserPasswordChanged(this));
 
         return Result.ok();
     }
@@ -703,7 +712,6 @@ public class User extends AggregateRoot {
 
     public void changeFCMToken(FCMToken fcmToken) {
         this.fcmToken = fcmToken;
-        modified();
     }
 
     @Override
