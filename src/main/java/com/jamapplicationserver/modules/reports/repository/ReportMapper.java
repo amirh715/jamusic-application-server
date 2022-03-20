@@ -88,30 +88,18 @@ public class ReportMapper {
     }
     
     public static ReportedEntity toReportedEntity(LibraryEntityModel model) {
+
         final UniqueEntityId id =
                 UniqueEntityId.createFromUUID(model.getId()).getValue();
         final ReportedEntityTitle title =
                 ReportedEntityTitle.create(model.getTitle()).getValue();
-        
-        String t = null;
-        if(model instanceof BandModel)
-            t = "BAND";
-        if(model instanceof SingerModel)
-            t = "SINGER";
-        if(model instanceof AlbumModel)
-            t = "ALBUM";
-        if(model instanceof TrackModel)
-            t = "TRACK";
-        final ReportedEntityType type =
-                ReportedEntityType.create(t).getValue();
-        
+
         final UniqueEntityId creatorId =
                 UniqueEntityId.createFromUUID(model.getCreator().getId()).getValue();
         
         return new ReportedEntity(
                 id,
                 title,
-                type,
                 creatorId
         );
     }
