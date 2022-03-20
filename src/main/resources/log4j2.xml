@@ -26,7 +26,7 @@
         <Logger name="org.hibernate.stat" level="DEBUG" additivity="false">
             <AppenderRef ref="Console-Appender"></AppenderRef>
         </Logger>-->
-        <Root level="all">
+        <Root level="fatal, error">
             <AppenderRef ref="file-appender"/>
         </Root>
     </Loggers>
