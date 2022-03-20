@@ -23,16 +23,18 @@ import com.jamapplicationserver.infra.Services.LogService.LogService;
  */
 public class TikaUtils {
     
-    private final TikaConfig tikaConfig;
-    private final DefaultDetector detector;
+    private final TikaConfig config;
+    private final Detector detector;
     
     private TikaUtils() throws TikaException, IOException, SAXException {
-        this.tikaConfig = new TikaConfig("./src/main/resources/Config/tika-config.xml");
-        this.detector = new DefaultDetector();
+        final InputStream resource = getClass().getClassLoader().getResourceAsStream("Config/tika-config.xml");
+        this.config = new TikaConfig(resource);
+        this.detector = config.getDetector();
     }
     
     public final boolean isImage(InputStream stream) throws IOException {
-        
+
+        if(stream == null) return false;
         final String type = this.getType(stream);
         
         return type.equals("image");
