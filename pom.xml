@@ -29,8 +29,8 @@
                 <configuration>
                   <archive>
                     <manifest>
-                      <addClasspath>true</addClasspath>
-                      <classpathPrefix>lib/</classpathPrefix>
+                      <!--<addClasspath>true</addClasspath>-->
+                      <!--<classpathPrefix>lib/</classpathPrefix>-->
                       <mainClass>com.jamapplicationserver.AppMain</mainClass>
                     </manifest>
                   </archive>
@@ -160,7 +160,7 @@
         <dependency>
             <groupId>org.casbin</groupId>
             <artifactId>jcasbin</artifactId>
-            <version>1.17.0</version>
+            <version>1.22.1</version>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
