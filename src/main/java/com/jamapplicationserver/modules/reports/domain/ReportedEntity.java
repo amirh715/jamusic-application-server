@@ -15,7 +15,6 @@ public class ReportedEntity extends ValueObject {
     
     private final UniqueEntityId id;
     private final ReportedEntityTitle title;
-    private final ReportedEntityType type;
     private final UniqueEntityId creatorId;
     
     @Override
@@ -26,12 +25,10 @@ public class ReportedEntity extends ValueObject {
     public ReportedEntity(
             UniqueEntityId id,
             ReportedEntityTitle title,
-            ReportedEntityType type,
             UniqueEntityId creatorId
     ) {
         this.id = id;
         this.title = title;
-        this.type = type;
         this.creatorId = creatorId;
     }
     
@@ -41,10 +38,6 @@ public class ReportedEntity extends ValueObject {
 
     public final ReportedEntityTitle getTitle() {
         return this.title;
-    }
-    
-    public final ReportedEntityType getType() {
-        return this.type;
     }
     
     public final UniqueEntityId getCreatorId() {
