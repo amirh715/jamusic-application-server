@@ -60,11 +60,9 @@ public class DomainEventDispatcher
         final UniqueEntityId id =
                 UniqueEntityId.createFromUUID(entity.getId()).getValue();
         DomainEvents.dispatchEventsForAggregate(id);
-//        new Thread(() -> {
-//            final UniqueEntityId id =
-//                UniqueEntityId.createFromUUID(entity.getId()).getValue();
-//            DomainEvents.dispatchEventsForAggregate(id);
-//        }).start();
+        new Thread(() -> {
+            DomainEvents.dispatchEventsForAggregate(id);
+        }).start();
     }
     
     public static final DomainEventDispatcher INSTANCE =
