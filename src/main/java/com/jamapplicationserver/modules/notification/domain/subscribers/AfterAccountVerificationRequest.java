@@ -6,6 +6,7 @@
 package com.jamapplicationserver.modules.notification.domain.subscribers;
 
 import com.jamapplicationserver.core.domain.events.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.modules.user.domain.events.*;
 import com.jamapplicationserver.modules.notification.infra.services.TransactionalSMSService;
 
@@ -35,6 +36,7 @@ public class AfterAccountVerificationRequest implements IDomainEventHandler<Acco
             sms.send(bodyId, to, args);
             
         } catch(Exception e) {
+            LogService.getInstance().fatal(e);
             throw e;
         }
         

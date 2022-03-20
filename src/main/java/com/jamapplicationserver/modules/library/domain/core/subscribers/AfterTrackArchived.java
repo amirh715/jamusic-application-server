@@ -10,6 +10,7 @@ import javax.persistence.*;
 import com.jamapplicationserver.core.domain.events.*;
 import com.jamapplicationserver.modules.library.domain.core.events.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -42,6 +43,7 @@ public class AfterTrackArchived implements IDomainEventHandler<TrackArchived> {
             tnx.commit();
             
         } catch(Exception e) {
+            LogService.getInstance().error(e);
             tnx.rollback();
             throw e;
         } finally {

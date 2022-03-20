@@ -28,7 +28,7 @@ public class UserRepository implements IUserRepository {
     
     private final EntityManagerFactoryHelper emfh;
     
-    private static final int MAX_ALLOWED_USERS = 30;
+    private static final int MAX_ALLOWED_USERS = 1000;
     
     private UserRepository(EntityManagerFactoryHelper emfh) {
         this.emfh = emfh;

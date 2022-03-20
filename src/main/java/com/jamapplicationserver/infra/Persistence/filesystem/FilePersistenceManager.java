@@ -34,7 +34,7 @@ public class FilePersistenceManager implements IFilePersistenceManager {
 
             return path;
         } catch(Exception e) {
-            LogService.getInstance().error(e);
+            LogService.getInstance().fatal(e);
             throw e;
         }
 

@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.stream.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.domain.events.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.modules.library.repositories.*;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.events.*;
@@ -70,7 +71,8 @@ public class AfterArtistPublished implements IDomainEventHandler<ArtistPublished
                 }
 
             } catch(Exception e) {
-                throw e; // LOG
+                LogService.getInstance().error(e);
+                throw e;
             }
             
         }

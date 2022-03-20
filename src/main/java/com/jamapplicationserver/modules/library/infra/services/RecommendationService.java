@@ -13,6 +13,7 @@ import com.jamapplicationserver.infra.Persistence.database.Models.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.modules.library.domain.Player.*;
 import com.jamapplicationserver.modules.library.infra.DTOs.queries.LibraryEntityIdAndTitle;
 import com.jamapplicationserver.modules.library.repositories.*;
@@ -111,6 +112,7 @@ public class RecommendationService implements IRecommendationService {
             return collections;
             
         } catch(Exception e) {
+            LogService.getInstance().fatal(e);
             throw e;
         } finally {
             em.close();

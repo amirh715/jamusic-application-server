@@ -35,7 +35,6 @@ public class ETag {
                     ).digestAsHex(new ByteArrayInputStream(baos.toByteArray()));
             return new ETag(hash);
         } catch(Exception e) {
-            LogService.getInstance().error(e);
             return null;
         }
     }
@@ -46,7 +45,6 @@ public class ETag {
                     new DigestUtils(MessageDigest.getInstance("SHA1")).digestAsHex(input);
             return new ETag(hash);
         } catch(NoSuchAlgorithmException | IOException e) {
-            LogService.getInstance().error(e);
             return null;
         }
     }

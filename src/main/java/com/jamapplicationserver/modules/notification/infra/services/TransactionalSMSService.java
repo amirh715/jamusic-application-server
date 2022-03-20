@@ -8,6 +8,7 @@ package com.jamapplicationserver.modules.notification.infra.services;
 import java.io.*;
 import java.net.*;
 import com.google.gson.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -56,6 +57,7 @@ public class TransactionalSMSService {
             conn.disconnect();
         }
         catch (Exception e) {
+            LogService.getInstance().error(e);
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             StringBuilder sb = new StringBuilder();
             String output = null;

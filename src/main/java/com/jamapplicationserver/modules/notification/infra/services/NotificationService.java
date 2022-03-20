@@ -29,9 +29,9 @@ public class NotificationService implements INotificationService {
     
     private NotificationService() {
         try {
-            String filePath = "./src/main/resources/Config/jamusic-5fd24-firebase-adminsdk-55r1y-d460748557.json";
+            final InputStream stream = getClass().getClassLoader().getResourceAsStream("Config/jamusic-5fd24-firebase-adminsdk-55r1y-d460748557.json");
             final GoogleCredentials credentials =
-                    GoogleCredentials.fromStream(new FileInputStream(filePath));
+                    GoogleCredentials.fromStream(stream);
             final FirebaseOptions options =
                     new FirebaseOptions.Builder()
                     .setCredentials(credentials)

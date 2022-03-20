@@ -99,8 +99,7 @@ public class UpdateRateJob implements Job {
             tnx.commit();
             
         } catch(Exception e) {
-            e.printStackTrace();
-            LogService.getInstance().error(e);
+            LogService.getInstance().warn(e);
             tnx.rollback();
         } finally {
             em.close();

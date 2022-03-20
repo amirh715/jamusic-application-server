@@ -8,6 +8,7 @@ package com.jamapplicationserver.modules.library.domain.core.subscribers;
 import java.util.*;
 import com.jamapplicationserver.core.domain.UserRole;
 import com.jamapplicationserver.core.domain.events.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.modules.library.domain.core.*;
 import com.jamapplicationserver.modules.library.domain.core.events.*;
 import com.jamapplicationserver.modules.library.repositories.*;
@@ -39,6 +40,7 @@ public class AfterArtistEdited implements IDomainEventHandler<ArtistEdited> {
             }
             
         } catch(Exception e) {
+            LogService.getInstance().error(e);
             throw e;
         }
         

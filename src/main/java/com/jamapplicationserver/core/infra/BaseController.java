@@ -105,7 +105,7 @@ public abstract class BaseController implements Route {
             return res;
             
         } catch(IOException e) {
-            LogService.getInstance().error(e);
+            LogService.getInstance().fatal(e);
             res.status(500);
             res.body(e.getMessage());
             return res;

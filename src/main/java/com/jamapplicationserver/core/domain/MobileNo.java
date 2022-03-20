@@ -42,7 +42,6 @@ public class MobileNo extends ValueObject<String> {
             return Result.ok(new MobileNo(phoneNo));
             
         } catch(NumberParseException e) {
-            LogService.getInstance().error(e);
             return Result.fail(new ValidationError("Mobile number is not correct"));
         }
         

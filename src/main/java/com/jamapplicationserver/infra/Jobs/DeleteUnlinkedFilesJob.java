@@ -92,8 +92,7 @@ public class DeleteUnlinkedFilesJob implements Job {
             }
             
         } catch(Exception e) {
-            LogService.getInstance().error(e);
-            // LOG
+            LogService.getInstance().warn(e);
         } finally {
             em.close();
         }

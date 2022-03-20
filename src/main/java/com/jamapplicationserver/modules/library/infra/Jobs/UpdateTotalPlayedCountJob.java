@@ -8,6 +8,7 @@ package com.jamapplicationserver.modules.library.infra.Jobs;
 import org.quartz.*;
 import javax.persistence.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -56,7 +57,7 @@ public class UpdateTotalPlayedCountJob implements Job {
                         + "FROM jamschema.played_tracks pt GROUP BY pt.played_track_id) total_played_count_of_tracks "
                         + "WHERE tracks.id = total_played_count_of_tracks.track_id AND tracks.album_id IS NOT NULL "
                         + "GROUP BY (tracks.album_id)"
-                        + ") WHERE id = total_played_count_of_tracks.album_id";
+                        + ") subQuery WHERE id = total_played_count_of_tracks.album_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
             
@@ -83,8 +84,8 @@ public class UpdateTotalPlayedCountJob implements Job {
             tnx.commit();
             
         } catch(Exception e) {
+            LogService.getInstance().warn(e);
             tnx.rollback();
-            e.printStackTrace();
         } finally {
             em.close();
         }

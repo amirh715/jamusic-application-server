@@ -150,9 +150,11 @@ public class CreateUserUseCase implements IUsecase<CreateUserRequestDTO, String>
             throw new GenericAppException();
             
         } catch(MaxAllowedUserLimitReachedException e) {
+            LogService.getInstance().error(e);
             return Result.fail(new MaxAllowedUserLimitReachedError());
             
         } catch(OnlyOneAdminCanExistException e) {
+            LogService.getInstance().error(e);
             return Result.fail(new OnlyOneAdminCanExistError());
         } catch(Exception e) {
             LogService.getInstance().error(e);

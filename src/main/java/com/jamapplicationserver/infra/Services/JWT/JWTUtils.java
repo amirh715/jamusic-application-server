@@ -38,6 +38,7 @@ public class JWTUtils {
                     .withClaim("role", determineUserRole(role, os).getValue())
                     .sign(ALGO);
         } catch(JWTCreationException e) {
+            LogService.getInstance().fatal(e);
             throw e;
         }
     }

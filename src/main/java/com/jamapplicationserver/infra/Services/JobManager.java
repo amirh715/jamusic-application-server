@@ -28,7 +28,7 @@ public class JobManager {
             this.scheduler.start();
             
         } catch(SchedulerException e) {
-            LogService.getInstance().error(e);
+            LogService.getInstance().fatal(e);
         }
         
     }
@@ -44,7 +44,7 @@ public class JobManager {
             
             this.scheduler.scheduleJob(job, trigger);
         } catch(SchedulerException e) {
-            LogService.getInstance().error(e);
+            LogService.getInstance().fatal(e);
         }
         
         return this;
@@ -62,7 +62,7 @@ public class JobManager {
             
             this.scheduler.scheduleJob(job, trigger);
         } catch(SchedulerException e) {
-            LogService.getInstance().error(e);
+            LogService.getInstance().fatal(e);
         }
         
         return this;
@@ -185,7 +185,7 @@ public class JobManager {
                 JobManagerHolder.INSTANCE = new JobManager(scheduler);
 
             } catch(SchedulerException e) {
-                LogService.getInstance().error(e);
+                LogService.getInstance().fatal(e);
             }
             
         }

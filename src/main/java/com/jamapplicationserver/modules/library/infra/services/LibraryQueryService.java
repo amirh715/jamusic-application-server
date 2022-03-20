@@ -72,6 +72,7 @@ public class LibraryQueryService implements ILibraryQueryService {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
+            LogService.getInstance().fatal(e);
             throw e;
         } finally {
             em.close();
@@ -115,6 +116,7 @@ public class LibraryQueryService implements ILibraryQueryService {
             return LibraryEntityDetails.create(entity);
             
         } catch(Exception e) {
+            LogService.getInstance().fatal(e);
             throw e;
         } finally {
             em.close();
@@ -135,6 +137,7 @@ public class LibraryQueryService implements ILibraryQueryService {
             return LibraryEntityDetails.create(entity);
             
         } catch(Exception e) {
+            LogService.getInstance().fatal(e);
             throw e;
         } finally {
             em.close();
@@ -161,6 +164,7 @@ public class LibraryQueryService implements ILibraryQueryService {
             return LibraryEntitySummary.create(entity);
             
         } catch(Exception e) {
+            LogService.getInstance().fatal(e);
             throw e;
         } finally {
             em.close();
@@ -181,7 +185,7 @@ public class LibraryQueryService implements ILibraryQueryService {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
-            LogService.getInstance().error(e);
+            LogService.getInstance().warn(e);
             throw e;
         } finally {
             em.close();
@@ -202,7 +206,7 @@ public class LibraryQueryService implements ILibraryQueryService {
             return GenreDetails.create(genre);
             
         } catch(Exception e) {
-            LogService.getInstance().error(e);
+            LogService.getInstance().warn(e);
             throw e;
         } finally {
             em.close();
@@ -241,7 +245,7 @@ public class LibraryQueryService implements ILibraryQueryService {
                     .collect(Collectors.toSet());
             
         } catch(Exception e) {
-            LogService.getInstance().error(e);
+            LogService.getInstance().fatal(e);
             throw e;
         } finally {
             em.close();
@@ -279,7 +283,7 @@ public class LibraryQueryService implements ILibraryQueryService {
         } catch(NoResultException e) {
             return null;
         } catch(Exception e) {
-            LogService.getInstance().error(e);
+            LogService.getInstance().fatal(e);
             throw e;
         } finally {
             em.close();

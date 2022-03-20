@@ -5,8 +5,18 @@
  */
 package com.jamapplicationserver.infra.Services.AuthService;
 
+import java.util.*;
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import org.apache.commons.io.*;
+import org.casbin.jcasbin.model.*;
 import org.casbin.jcasbin.main.Enforcer;
+import org.casbin.jcasbin.config.Config;
 import com.jamapplicationserver.core.infra.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
+import java.nio.file.Files;
 
 /**
  *
@@ -17,7 +27,15 @@ public class AuthService implements IAuthService {
     private Enforcer enforcer;
     
     private AuthService() {
-        this.enforcer = new Enforcer("src/main/resources/jCasbin/model.conf", "src/main/resources/jCasbin/policy.csv");
+        final InputStream model = getClass().getClassLoader().getResourceAsStream("jCasbin/model.conf");
+        final InputStream policy = getClass().getClassLoader().getResourceAsStream("jCasbin/policy.csv");
+        try {
+            final Path modelPath = Files.write(Path.of("temp_model"), model.readAllBytes(), StandardOpenOption.CREATE_NEW);
+            final Path policyPath = Files.write(Path.of("temp_policy"), policy.readAllBytes(), StandardOpenOption.CREATE_NEW);
+            this.enforcer = new Enforcer(modelPath.toAbsolutePath().toString(), policyPath.toAbsolutePath().toString());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -26,11 +44,17 @@ public class AuthService implements IAuthService {
     }
     
     public static AuthService getInstance() {
-        return AuthServiceHolder.INSTANCE;
+        try {
+            if(AuthServiceHolder.INSTANCE == null)
+                AuthServiceHolder.INSTANCE = new AuthService();
+            return AuthServiceHolder.INSTANCE;
+        } catch(Exception e) {
+            LogService.getInstance().fatal(e);
+            return null;
+        }
     }
     
     private static class AuthServiceHolder {
-
-        private static final AuthService INSTANCE = new AuthService();
+        private static AuthService INSTANCE = new AuthService();
     }
 }

@@ -8,6 +8,7 @@ package com.jamapplicationserver.modules.library.infra.Jobs;
 import org.quartz.*;
 import javax.persistence.*;
 import com.jamapplicationserver.infra.Persistence.database.EntityManagerFactoryHelper;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 
 /**
  *
@@ -42,6 +43,7 @@ public class UpdateArtistDurationJob implements Job {
             tnx.commit();
             
         } catch(Exception e) {
+            LogService.getInstance().warn(e);
             tnx.rollback();
         } finally {
             em.close();

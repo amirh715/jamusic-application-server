@@ -50,10 +50,12 @@ public class AppMain {
         options("/*", (request, response) -> {
             final Set<String> allowedOrigins = Set.of("https://jamusicapp.ir", "https://admin.jamusicapp.ir");
             
+            final String origin = request.headers("Origin");
+            if(!allowedOrigins.contains(origin)) return halt(400);
+            
             String accessControlRequestHeaders = request
                     .headers("Access-Control-Request-Headers");
             if (accessControlRequestHeaders != null) {
-                if(allowedOrigins.contains(accessControlRequestHeaders)) return halt(400);
                 response.header("Access-Control-Allow-Headers",
                         accessControlRequestHeaders);
             }
@@ -85,9 +87,12 @@ public class AppMain {
         DomainEvents.register(new AfterPlaylistCreated());
         DomainEvents.register(new AfterUserBlocked());
         DomainEvents.register(new AfterTrackArchived());
+        DomainEvents.register(new AfterAccountVerificationRequest());
+        DomainEvents.register(new AfterPasswordResetRequested());
+        DomainEvents.register(new AfterUserBlocked());
         
         // API ROUTES (v1)
-        path("api/v1", () -> {
+        path("v1", () -> {
             
             // configure multipart/formData
             before("/*", (req, res) -> req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp")));
@@ -98,14 +103,14 @@ public class AppMain {
                 try {
                     
                     if(
-                            req.pathInfo().equals("api/v1/user/login") ||
-                            req.pathInfo().equals("api/v1/user/request-account-verification") ||
-                            req.pathInfo().equals("api/v1/user/verify-account") ||
-                            req.pathInfo().equals("api/v1/user/request-password-reset") ||
-                            req.pathInfo().equals("api/v1/user/reset-password") ||
-                            req.pathInfo().equals("api/v1/user/verify-email")
+                            req.pathInfo().equals("v1/user/login") ||
+                            req.pathInfo().equals("v1/user/request-account-verification") ||
+                            req.pathInfo().equals("v1/user/verify-account") ||
+                            req.pathInfo().equals("v1/user/request-password-reset") ||
+                            req.pathInfo().equals("v1/user/reset-password") ||
+                            req.pathInfo().equals("v1/user/verify-email")
                     ) {
-
+                        
                     } else {
 
                         if(!req.requestMethod().equals("OPTIONS")) {
@@ -121,7 +126,7 @@ public class AppMain {
                     }
                     
                 } catch(Exception e) {
-                    LogService.getInstance().error(e);
+                    LogService.getInstance().fatal(e);
                 }
                 
             });

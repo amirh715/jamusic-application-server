@@ -5,6 +5,7 @@
  */
 package com.jamapplicationserver.infra.Persistence.database;
 
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import java.util.*;
 import javax.persistence.*;
 import org.hibernate.*;
@@ -25,6 +26,7 @@ public class EntityManagerFactoryHelper {
             factory = Persistence.createEntityManagerFactory("manager1");
             
         } catch(Exception e) {
+            LogService.getInstance().fatal(e);
             throw e;
         }
     }

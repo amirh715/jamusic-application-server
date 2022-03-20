@@ -27,12 +27,24 @@ public class LogService {
         logger.log(Level.WARN, message);
     }
     
+    public void warn(Exception e) {
+        logger.log(Level.WARN, e.getMessage(), e);
+    }
+    
     public void error(String message) {
         logger.log(Level.ERROR, message);
     }
     
     public void error(Exception e) {
-        logger.log(Level.ERROR, e.getMessage());
+        logger.log(Level.ERROR, e.getMessage(), e);
+    }
+    
+    public void fatal(Exception e) {
+        logger.log(Level.FATAL, e.getMessage(), e);
+    }
+    
+    public void fatal(String message) {
+        logger.log(Level.FATAL, message);
     }
     
     public static LogService getInstance() {

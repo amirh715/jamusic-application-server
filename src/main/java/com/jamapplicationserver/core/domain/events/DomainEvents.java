@@ -64,7 +64,7 @@ public class DomainEvents {
                             try {
                                 handler.handleEvent(domainEvent);
                             } catch(Exception e) {
-                                
+                                LogService.getInstance().error(e);
                             }
                         }).start();
                     }
@@ -73,7 +73,6 @@ public class DomainEvents {
 
         } catch(Exception e) {
             LogService.getInstance().error(e);
-            // LOG
         }
         
     }

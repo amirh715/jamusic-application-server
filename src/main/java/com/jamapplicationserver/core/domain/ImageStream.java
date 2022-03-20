@@ -39,10 +39,11 @@ public class ImageStream extends FilterInputStream {
     
     public static final Result<ImageStream> createAndValidate(InputStream stream) throws GenericAppException {
         
+        if(stream == null) return Result.fail(new ValidationError("فایل تصویر ضروری است"));
         
         try {
             
-            if(!tika.isImage(stream)) return Result.fail(new ValidationError("File must be an image"));
+            if(!tika.isImage(stream)) return Result.fail(new ValidationError("فایل باید فایل تصویری باشد"));
             
             final String subType = tika.getSubtype(stream);
             final Result<ImageFileFormat> formatOrError = ImageFileFormat.create(subType);
@@ -56,7 +57,7 @@ public class ImageStream extends FilterInputStream {
             return Result.ok(new ImageStream(stream, 0, format));
             
         } catch(IOException e) {
-            throw new GenericAppException(e);
+            return Result.fail(new ValidationError("صفات فایل عکس قابل شناسایی نیست"));
         }
         
     }
@@ -65,7 +66,7 @@ public class ImageStream extends FilterInputStream {
         
         try {
             
-            if(!tika.isImage(stream)) return Result.fail(new ValidationError("File must be an image"));
+            if(!tika.isImage(stream)) return Result.fail(new ValidationError("فایل باید فایل تصویری باشد"));
             
             final String subType = tika.getSubtype(stream);
             final Result<ImageFileFormat> formatOrError = ImageFileFormat.create(subType);
