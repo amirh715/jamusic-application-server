@@ -64,7 +64,7 @@ public class RecommendationService implements IRecommendationService {
                         + "HAVING COUNT(*) > 15";
                 final Set<LibraryEntityIdAndTitle> items =
                         (Set<LibraryEntityIdAndTitle>) em.createNativeQuery(query, LibraryEntityModel.class)
-                        .setParameter("playerId", playerId)
+                        .setParameter("playerId", playerId.toValue())
                         .setMaxResults(15)
                         .getResultStream()
                         .map(item -> LibraryEntityIdAndTitle.create((LibraryEntityModel) item))
@@ -80,8 +80,9 @@ public class RecommendationService implements IRecommendationService {
                         + "FROM jamschema.library_entities le, jamschema.played_tracks pt "
                         + "WHERE le.id = pt.played_track_id "
                         + "AND pt.played_at BETWEEN now() - interval '7 day' AND now() "
+                        + "AND le.published IS TRUE "
                         + "GROUP BY (le.id) "
-                        + "ORDER BY (COUNT(*) DESC)";
+                        + "ORDER BY COUNT(*) DESC";
                 final Set<LibraryEntityIdAndTitle> items =
                         (Set<LibraryEntityIdAndTitle>) em.createNativeQuery(query, LibraryEntityModel.class)
                         .setMaxResults(15)
@@ -96,7 +97,7 @@ public class RecommendationService implements IRecommendationService {
             {
                 final String title = "آلبوم ها و آهنگ های جدید";
                 final String query = "SELECT artworks FROM ArtworkModel artworks "
-                        + "WHERE artworks.releaseDate = :thisYearMonth";
+                        + "WHERE artworks.releaseDate = :thisYearMonth AND artworks.published IS TRUE";
                 final YearMonth thisYearMonth = YearMonth.now();
                 final Set<LibraryEntityIdAndTitle> items =
                         em.createQuery(query, ArtworkModel.class)
