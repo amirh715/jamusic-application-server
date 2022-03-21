@@ -48,7 +48,7 @@ public class AppMain {
         });
 
         options("/*", (request, response) -> {
-            final Set<String> allowedOrigins = Set.of("https://jamusicapp.ir", "https://admin.jamusicapp.ir");
+            final Set<String> allowedOrigins = Set.of("https://jamusicapp.ir", "https://admin.jamusicapp.ir", "http://localhost:8080");
             
             final String origin = request.headers("Origin");
             if(!allowedOrigins.contains(origin)) return halt(400);

@@ -11,7 +11,11 @@
                 </pattern>>
             </PatternLayout>
         </Console>-->
-        <File name="file-appender" fileName="/home/api/logs/apiLog.log">
+        <SMTP name="mail-appender" subject="Jamusic Application Server Log Message"
+            from="log@jamusicapp.ir" to="amirh715@gmail.com" smtpHost="localhost" smtpPort="2525">
+            
+        </SMTP>
+        <File name="file-appender" fileName="/home/api/logs/api.log">
             <PatternLayout>
                 <Pattern>
                     [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
@@ -28,6 +32,7 @@
         </Logger>-->
         <Root level="fatal, error">
             <AppenderRef ref="file-appender"/>
+            <AppenderRef ref="mail-appender"/>
         </Root>
     </Loggers>
 </Configuration>
