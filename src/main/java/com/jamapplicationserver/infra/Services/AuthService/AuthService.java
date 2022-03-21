@@ -17,6 +17,7 @@ import org.casbin.jcasbin.config.Config;
 import com.jamapplicationserver.core.infra.*;
 import com.jamapplicationserver.infra.Services.LogService.LogService;
 import java.nio.file.Files;
+import com.jamapplicationserver.utils.GetResourceAsStreamToFile;
 
 /**
  *
@@ -27,13 +28,12 @@ public class AuthService implements IAuthService {
     private Enforcer enforcer;
     
     private AuthService() {
-        final InputStream model = getClass().getClassLoader().getResourceAsStream("jCasbin/model.conf");
-        final InputStream policy = getClass().getClassLoader().getResourceAsStream("jCasbin/policy.csv");
         try {
-            final Path modelPath = Files.write(Path.of("temp_model"), model.readAllBytes(), StandardOpenOption.CREATE_NEW);
-            final Path policyPath = Files.write(Path.of("temp_policy"), policy.readAllBytes(), StandardOpenOption.CREATE_NEW);
-            this.enforcer = new Enforcer(modelPath.toAbsolutePath().toString(), policyPath.toAbsolutePath().toString());
+            final File modelPath = GetResourceAsStreamToFile.toFile("jCasbin/model.conf");
+            final File policyPath = GetResourceAsStreamToFile.toFile("jCasbin/policy.csv");
+            this.enforcer = new Enforcer(modelPath.getAbsolutePath(), policyPath.getAbsolutePath());
         } catch(Exception e) {
+            LogService.getInstance().fatal(e);
             e.printStackTrace();
         }
     }
