@@ -66,7 +66,10 @@ public abstract class ArtworkDetails extends LibraryEntityDetails {
         );
         this.recordLabel = recordLabel;
         this.producer = producer;
-        this.releaseDate = LocalDateTime.of(releaseDate.getYear(), releaseDate.getMonth(), 1, 0, 0, 0).format(DateTimeFormatter.ISO_DATE_TIME);
+        this.releaseDate =
+                releaseDate != null ?
+                LocalDateTime.of(releaseDate.getYear(), releaseDate.getMonth(), 1, 0, 0, 0).format(DateTimeFormatter.ISO_DATE_TIME)
+                : null;
         this.artist = artist;
     }
 }
