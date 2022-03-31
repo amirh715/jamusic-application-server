@@ -81,7 +81,6 @@ public class ReportDetails implements IQueryResponseDTO {
                 break;
             case SUBSCRIBER:
                 this.id = null;
-                this.status = null;
                 this.processorId = null;
                 this.processorName = null;
                 this.processorNote = null;
