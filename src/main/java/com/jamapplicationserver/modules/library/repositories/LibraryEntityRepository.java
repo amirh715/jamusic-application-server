@@ -351,6 +351,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             
         } catch(Exception e) {
             throw e;
+        } finally {
+            em.close();
         }
 
     }

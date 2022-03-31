@@ -27,9 +27,7 @@ public class UpdateTotalPlayedCountJob implements Job {
         try {
             
             tnx.begin();
-            
-            System.out.println("Job is running");
-            
+
             // update tracks total played count
             {
             

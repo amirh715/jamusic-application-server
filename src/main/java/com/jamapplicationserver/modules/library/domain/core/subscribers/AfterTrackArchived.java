@@ -38,7 +38,6 @@ public class AfterTrackArchived implements IDomainEventHandler<TrackArchived> {
             
             final String query = "";
             final int num = em.createQuery(query).executeUpdate();
-            System.out.println("Number of removed tracks from playlists: " + num);
             
             tnx.commit();
             

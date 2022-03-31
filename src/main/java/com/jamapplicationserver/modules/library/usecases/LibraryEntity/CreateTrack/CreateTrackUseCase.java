@@ -42,7 +42,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
     public Result execute(CreateTrackRequestDTO request) throws GenericAppException {
         
         try {
-            
+
             final ArrayList<Result> combinedProps = new ArrayList<>();
             
             final Result<Title> titleOrError = Title.create(request.title);
@@ -88,7 +88,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
 
             final Result combinedPropsResult = Result.combine(combinedProps);
             if(combinedPropsResult.isFailure) return combinedPropsResult;
-            
+
             final Title title = titleOrError.getValue();
             final Description description =
                     request.description != null ? descriptionOrError.getValue()
@@ -171,16 +171,16 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                             lyrics
                     );
             if(trackOrError.isFailure) return trackOrError;
-            
+
             // write image to disk
             if(image != null) {
                 final Path imagePath = persistence.buildPath(Track.class);
                 persistence.write(image, imagePath);
             }
-            
+
             // write audio to disk
             persistence.write(audio, audioPath);
-            
+
             final Track track = trackOrError.getValue();
 
             if(album != null) {
@@ -193,7 +193,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                 repository.save(track);
                 repository.save(artist);
             }
-            
+
             return Result.ok();
         } catch(Exception e) {
             LogService.getInstance().error(e);

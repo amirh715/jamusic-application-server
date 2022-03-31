@@ -69,9 +69,7 @@ public class LoginAuditManager {
     }
     
     public Set<LoginAuditModel> queryAudit(UniqueEntityId userId) {
-        
-        final EntityManager em = emfh.createEntityManager();
-        
+
         try {
 
             

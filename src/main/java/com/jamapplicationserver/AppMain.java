@@ -38,6 +38,7 @@ public class AppMain {
         // TODO code application logic here
         
         System.out.println("SERVER STARTED");
+        LogService.getInstance().log("SERVER STARTED");
         
         before("/*", (req, res) -> req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp")));
         
@@ -101,16 +102,16 @@ public class AppMain {
             before("/*", (req, res) -> {
                 
                 try {
-                    
+                                        
                     if(
-                            req.pathInfo().equals("v1/user/login") ||
-                            req.pathInfo().equals("v1/user/request-account-verification") ||
-                            req.pathInfo().equals("v1/user/verify-account") ||
-                            req.pathInfo().equals("v1/user/request-password-reset") ||
-                            req.pathInfo().equals("v1/user/reset-password") ||
-                            req.pathInfo().equals("v1/user/verify-email")
+                            req.pathInfo().equals("/v1/user/login") ||
+                            req.pathInfo().equals("/v1/user/request-account-verification") ||
+                            req.pathInfo().equals("/v1/user/verify-account") ||
+                            req.pathInfo().equals("/v1/user/request-password-reset") ||
+                            req.pathInfo().equals("/v1/user/reset-password") ||
+                            req.pathInfo().equals("/v1/user/verify-email")
                     ) {
-                        
+
                     } else {
 
                         if(!req.requestMethod().equals("OPTIONS")) {
@@ -147,6 +148,11 @@ public class AppMain {
             path("/showcase", ShowcaseRoutes.getInstance());
             
         }); // API ROUTES ends
+        
+        
+        after((req, res) -> {
+            res.header("Content-Encoding", "gzip");
+        });
         
     }
     
