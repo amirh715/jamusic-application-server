@@ -39,7 +39,7 @@ and open the template in the editor.
       <property name="javax.persistence.jdbc.user" value="postgres"/>
       <property name="javax.persistence.jdbc.password" value="Aspect123"/>
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-      <property name="connection.pool_size" value="1"/>
+      <property name="connection.pool_size" value="10"/>
       <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
       <!--        <property name="hibernate.ejb.event.post-insert"
                 value="org.hibernate.ejb.event.EJB3PostInsertEventListener,org.hibernate.envers.event.AuditEventListener" />
