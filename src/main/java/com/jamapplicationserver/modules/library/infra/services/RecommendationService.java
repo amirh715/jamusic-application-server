@@ -70,7 +70,7 @@ public class RecommendationService implements IRecommendationService {
                         .map(item -> LibraryEntityIdAndTitle.create((LibraryEntityModel) item))
                         .collect(Collectors.toSet());
                 if(items.size() > 0)
-                    collections.add(new RecommendedCollection(title, items));
+                    collections.add(new RecommendedCollection(title, items, 3));
             }
 
             // recommended artworks based on what others are listening to
@@ -90,7 +90,7 @@ public class RecommendationService implements IRecommendationService {
                         .map(item -> LibraryEntityIdAndTitle.create((LibraryEntityModel) item))
                         .collect(Collectors.toSet());
                 if(items.size() > 0)
-                    collections.add(new RecommendedCollection(title, items));
+                    collections.add(new RecommendedCollection(title, items, 2));
             }
 
             // recommended artworks based on their release year
@@ -107,7 +107,7 @@ public class RecommendationService implements IRecommendationService {
                         .map(artwork -> LibraryEntityIdAndTitle.create(artwork))
                         .collect(Collectors.toSet());
                 if(items.size() > 0)
-                    collections.add(new RecommendedCollection(title, items));
+                    collections.add(new RecommendedCollection(title, items, 1));
             }
 
             return collections;

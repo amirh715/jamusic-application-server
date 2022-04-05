@@ -18,13 +18,16 @@ public class RecommendedCollection<T> implements IQueryResponseDTO {
     
     public final String title;
     public final Set<T> items;
+    public final int index;
     
     public RecommendedCollection(
             String title,
-            Set<T> items
+            Set<T> items,
+            int index
     ) {
         this.title = title;
         this.items = items;
+        this.index = index;
     }
     
     @Override
