@@ -35,7 +35,7 @@ public class GetTrackAudioByIdUseCase implements IUsecase<GetTrackAudioByIdReque
     
     @Override
     public Result<InputStream> execute(GetTrackAudioByIdRequestDTO request) throws GenericAppException {
-        
+                
         try {
             
             final Result<UniqueEntityId> idOrError =
@@ -43,19 +43,19 @@ public class GetTrackAudioByIdUseCase implements IUsecase<GetTrackAudioByIdReque
             if(idOrError.isFailure) return Result.fail(idOrError.getError());
             
             final UniqueEntityId id = idOrError.getValue();
-            
+                        
             final Track track =
                     repository
                             .fetchTrackById(id)
-                            .includeUnpublished(request.subjectRole)
+                            .includeUnpublished()
                             .getSingleResult();
             if(track == null)
                 return Result.fail(new TrackDoesNotExistError());
-            
+                        
             final Path audioPath = track.getAudioPath();
             final InputStream audio = persistence.read(audioPath.toFile());
-            if(audio == null) throw new Exception(); // LOG
-            
+            if(audio == null) throw new Exception("File not found"); // LOG
+                        
             return Result.ok(audio);
             
         } catch(Exception e) {

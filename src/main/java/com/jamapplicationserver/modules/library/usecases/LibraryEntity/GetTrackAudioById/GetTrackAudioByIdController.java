@@ -23,11 +23,12 @@ public class GetTrackAudioByIdController extends BaseController {
     
     private GetTrackAudioByIdController(IUsecase usecase) {
         this.usecase = usecase;
+        this.requireAuthClaims = false;
     }
     
     @Override
     public void executeImpl() {
-        
+                
         try {
             
             final GetTrackAudioByIdRequestDTO dto =
@@ -36,7 +37,7 @@ public class GetTrackAudioByIdController extends BaseController {
                             subjectId,
                             subjectRole
                     );
-            
+                        
             final Result<InputStream> result = usecase.execute(dto);
             
             if(result.isFailure) {
@@ -52,13 +53,13 @@ public class GetTrackAudioByIdController extends BaseController {
                 
                 return;
             }
-            
-            if(subjectRole.isSubscriber()) {
+                        
+//            if(subjectRole.isSubscriber()) {
                 publicCache();
                 cache(Duration.ofHours(6));
                 staleWhileRevalidate(Duration.ofDays(4));
                 staleIfError(Duration.ofDays(4));
-            }
+//            }
             sendFile(result.getValue());
             
         } catch(Exception e) {

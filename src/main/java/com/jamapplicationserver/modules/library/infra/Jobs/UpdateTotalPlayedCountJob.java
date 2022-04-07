@@ -18,6 +18,8 @@ public class UpdateTotalPlayedCountJob implements Job {
     
     @Override
     public void execute(JobExecutionContext context) {
+        
+        LogService.getInstance().log("Job: " + this.getClass().getSimpleName());
                 
         final EntityManager em =
                 EntityManagerFactoryHelper.getInstance()
@@ -55,7 +57,7 @@ public class UpdateTotalPlayedCountJob implements Job {
                         + "FROM jamschema.played_tracks pt GROUP BY pt.played_track_id) total_played_count_of_tracks "
                         + "WHERE tracks.id = total_played_count_of_tracks.track_id AND tracks.album_id IS NOT NULL "
                         + "GROUP BY (tracks.album_id)"
-                        + ") subQuery WHERE id = total_played_count_of_tracks.album_id";
+                        + ") subQuery WHERE id = subQuery.album_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
             
@@ -72,8 +74,8 @@ public class UpdateTotalPlayedCountJob implements Job {
                         + "(SELECT pt.played_track_id track_id, COUNT(*) total_played_count "
                         + "FROM jamschema.played_tracks pt GROUP BY pt.played_track_id) total_played_count_of_tracks "
                         + "WHERE le.id = total_played_count_of_tracks.track_id "
-                        + "GROUP BY (le.artist_id)) results.artist_id "
-                        + "WHERE id = results";
+                        + "GROUP BY (le.artist_id)) results "
+                        + "WHERE id = results.artist_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
                 

@@ -15,7 +15,7 @@ import com.jamapplicationserver.core.logic.*;
 public class Title extends ValueObject {
     
     public static final int MIN_LENGTH = 1;
-    public static final int MAX_LENGTH = 80;
+    public static final int MAX_LENGTH = 120;
     
     private final String title;
     

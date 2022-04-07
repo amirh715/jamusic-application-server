@@ -35,7 +35,7 @@ public class LibraryEntityQueryScope<T extends LibraryEntity>
         defaultScope.add(publishedScope);
     }
     
-    private LibraryEntityQueryScope<T> includeUnpublished() {
+    public LibraryEntityQueryScope<T> includeUnpublished() {
         defaultScope.remove(publishedScope);
         return this;
     }

@@ -53,12 +53,12 @@ public class GetLibraryEntityByIdController extends BaseController {
                 
                 return;
             }
-            
+
             if(subjectRole.isSubscriber()) {
                 publicCache();
-                cache(Duration.ofHours(6));
-                staleWhileRevalidate(Duration.ofDays(4));
-                staleIfError(Duration.ofDays(4));
+                cache(Duration.ofHours(1));
+                staleWhileRevalidate(Duration.ofDays(1));
+                staleIfError(Duration.ofDays(1));
             }
             ok(result.getValue());
             

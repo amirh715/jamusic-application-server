@@ -78,7 +78,7 @@ public class GetLibraryEntitiesByFiltersController extends BaseController {
                 
                 return;
             }
-            
+
             if(subjectRole.isSubscriber()) {
                 publicCache();
                 cache(Duration.ofHours(1));

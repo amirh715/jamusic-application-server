@@ -8,6 +8,8 @@ package com.jamapplicationserver;
 import static spark.Spark.*;
 import javax.servlet.*;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import com.jamapplicationserver.modules.user.infra.http.UserRoutes;
 import com.jamapplicationserver.modules.library.infra.http.LibraryRoutes;
 import com.jamapplicationserver.modules.reports.infra.http.ReportRoutes;
@@ -102,14 +104,19 @@ public class AppMain {
             before("/*", (req, res) -> {
                 
                 try {
-                                        
+                    
+                    final Pattern pattern = Pattern.compile("/v1/library/audio/");
+                    final Matcher matcher = pattern.matcher(req.pathInfo());
+                    final boolean isGetTrackAudioPath = matcher.find();
+                    
                     if(
                             req.pathInfo().equals("/v1/user/login") ||
                             req.pathInfo().equals("/v1/user/request-account-verification") ||
                             req.pathInfo().equals("/v1/user/verify-account") ||
                             req.pathInfo().equals("/v1/user/request-password-reset") ||
                             req.pathInfo().equals("/v1/user/reset-password") ||
-                            req.pathInfo().equals("/v1/user/verify-email")
+                            req.pathInfo().equals("/v1/user/verify-email") ||
+                            isGetTrackAudioPath
                     ) {
 
                     } else {

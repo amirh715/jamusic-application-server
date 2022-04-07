@@ -32,7 +32,6 @@ public class GetRecommendedCollectionsUseCase implements IUsecase<UniqueEntityId
             return Result.ok(service.getCollections(playerId));
             
         } catch(Exception e) {
-            LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }
         
