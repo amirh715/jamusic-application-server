@@ -51,7 +51,6 @@ public class GetUserProfileImageUseCase implements IUsecase<String, Result> {
             
             final InputStream image = this.persistence.read(file);
             
-            
             return Result.ok(image);
 
         } catch(Exception e) {

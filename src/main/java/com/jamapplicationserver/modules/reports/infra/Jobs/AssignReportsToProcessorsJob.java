@@ -9,6 +9,7 @@ import java.util.*;
 import org.quartz.*;
 import com.jamapplicationserver.core.domain.*;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.infra.Services.LogService.LogService;
 import com.jamapplicationserver.modules.reports.domain.*;
 import com.jamapplicationserver.modules.reports.repository.*;
 
@@ -21,6 +22,8 @@ public class AssignReportsToProcessorsJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
                 
+        LogService.getInstance().log("Job: " + this.getClass().getSimpleName());
+        
         final IReportRepository repository = ReportRepository.getInstance();
         
         // pending assignments

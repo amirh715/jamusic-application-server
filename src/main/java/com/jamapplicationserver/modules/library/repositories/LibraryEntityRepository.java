@@ -297,6 +297,15 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                 model.getReports().forEach(report -> em.remove(report));
             }
             
+            // remove from playlist tracks
+            {
+                final String query = "DELETE FROM jamschema.playlist_tracks pt "
+                        + "WHERE pt.track_id = ?1";
+                em.createNativeQuery(query)
+                        .setParameter(1, model.getId())
+                        .executeUpdate();
+            }
+            
             if(entity instanceof Band) {
                 
                 ((BandModel) model).getTracks()

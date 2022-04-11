@@ -28,7 +28,7 @@ public class AfterUserBlocked implements IDomainEventHandler<UserBlocked> {
                         
             final IFCMDataMessageService fcmService = FCMDataMessageService.getInstance();
             
-            final Map<String, String> data = Map.of("USER_STATE_CHANGED_TO", "BLOCKED");
+            final Map<String, String> data = Map.of("COMMAND", "USER_BLOCKED");
             final Set<String> fcmTokens = Set.of(event.user.getFCMToken().getValue());
             
             fcmService.send(data, fcmTokens);

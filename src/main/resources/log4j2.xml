@@ -11,10 +11,11 @@
                 </pattern>>
             </PatternLayout>
         </Console>-->
-        <SMTP name="mail-appender" subject="Jamusic Application Server Log Message"
+        
+<!--        <SMTP name="mail-appender" subject="Jamusic Application Server Log Message"
             from="log@jamusicapp.ir" to="amirh715@gmail.com" smtpHost="localhost" smtpPort="2525">
-            
-        </SMTP>
+        </SMTP>-->
+        
         <File name="file-appender" fileName="/home/api/logs/api.log">
             <PatternLayout>
                 <Pattern>
@@ -30,9 +31,9 @@
         <Logger name="org.hibernate.stat" level="DEBUG" additivity="false">
             <AppenderRef ref="Console-Appender"></AppenderRef>
         </Logger>-->
-        <Root level="fatal, error">
+        <Root level="fatal, error, info">
             <AppenderRef ref="file-appender"/>
-            <AppenderRef ref="mail-appender"/>
+            <!--<AppenderRef ref="mail-appender"/>-->
         </Root>
     </Loggers>
 </Configuration>

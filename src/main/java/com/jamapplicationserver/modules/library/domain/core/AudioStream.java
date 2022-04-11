@@ -8,15 +8,18 @@ package com.jamapplicationserver.modules.library.domain.core;
 import java.io.*;
 import java.time.Duration;
 import com.jamapplicationserver.core.logic.*;
+import com.jamapplicationserver.modules.library.domain.core.errors.AudioMaxAllowedDurationExceededError;
 import com.jamapplicationserver.utils.TikaUtils;
 import org.apache.tika.metadata.*;
-import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp3.Mp3Parser;
+import org.apache.tika.parser.*;
+import org.apache.tika.parser.audio.MidiParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.exception.TikaException;
 import org.xml.sax.SAXException;
 import com.jamapplicationserver.infra.Services.LogService.LogService;
 import javax.sound.sampled.*;
+
 
 /**
  *
@@ -51,37 +54,38 @@ public class AudioStream extends FilterInputStream {
     public static final Result<AudioStream> createAndValidate(InputStream stream) {
         
         try {
-            
             if(stream == null)
                 return Result.fail(new ValidationError("فایل صوتی ضروری ست"));
 
             // stream is not an audio stream
             if(!tika.isAudio(stream))
                 return Result.fail(new ValidationError("فایل آهنگ باید فایل صوتی باشد"));
-            
+
             // audio format is not supported
             final String subType = tika.getSubtype(stream);
             final Result<MusicFileFormat> formatOrError = MusicFileFormat.create(subType);
             if(formatOrError.isFailure) return Result.fail(formatOrError.getError());
             final MusicFileFormat format = formatOrError.getValue();
-            
-//            final Duration duration = getDuration(stream);
-//            if(!duration.minus(MAX_ALLOWED_DURATION).isNegative())
-//                return Result.fail(new AudioMaxAllowedDurationExceededError());
+                        
+            final Duration duration = getDuration(stream);
+            if(!duration.minus(MAX_ALLOWED_DURATION).isNegative())
+                return Result.fail(new AudioMaxAllowedDurationExceededError());
             
 //            final int size = getSize(stream);
 //            if(size > MAX_ALLOWED_SIZE)
 //                return Result.fail(new MaxAllowedAudioSizeExceededError());
             
-            return Result.ok(new AudioStream(stream, 0, Duration.ZERO, format));
+            return Result.ok(new AudioStream(stream, 0, duration, format));
             
 //        } catch(UnsupportedAudioFileException e) {
 //            LogService.getInstance().error(e);
 //            return Result.fail(new AudioNotSupportedError());
         } catch(IOException e) {
+            e.printStackTrace();
             LogService.getInstance().error(e);
             return Result.fail(new ValidationError(e.getMessage()));
         } catch(Exception e) {
+            e.printStackTrace();
             LogService.getInstance().error(e);
             return Result.fail(new ValidationError(e.getMessage()));
         }
@@ -101,12 +105,11 @@ public class AudioStream extends FilterInputStream {
             throws UnsupportedAudioFileException,
             IOException, SAXException, TikaException {
         
+        Mp3Parser parser = new Mp3Parser();
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         ParseContext context = new ParseContext();
-        Mp3Parser p = new Mp3Parser();
-        
-        p.parse(stream, handler, metadata, context);
+        parser.parse(stream, handler, metadata, context);
 
         final long duration =
                 Math.round(

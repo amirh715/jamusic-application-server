@@ -11,9 +11,6 @@ import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.*;
 import org.apache.tika.detect.*;
 import org.apache.tika.metadata.*;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.mp3.Mp3Parser;
-import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.*;
 import com.jamapplicationserver.infra.Services.LogService.LogService;
 
@@ -78,17 +75,6 @@ public class TikaUtils {
         
     }
     
-    public String test(InputStream stream) throws IOException, SAXException, TikaException {
-        BodyContentHandler handler = new BodyContentHandler();
-        Metadata metadata = new Metadata();
-        ParseContext context = new ParseContext();
-        Mp3Parser p = new Mp3Parser();
-        
-        p.parse(stream, handler, metadata, context);
-        
-        return metadata.toString();
-    }
-    
     public static TikaUtils getInstance() {
         
         try {
@@ -102,13 +88,4 @@ public class TikaUtils {
         
     }
     
-//    public static TikaUtils getInstance() {
-//        
-//        return TikaUtilsHolder.INSTANCE;
-//    }
-//    
-//    private static class TikaUtilsHolder {
-//
-//        private static final TikaUtils INSTANCE = new TikaUtils();
-//    }
 }

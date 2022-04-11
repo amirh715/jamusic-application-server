@@ -13,4 +13,8 @@ and open the template in the editor.
         <detector class="org.apache.tika.parser.audio.AudioParser" />
     </detectors>
     
+    <parsers>
+        <parser class="org.apache.tika.parser.audio.AudioParser"></parser>
+    </parsers>
+    
 </properties>

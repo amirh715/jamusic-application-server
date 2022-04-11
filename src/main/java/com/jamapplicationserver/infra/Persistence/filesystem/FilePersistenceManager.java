@@ -45,7 +45,7 @@ public class FilePersistenceManager implements IFilePersistenceManager {
         
         try {
 
-            final InputStream is = new FileInputStream(file);
+            final FileInputStream is = new FileInputStream(file);
             
             return new BufferedInputStream(is);
             

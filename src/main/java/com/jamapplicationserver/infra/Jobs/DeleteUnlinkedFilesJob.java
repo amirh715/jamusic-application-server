@@ -25,6 +25,8 @@ public class DeleteUnlinkedFilesJob implements Job {
     @Override
     public void execute(JobExecutionContext context) {
         
+        LogService.getInstance().log("Job: " + this.getClass().getSimpleName());
+        
         final EntityManager em =
                 EntityManagerFactoryHelper.getInstance()
                 .createEntityManager();

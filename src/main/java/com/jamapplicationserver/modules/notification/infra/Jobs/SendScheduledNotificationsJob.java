@@ -22,6 +22,8 @@ public class SendScheduledNotificationsJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
                 
+        LogService.getInstance().log("Job: " + this.getClass().getSimpleName());
+        
         try {
             
             final INotificationRepository repository =

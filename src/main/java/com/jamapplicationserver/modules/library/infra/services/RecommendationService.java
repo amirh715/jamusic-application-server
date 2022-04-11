@@ -50,11 +50,28 @@ public class RecommendationService implements IRecommendationService {
             if(player == null) return collections;
 
             if(player.getPlayedTracks().size() < 10) return collections;
-
+            
+            // recommended artworks based on their release year
+            {
+                final String title = "آلبوم ها و آهنگ های جدید";
+                final String query = "SELECT artworks FROM ArtworkModel artworks "
+                        + "WHERE artworks.releaseDate = :thisYearMonth AND artworks.published IS TRUE";
+                final YearMonth thisYearMonth = YearMonth.now();
+                final Set<LibraryEntityIdAndTitle> items =
+                        em.createQuery(query, ArtworkModel.class)
+                        .setParameter("thisYearMonth", thisYearMonth)
+                        .setMaxResults(15)
+                        .getResultStream()
+                        .map(artwork -> LibraryEntityIdAndTitle.create(artwork))
+                        .collect(Collectors.toSet());
+                if(items.size() > 0)
+                    collections.add(new RecommendedCollection(title, items, 3));
+            }
+            
             // recommended artworks based on being repetitively played
             {
                 final String title = "قفلی زدی";
-                final String query = "SELECT le "
+                final String query = "SELECT le.* "
                         + "FROM jamschema.library_entities le, jamschema.played_tracks pt "
                         + "WHERE le.id = pt.played_track_id "
                         + "AND pt.player_id = :playerId "
@@ -70,13 +87,13 @@ public class RecommendationService implements IRecommendationService {
                         .map(item -> LibraryEntityIdAndTitle.create((LibraryEntityModel) item))
                         .collect(Collectors.toSet());
                 if(items.size() > 0)
-                    collections.add(new RecommendedCollection(title, items, 3));
+                    collections.add(new RecommendedCollection(title, items, 2));
             }
 
             // recommended artworks based on what others are listening to
             {
                 final String title = "دیگران گوش می دهند";
-                final String query = "SELECT le "
+                final String query = "SELECT le.* "
                         + "FROM jamschema.library_entities le, jamschema.played_tracks pt "
                         + "WHERE le.id = pt.played_track_id "
                         + "AND pt.played_at BETWEEN now() - interval '7 day' AND now() "
@@ -90,24 +107,30 @@ public class RecommendationService implements IRecommendationService {
                         .map(item -> LibraryEntityIdAndTitle.create((LibraryEntityModel) item))
                         .collect(Collectors.toSet());
                 if(items.size() > 0)
-                    collections.add(new RecommendedCollection(title, items, 2));
+                    collections.add(new RecommendedCollection(title, items, 1));
             }
-
-            // recommended artworks based on their release year
+            
+            // recommended artworks based on user's taste
             {
-                final String title = "آلبوم ها و آهنگ های جدید";
-                final String query = "SELECT artworks FROM ArtworkModel artworks "
-                        + "WHERE artworks.releaseDate = :thisYearMonth AND artworks.published IS TRUE";
-                final YearMonth thisYearMonth = YearMonth.now();
+                final String title = "پیشنهاد جم";
+                final String query = "SELECT le.* "
+                        + "FROM jamschema.library_entities le, jamschema.entity_genres eg "
+                        + "WHERE le.id = eg.entity_id AND eg.genre_id IN ("
+                        + "SELECT eg.genre_id FROM jamschema.played_tracks pt, jamschema.entity_genres eg "
+                        + "WHERE pt.played_track_id = eg.entity_id AND pt.player_id = :playerId "
+                        + "AND le.published IS TRUE "
+                        + "AND pt.played_at BETWEEN NOW() - interval '10 day' AND NOW() "
+                        + "GROUP BY (genre_id) ORDER BY COUNT(*) DESC"
+                        + ")";
                 final Set<LibraryEntityIdAndTitle> items =
-                        em.createQuery(query, ArtworkModel.class)
-                        .setParameter("thisYearMonth", thisYearMonth)
+                        (Set<LibraryEntityIdAndTitle>) em.createNativeQuery(query, LibraryEntityModel.class)
+                        .setParameter("playerId", playerId.toValue())
                         .setMaxResults(15)
                         .getResultStream()
-                        .map(artwork -> LibraryEntityIdAndTitle.create(artwork))
+                        .map(artwork -> LibraryEntityIdAndTitle.create((LibraryEntityModel) artwork))
                         .collect(Collectors.toSet());
                 if(items.size() > 0)
-                    collections.add(new RecommendedCollection(title, items, 1));
+                    collections.add(new RecommendedCollection(title, items, 0));
             }
 
             return collections;

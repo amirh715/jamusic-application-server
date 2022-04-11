@@ -10,6 +10,7 @@ import java.io.*;
 import java.time.*;
 import java.util.*;
 import java.util.stream.*;
+import java.util.zip.*;
 import com.jamapplicationserver.core.logic.*;
 import com.jamapplicationserver.utils.TikaUtils;
 import com.jamapplicationserver.core.domain.*;
@@ -91,9 +92,9 @@ public abstract class BaseController implements Route {
     }
     
     protected static Response fileResponse(Response res, InputStream in) {
-
+        
         try {
-            
+
             final TikaUtils tika = TikaUtils.getInstance();
 
             final String contentType = tika.getContentType(in);

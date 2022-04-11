@@ -39,7 +39,7 @@ public class UpdateTotalPlayedCountJob implements Job {
                         + "SELECT pt.played_track_id track_id, COUNT(*) total_played_count "
                         + "FROM jamschema.played_tracks pt GROUP BY pt.played_track_id"
                         + ") results "
-                        + "WHERE id = results.track_id";
+                        + "WHERE id = track_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
             
@@ -57,7 +57,7 @@ public class UpdateTotalPlayedCountJob implements Job {
                         + "FROM jamschema.played_tracks pt GROUP BY pt.played_track_id) total_played_count_of_tracks "
                         + "WHERE tracks.id = total_played_count_of_tracks.track_id AND tracks.album_id IS NOT NULL "
                         + "GROUP BY (tracks.album_id)"
-                        + ") subQuery WHERE id = subQuery.album_id";
+                        + ") results WHERE id = results.album_id";
                 em.createNativeQuery(query)
                         .executeUpdate();
             
@@ -69,7 +69,7 @@ public class UpdateTotalPlayedCountJob implements Job {
                 final String query =
                         "UPDATE jamschema.library_entities SET total_played_count = results.total_played_count "
                         + "FROM ("
-                        + "SELECT le.artist_id, SUM(total_played_count_of_tracks.total_played_count) "
+                        + "SELECT le.artist_id, SUM(total_played_count_of_tracks.total_played_count) total_played_count "
                         + "FROM jamschema.library_entities le, "
                         + "(SELECT pt.played_track_id track_id, COUNT(*) total_played_count "
                         + "FROM jamschema.played_tracks pt GROUP BY pt.played_track_id) total_played_count_of_tracks "
@@ -84,6 +84,7 @@ public class UpdateTotalPlayedCountJob implements Job {
             tnx.commit();
             
         } catch(Exception e) {
+            e.printStackTrace();
             LogService.getInstance().warn(e);
             tnx.rollback();
         } finally {
