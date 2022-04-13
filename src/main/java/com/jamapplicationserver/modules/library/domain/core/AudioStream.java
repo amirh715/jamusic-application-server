@@ -13,7 +13,6 @@ import com.jamapplicationserver.utils.TikaUtils;
 import org.apache.tika.metadata.*;
 import org.apache.tika.parser.mp3.Mp3Parser;
 import org.apache.tika.parser.*;
-import org.apache.tika.parser.audio.MidiParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.exception.TikaException;
 import org.xml.sax.SAXException;
@@ -67,15 +66,15 @@ public class AudioStream extends FilterInputStream {
             if(formatOrError.isFailure) return Result.fail(formatOrError.getError());
             final MusicFileFormat format = formatOrError.getValue();
                         
-            final Duration duration = getDuration(stream);
-            if(!duration.minus(MAX_ALLOWED_DURATION).isNegative())
-                return Result.fail(new AudioMaxAllowedDurationExceededError());
+//            final Duration duration = getDuration(stream);
+//            if(!duration.minus(MAX_ALLOWED_DURATION).isNegative())
+//                return Result.fail(new AudioMaxAllowedDurationExceededError());
             
 //            final int size = getSize(stream);
 //            if(size > MAX_ALLOWED_SIZE)
 //                return Result.fail(new MaxAllowedAudioSizeExceededError());
             
-            return Result.ok(new AudioStream(stream, 0, duration, format));
+            return Result.ok(new AudioStream(stream, 0, Duration.ZERO, format));
             
 //        } catch(UnsupportedAudioFileException e) {
 //            LogService.getInstance().error(e);

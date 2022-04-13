@@ -25,11 +25,7 @@ import com.jamapplicationserver.modules.library.infra.Jobs.*;
 import com.jamapplicationserver.modules.notification.infra.Jobs.*;
 import com.jamapplicationserver.modules.reports.infra.Jobs.*;
 import com.jamapplicationserver.infra.Jobs.DeleteUnlinkedFilesJob;
-import com.jamapplicationserver.infra.Persistence.filesystem.FilePersistenceManager;
 import com.jamapplicationserver.infra.Services.LogService.LogService;
-import java.nio.file.Path;
-import java.io.*;
-import spark.utils.GzipUtils;
 
 /**
  *

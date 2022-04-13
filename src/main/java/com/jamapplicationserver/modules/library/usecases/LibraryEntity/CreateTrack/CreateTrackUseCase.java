@@ -128,7 +128,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
                     : null;
             final AudioStream audio = audioOrError.getValue();
             
-            final Path audioPath = persistence.buildPath(Track.class);
+            final Path audioPath = persistence.buildPath(Track.class, audio.format.getValue());
             
             Album album = null;
             Artist artist = null;
@@ -174,7 +174,7 @@ public class CreateTrackUseCase implements IUsecase<CreateTrackRequestDTO, Strin
 
             // write image to disk
             if(image != null) {
-                final Path imagePath = persistence.buildPath(Track.class);
+                final Path imagePath = persistence.buildPath(Track.class, image.format.getValue());
                 persistence.write(image, imagePath);
             }
 

@@ -122,6 +122,7 @@ public class PlayerRepository implements IPlayerRepository {
             tnx.commit();
             
         } catch(Exception e) {
+            e.printStackTrace();
             LogService.getInstance().error(e);
             tnx.rollback();
             throw e;

@@ -136,8 +136,8 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
             if(result.isFailure) return result;
                         
             // save album image
-            if(request.image != null) {
-                final Path path = persistence.buildPath(Album.class);
+            if(image != null) {
+                final Path path = persistence.buildPath(Album.class, image.format.getValue());
                 album.changeImage(path, request.subjectId);
                 persistence.write(image, path);
             }
@@ -150,6 +150,7 @@ public class CreateAlbumUseCase implements IUsecase<CreateAlbumRequestDTO, Strin
             
             return Result.ok(album);
         } catch(Exception e) {
+            e.printStackTrace();
             LogService.getInstance().error(e);
             throw new GenericAppException(e);
         }

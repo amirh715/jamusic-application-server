@@ -85,9 +85,9 @@ public abstract class Artist extends LibraryEntity {
                 creatorId,
                 updaterId
         );
-        this.albumsIds = albumsIds;
-        this.allTracksIds = allTracksIds;
-        this.singleTracksIds = singleTracksIds;
+        this.albumsIds = albumsIds != null ? albumsIds : new HashSet<>();
+        this.allTracksIds = allTracksIds != null ? allTracksIds : new HashSet<>();
+        this.singleTracksIds = singleTracksIds != null ? singleTracksIds : new HashSet<>();
         this.instagramId = instagramId;
     }
 

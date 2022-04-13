@@ -616,11 +616,12 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             
             if(model instanceof BandModel) { // Band
                 
-                final Set<Singer> members =
-                        ((BandModel) model).getMembers()
-                        .stream()
-                        .map(member -> (Singer) toDomain(member, em))
-                        .collect(Collectors.toSet());
+//                final Set<Singer> members =
+//                        ((BandModel) model).getMembers()
+//                        .stream()
+//                        .map(member -> (Singer) toDomain(member, em))
+//                        .collect(Collectors.toSet());
+                final Set<Singer> members = Set.of();
                 
                 entity = Band.reconstitute(
                         model.getId(),
@@ -643,7 +644,8 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
                         allTracksIds,
                         singleTracksIds,
                         members
-                        ).getValue();
+                ).getValue();
+                
             } else { // Singer
                 
                 entity = Singer.reconstitute(
@@ -886,14 +888,14 @@ public class LibraryEntityRepository implements ILibraryEntityRepository {
             }
         }
         
-        if(entity instanceof Band) {
-            ((Band) entity).getMembers()
-                .forEach(member ->
-                        ((BandModel) model).addMember(
-                                (SingerModel) toPersistence(member, em)
-                        )
-                );
-        }
+//        if(entity instanceof Band) {
+//            ((Band) entity).getMembers()
+//                .forEach(member ->
+//                        ((BandModel) model).addMember(
+//                                (SingerModel) toPersistence(member, em)
+//                        )
+//                );
+//        }
         
         if(entity instanceof Album) {
             ((Album) entity).getTracks()

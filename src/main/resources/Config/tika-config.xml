@@ -14,7 +14,7 @@ and open the template in the editor.
     </detectors>
     
     <parsers>
-        <parser class="org.apache.tika.parser.audio.AudioParser"></parser>
+        <parser class="org.apache.tika.parser.mp3.Mp3Parser"></parser>
     </parsers>
     
 </properties>
