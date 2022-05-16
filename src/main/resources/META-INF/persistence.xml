@@ -37,7 +37,7 @@ and open the template in the editor.
       <property name="hibernate.archive.autodetection" value="class, hbm"/>
       <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/JamDB"/>
       <property name="javax.persistence.jdbc.user" value="postgres"/>
-      <property name="javax.persistence.jdbc.password" value="Aspect123"/>
+      <property name="javax.persistence.jdbc.password" value="Temp123"/>
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
       <property name="connection.pool_size" value="12"/>
       <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
